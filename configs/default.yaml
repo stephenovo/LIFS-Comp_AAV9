@@ -1,0 +1,35 @@
+project:
+  random_seed: 42
+  peptide_length: 7
+  insertion_site_note: "Verify Fit4Function residue numbering before analysis."
+
+targets:
+  packaging: f_pack
+  cns:
+    brain_mouse: 0.5
+    spinal_cord_mouse: 0.5
+  liver: liver_mouse
+  off_target:
+    heart_mouse: 0.5
+    kidney_mouse: 0.5
+  annotation_only:
+    - liver_human
+    - immune_footprint_risk
+
+screening:
+  # Must be estimated from training data; deliberately left unset.
+  packaging_threshold: null
+  score_weights:
+    cns: 0.45
+    liver: 0.35
+    off_target: 0.20
+  epsilon: 1.0e-6
+  weight_sensitivity_delta: 0.10
+  final_candidate_count:
+    minimum: 24
+    maximum: 30
+
+validation:
+  split_strategy: sequence_cluster
+  primate_data_role: blind_test_only
+

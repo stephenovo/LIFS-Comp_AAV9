@@ -1,0 +1,3 @@
+task,model,split,random_state,train_rows,test_rows,pearson_r,r2,mae
+Production2,random_forest,random-holdout-sanity-check,42,78854,19714,0.6431363907421064,0.41350811503234486,1.0480606722991825
+Liver,random_forest,random-holdout-sanity-check,42,78896,19725,0.7668734238207555,0.5880144484297103,0.7092916138886342

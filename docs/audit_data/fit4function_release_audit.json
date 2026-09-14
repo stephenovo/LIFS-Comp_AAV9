@@ -1,0 +1,666 @@
+{
+  "release_root": "data/raw/fit4function_official",
+  "csv_files": {
+    "modeling_library_production_fitness.csv": {
+      "bytes": 8192894,
+      "sha256": "6aabda2d7300dba4f2323135143147fa9f429221b81447fe464deda72fc87d41",
+      "rows": 74464,
+      "columns": [
+        "AA",
+        "CodonRep1",
+        "CodonRep2",
+        "Label",
+        "Production1",
+        "Production2",
+        "Production"
+      ],
+      "numeric": {
+        "Production1": {
+          "finite_count": 74452,
+          "nan_count": 10,
+          "positive_inf_count": 2,
+          "negative_inf_count": 0,
+          "min": 0.0,
+          "median": 0.0237494303586221,
+          "max": 220.695424314551
+        },
+        "Production2": {
+          "finite_count": 74446,
+          "nan_count": 14,
+          "positive_inf_count": 4,
+          "negative_inf_count": 0,
+          "min": 0.0,
+          "median": 0.023951544389123447,
+          "max": 179.501579143762
+        },
+        "Production": {
+          "finite_count": 74435,
+          "nan_count": 24,
+          "positive_inf_count": 5,
+          "negative_inf_count": 0,
+          "min": 0.0,
+          "median": 0.0261803198220341,
+          "max": 177.661219310154
+        }
+      },
+      "has_amino_acid_sequence": true,
+      "unique_amino_acid_sequences": 74464,
+      "duplicate_amino_acid_rows": 0,
+      "valid_7mer_rows": 74464
+    },
+    "assessment_library_production_fitness.csv": {
+      "bytes": 8087126,
+      "sha256": "0ab5570b4d62e77c5aa0e2f17476f5862dfa69533baae67e7252cd8c379f5a07",
+      "rows": 74467,
+      "columns": [
+        "AA",
+        "CodonRep1",
+        "CodonRep2",
+        "Label",
+        "Production1",
+        "Production2",
+        "Production"
+      ],
+      "numeric": {
+        "Production1": {
+          "finite_count": 74453,
+          "nan_count": 13,
+          "positive_inf_count": 1,
+          "negative_inf_count": 0,
+          "min": 0.0,
+          "median": 0.0247368166848817,
+          "max": 889.0872698758
+        },
+        "Production2": {
+          "finite_count": 74454,
+          "nan_count": 11,
+          "positive_inf_count": 2,
+          "negative_inf_count": 0,
+          "min": 0.0,
+          "median": 0.024986647269727248,
+          "max": 396.283523210517
+        },
+        "Production": {
+          "finite_count": 74440,
+          "nan_count": 24,
+          "positive_inf_count": 3,
+          "negative_inf_count": 0,
+          "min": 0.0,
+          "median": 0.0284893742123105,
+          "max": 464.239664020587
+        }
+      },
+      "has_amino_acid_sequence": true,
+      "unique_amino_acid_sequences": 74467,
+      "duplicate_amino_acid_rows": 0,
+      "valid_7mer_rows": 74467
+    },
+    "fit4function_library_screens.csv": {
+      "bytes": 10781880,
+      "sha256": "29e509dc8a6c412c9b6d1ca90e537062273c1667b32973ff12b4ba92f6506351",
+      "rows": 100000,
+      "columns": [
+        "AA",
+        "Production1",
+        "Production2",
+        "Liver",
+        "HepG2_bind",
+        "HepG2_tr",
+        "THLE_bind",
+        "THLE_tr"
+      ],
+      "numeric": {
+        "Production1": {
+          "finite_count": 99946,
+          "nan_count": 7,
+          "positive_inf_count": 0,
+          "negative_inf_count": 47,
+          "min": -9.87203222188927,
+          "median": -0.7640277152028505,
+          "max": 6.1228326683233
+        },
+        "Production2": {
+          "finite_count": 98568,
+          "nan_count": 1432,
+          "positive_inf_count": 0,
+          "negative_inf_count": 0,
+          "min": -6.979164,
+          "median": -0.769888015,
+          "max": 5.901779
+        },
+        "Liver": {
+          "finite_count": 98621,
+          "nan_count": 970,
+          "positive_inf_count": 118,
+          "negative_inf_count": 291,
+          "min": -7.66223654764477,
+          "median": -0.883489157718483,
+          "max": 4.46336605048511
+        },
+        "HepG2_bind": {
+          "finite_count": 76867,
+          "nan_count": 1447,
+          "positive_inf_count": 333,
+          "negative_inf_count": 21353,
+          "min": -8.30184895522169,
+          "median": -1.67178555101606,
+          "max": 8.42483515786557
+        },
+        "HepG2_tr": {
+          "finite_count": 32924,
+          "nan_count": 1745,
+          "positive_inf_count": 35,
+          "negative_inf_count": 65296,
+          "min": -9.86269557735104,
+          "median": -0.1777060593276745,
+          "max": 8.12872205878878
+        },
+        "THLE_bind": {
+          "finite_count": 91509,
+          "nan_count": 7038,
+          "positive_inf_count": 120,
+          "negative_inf_count": 1333,
+          "min": -5.34176580234893,
+          "median": -1.06581732173778,
+          "max": 7.93087252609551
+        },
+        "THLE_tr": {
+          "finite_count": 54096,
+          "nan_count": 7141,
+          "positive_inf_count": 17,
+          "negative_inf_count": 38746,
+          "min": -7.82749585300907,
+          "median": -1.1928060415500301,
+          "max": 7.44261267440551
+        }
+      },
+      "has_amino_acid_sequence": true,
+      "unique_amino_acid_sequences": 100000,
+      "duplicate_amino_acid_rows": 0,
+      "valid_7mer_rows": 100000
+    },
+    "nnk_library_top_production_fitness_240k.csv": {
+      "bytes": 2160002,
+      "sha256": "6647065d2fc47d74535d00ee6bcf36d0b8b6eb67254bc42f389bedd3ee720398",
+      "rows": 240000,
+      "columns": [
+        "AA"
+      ],
+      "numeric": {},
+      "has_amino_acid_sequence": true,
+      "unique_amino_acid_sequences": 239244,
+      "duplicate_amino_acid_rows": 756,
+      "valid_7mer_rows": 240000
+    }
+  },
+  "sequence_intersections": {
+    "modeling_library_production_fitness.csv__assessment_library_production_fitness.csv": 9993,
+    "modeling_library_production_fitness.csv__fit4function_library_screens.csv": 8,
+    "modeling_library_production_fitness.csv__nnk_library_top_production_fitness_240k.csv": 8,
+    "assessment_library_production_fitness.csv__fit4function_library_screens.csv": 6,
+    "assessment_library_production_fitness.csv__nnk_library_top_production_fitness_240k.csv": 15,
+    "fit4function_library_screens.csv__nnk_library_top_production_fitness_240k.csv": 73
+  },
+  "production_mixture": {
+    "method": "two-component-Gaussian-mixture-on-finite-designed-log2-production",
+    "rows": 59549,
+    "non_fit_component": {
+      "mean": -7.32334114728274,
+      "sd": 2.0679674122078344,
+      "weight": 0.5589235484513866
+    },
+    "fit_component": {
+      "mean": 0.23263898367820876,
+      "sd": 1.8969087509322824,
+      "weight": 0.44107645154861347
+    },
+    "posterior_equal_boundary_log2": -3.304097084609296,
+    "posterior_equal_boundary_raw_ratio": 0.10124362089431124,
+    "fraction_of_finite_rows_above_boundary": 0.4372365614871786,
+    "caveat": "An audit estimate, not a pre-approved project gate."
+  },
+  "invivo_measurements": {
+    "bytes": 12845297,
+    "sha256": "0da399c41fd524b912bcc4e3d2cd624c6ef59a55b5c3a61d55576f53c465e2fc",
+    "structure": {
+      "sheets": [
+        {
+          "name": "Serum",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "Liver",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "Spleen",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "Kidney",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "Heart",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "Lung",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "SpinalCord",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        },
+        {
+          "name": "Brain",
+          "state": "visible",
+          "rows_including_header": 50001,
+          "columns": 5
+        }
+      ],
+      "defined_names": []
+    },
+    "organs": {
+      "Serum": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Serum_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 27876,
+          "Animal2": 34139,
+          "Animal3": 31994,
+          "Animal4": 19655
+        },
+        "pairwise_animal_pearson_median": 0.7706940041218657,
+        "pairwise_animal_pearson_min": 0.7226531470655767,
+        "pairwise_animal_pearson_max": 0.8019663952921436
+      },
+      "Liver": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Liver_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 25492,
+          "Animal2": 23786,
+          "Animal3": 16150,
+          "Animal4": 23733
+        },
+        "pairwise_animal_pearson_median": 0.843247527188475,
+        "pairwise_animal_pearson_min": 0.7877103779518225,
+        "pairwise_animal_pearson_max": 0.8868445236778945
+      },
+      "Spleen": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Spleen_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 28482,
+          "Animal2": 23065,
+          "Animal3": 31586,
+          "Animal4": 33175
+        },
+        "pairwise_animal_pearson_median": 0.81681908477054,
+        "pairwise_animal_pearson_min": 0.7898419165706632,
+        "pairwise_animal_pearson_max": 0.8420631801197513
+      },
+      "Kidney": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Kidney_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 27227,
+          "Animal2": 28967,
+          "Animal3": 33321,
+          "Animal4": 31512
+        },
+        "pairwise_animal_pearson_median": 0.7654913930257307,
+        "pairwise_animal_pearson_min": 0.7247587220333247,
+        "pairwise_animal_pearson_max": 0.7930274491398779
+      },
+      "Heart": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Heart_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 23382,
+          "Animal2": 28376,
+          "Animal3": 33969,
+          "Animal4": 36869
+        },
+        "pairwise_animal_pearson_median": 0.5260939621690148,
+        "pairwise_animal_pearson_min": 0.44168339871162543,
+        "pairwise_animal_pearson_max": 0.6127967870632091
+      },
+      "Lung": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Lung_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 13008,
+          "Animal2": 13560,
+          "Animal3": 28948,
+          "Animal4": 32661
+        },
+        "pairwise_animal_pearson_median": 0.4742367901871797,
+        "pairwise_animal_pearson_min": 0.22228866514896714,
+        "pairwise_animal_pearson_max": 0.7524346600813446
+      },
+      "SpinalCord": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_SpinalCord_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 22033,
+          "Animal2": 24755,
+          "Animal3": 19833,
+          "Animal4": 29479
+        },
+        "pairwise_animal_pearson_median": 0.6612783548469297,
+        "pairwise_animal_pearson_min": 0.6254259995660988,
+        "pairwise_animal_pearson_max": 0.7386349545165
+      },
+      "Brain": {
+        "rows": 50000,
+        "columns": [
+          "SequenceID",
+          "Animal1",
+          "Animal2",
+          "Animal3",
+          "Animal4"
+        ],
+        "sequence_id_example": "Sequence_Brain_1",
+        "contains_amino_acid_sequence": false,
+        "sequential_anonymous_ids": true,
+        "non_null_by_animal": {
+          "Animal1": 18661,
+          "Animal2": 21556,
+          "Animal3": 21648,
+          "Animal4": 30306
+        },
+        "pairwise_animal_pearson_median": 0.5892396087026502,
+        "pairwise_animal_pearson_min": 0.5513636096706729,
+        "pairwise_animal_pearson_max": 0.6466671028949293
+      }
+    },
+    "row_aligned_cross_organ_correlations": {
+      "Serum": {
+        "Serum": 1.0,
+        "Liver": 0.001277085326113962,
+        "Spleen": 0.004816861177967448,
+        "Kidney": 0.0009819548799558648,
+        "Heart": -0.006514196839492051,
+        "Lung": -0.0003357785873762145,
+        "SpinalCord": 0.003933838975621805,
+        "Brain": 0.0167851028422622
+      },
+      "Liver": {
+        "Serum": 0.001277085326113962,
+        "Liver": 1.0,
+        "Spleen": 0.007886766802085436,
+        "Kidney": 0.00809792808370671,
+        "Heart": 0.0004185437800891064,
+        "Lung": 0.011800852475259378,
+        "SpinalCord": 0.0013428130520386405,
+        "Brain": -0.011590981157499186
+      },
+      "Spleen": {
+        "Serum": 0.004816861177967448,
+        "Liver": 0.007886766802085436,
+        "Spleen": 1.0,
+        "Kidney": -0.0017207573782071033,
+        "Heart": -0.008682884329194538,
+        "Lung": 0.0038094562076057114,
+        "SpinalCord": -0.00505148780002117,
+        "Brain": 0.007350657142023608
+      },
+      "Kidney": {
+        "Serum": 0.0009819548799558648,
+        "Liver": 0.00809792808370671,
+        "Spleen": -0.0017207573782071033,
+        "Kidney": 1.0,
+        "Heart": -0.003309682736735246,
+        "Lung": 0.006911528981268179,
+        "SpinalCord": 0.005323021539401769,
+        "Brain": -0.00906638902740839
+      },
+      "Heart": {
+        "Serum": -0.006514196839492051,
+        "Liver": 0.0004185437800891064,
+        "Spleen": -0.008682884329194538,
+        "Kidney": -0.003309682736735246,
+        "Heart": 1.0,
+        "Lung": 0.006763056421114439,
+        "SpinalCord": 0.005246418970869699,
+        "Brain": -0.004733357690833574
+      },
+      "Lung": {
+        "Serum": -0.0003357785873762145,
+        "Liver": 0.011800852475259378,
+        "Spleen": 0.0038094562076057114,
+        "Kidney": 0.006911528981268179,
+        "Heart": 0.006763056421114439,
+        "Lung": 1.0,
+        "SpinalCord": -0.00999923896875649,
+        "Brain": -0.0019791343388563154
+      },
+      "SpinalCord": {
+        "Serum": 0.003933838975621805,
+        "Liver": 0.0013428130520386405,
+        "Spleen": -0.00505148780002117,
+        "Kidney": 0.005323021539401769,
+        "Heart": 0.005246418970869699,
+        "Lung": -0.00999923896875649,
+        "SpinalCord": 1.0,
+        "Brain": 0.008665432905172063
+      },
+      "Brain": {
+        "Serum": 0.0167851028422622,
+        "Liver": -0.011590981157499186,
+        "Spleen": 0.007350657142023608,
+        "Kidney": -0.00906638902740839,
+        "Heart": -0.004733357690833574,
+        "Lung": -0.0019791343388563154,
+        "SpinalCord": 0.008665432905172063,
+        "Brain": 1.0
+      }
+    },
+    "row_aligned_complete_all_organs": 2018,
+    "sequence_linkage_status": "anonymous-organ-specific-ids-no-AA-column"
+  },
+  "invivo_predictions": {
+    "bytes": 11429726,
+    "sha256": "7430c7370ba74a9cad0c55f6d598355bf454bde79dd49831c257f0a9f6853df7",
+    "structure": {
+      "sheets": [
+        {
+          "name": "Serum",
+          "state": "visible",
+          "rows_including_header": 70001,
+          "columns": 3
+        },
+        {
+          "name": "Liver",
+          "state": "visible",
+          "rows_including_header": 60001,
+          "columns": 3
+        },
+        {
+          "name": "Spleen",
+          "state": "visible",
+          "rows_including_header": 70001,
+          "columns": 3
+        },
+        {
+          "name": "Kidney",
+          "state": "visible",
+          "rows_including_header": 65001,
+          "columns": 3
+        },
+        {
+          "name": "Heart",
+          "state": "visible",
+          "rows_including_header": 70001,
+          "columns": 3
+        },
+        {
+          "name": "Lung",
+          "state": "visible",
+          "rows_including_header": 40001,
+          "columns": 3
+        },
+        {
+          "name": "SpinalCord",
+          "state": "visible",
+          "rows_including_header": 40001,
+          "columns": 3
+        },
+        {
+          "name": "Brain",
+          "state": "visible",
+          "rows_including_header": 25001,
+          "columns": 3
+        }
+      ],
+      "defined_names": []
+    },
+    "organs": {
+      "Serum": {
+        "rows": 70000,
+        "sequence_id_example": "Sequence_Serum_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 70000,
+        "measured_vs_predicted_pearson": 0.6896619677543327
+      },
+      "Liver": {
+        "rows": 60000,
+        "sequence_id_example": "Sequence_Liver_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 60000,
+        "measured_vs_predicted_pearson": 0.8216081905945911
+      },
+      "Spleen": {
+        "rows": 70000,
+        "sequence_id_example": "Sequence_Spleen_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 70000,
+        "measured_vs_predicted_pearson": 0.7443239093709072
+      },
+      "Kidney": {
+        "rows": 65000,
+        "sequence_id_example": "Sequence_Kidney_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 65000,
+        "measured_vs_predicted_pearson": 0.7069742193751968
+      },
+      "Heart": {
+        "rows": 70000,
+        "sequence_id_example": "Sequence_Heart_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 70000,
+        "measured_vs_predicted_pearson": 0.6192600880579218
+      },
+      "Lung": {
+        "rows": 40000,
+        "sequence_id_example": "Sequence_Lung_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 40000,
+        "measured_vs_predicted_pearson": 0.5751898940319041
+      },
+      "SpinalCord": {
+        "rows": 40000,
+        "sequence_id_example": "Sequence_SpinalCord_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 40000,
+        "measured_vs_predicted_pearson": 0.6461652847204813
+      },
+      "Brain": {
+        "rows": 25000,
+        "sequence_id_example": "Sequence_Brain_Predict_1",
+        "contains_amino_acid_sequence": false,
+        "paired_measurements": 25000,
+        "measured_vs_predicted_pearson": 0.6118211850491324
+      }
+    },
+    "sequence_linkage_status": "anonymous-organ-specific-ids-no-AA-column"
+  },
+  "training_readiness": {
+    "production_sequence_model": "ready",
+    "liver_and_human_liver_sequence_models": "ready-from-100k-sample",
+    "brain_sequence_model": "blocked-in-processed-release",
+    "spinal_cord_sequence_model": "blocked-in-processed-release",
+    "heart_sequence_model": "blocked-in-processed-release",
+    "kidney_sequence_model": "blocked-in-processed-release",
+    "reason": "Processed multi-organ workbooks expose only organ-specific anonymous IDs; they contain neither AA sequences nor a shared lookup table."
+  }
+}

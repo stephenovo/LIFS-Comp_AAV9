@@ -1,0 +1,189 @@
+{
+  "path": "data/raw/sra_samples/SRR29692586.fastq.gz",
+  "mode": "conservative-exact-anchor-pilot",
+  "reads_examined": 1787085,
+  "status_counts": {
+    "valid": 1023545,
+    "low_quality": 659678,
+    "failed_anchor": 103694,
+    "stop_codon": 168
+  },
+  "valid_fraction": 0.5727455605077543,
+  "unique_valid_nucleotide_21mers": 246131,
+  "unique_valid_peptide_7mers": 175699,
+  "top_peptide_7mers": [
+    [
+      "SVSKPFL",
+      10415
+    ],
+    [
+      "TLAVPFK",
+      3428
+    ],
+    [
+      "RGDGIIG",
+      1133
+    ],
+    [
+      "GNQTRGG",
+      1074
+    ],
+    [
+      "GNQVKGG",
+      702
+    ],
+    [
+      "TNSTKGA",
+      657
+    ],
+    [
+      "TALMPFK",
+      653
+    ],
+    [
+      "SNHTKNF",
+      572
+    ],
+    [
+      "NNVVKNI",
+      534
+    ],
+    [
+      "IVRDINM",
+      505
+    ],
+    [
+      "GNSVKNG",
+      495
+    ],
+    [
+      "SNSTKSA",
+      473
+    ],
+    [
+      "NGMKAQI",
+      437
+    ],
+    [
+      "QNYTKNN",
+      384
+    ],
+    [
+      "GNNTKMG",
+      383
+    ],
+    [
+      "SNTTRPI",
+      373
+    ],
+    [
+      "NNSIKSQ",
+      369
+    ],
+    [
+      "KINNWHE",
+      355
+    ],
+    [
+      "NNHTKGV",
+      345
+    ],
+    [
+      "ISEKPGI",
+      318
+    ]
+  ],
+  "method_note": "The publication used Bowtie2 alignment and a synthetic-library whitelist. This pilot uses exact adjacent anchors and does not claim exact parity.",
+  "anchors": {
+    "left": "AAACCACCAGAGTGCCCAA",
+    "right": "GCACAGGCGCAGACCGGT",
+    "insertion_nt": 21
+  },
+  "whitelist_size": 100000,
+  "whitelist_matched_reads": 412827,
+  "whitelist_detected_peptides": 70428,
+  "whitelist_detection_fraction": 0.70428,
+  "top_whitelist_peptide_7mers": [
+    [
+      "GNQVKGG",
+      702
+    ],
+    [
+      "TNSTKGA",
+      657
+    ],
+    [
+      "NNVVKNI",
+      534
+    ],
+    [
+      "GNSVKNG",
+      495
+    ],
+    [
+      "SNSTKSA",
+      473
+    ],
+    [
+      "NNSIKSQ",
+      369
+    ],
+    [
+      "KINNWHE",
+      355
+    ],
+    [
+      "NNHTKGV",
+      345
+    ],
+    [
+      "WKVDGGY",
+      303
+    ],
+    [
+      "TGGKMDF",
+      300
+    ],
+    [
+      "AKQMDLT",
+      243
+    ],
+    [
+      "EMKGLSL",
+      235
+    ],
+    [
+      "HAAKAMI",
+      178
+    ],
+    [
+      "NNNTKNI",
+      174
+    ],
+    [
+      "AGKVGTL",
+      168
+    ],
+    [
+      "TIGRPFV",
+      167
+    ],
+    [
+      "GNTIRQA",
+      161
+    ],
+    [
+      "DNKIKST",
+      158
+    ],
+    [
+      "ENQVKQY",
+      157
+    ],
+    [
+      "WKSHGAA",
+      151
+    ]
+  ],
+  "whitelist_counts_output": "data/interim/SRR29692586_counts.csv"
+}

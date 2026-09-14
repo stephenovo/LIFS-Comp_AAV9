@@ -12,12 +12,20 @@ The motivating application is future SMN1 delivery for spinal muscular atrophy (
 engineers the delivery capsid; it does not redesign SMN1, dosage, route of administration, or a
 clinical product.
 
+The Fit4Function labels were measured in an AAV9 (K449R) backbone with a 7-mer inserted between
+VP1 residues 588 and 589. The project does not assume that learned effects transfer unchanged to a
+different capsid backbone.
+
 ## Primary endpoints
 
 1. Packaging fitness (`F_pack`) — hard eligibility gate.
 2. Mouse CNS enrichment proxy (`F_CNS`) — weighted brain and spinal-cord predictions.
 3. Mouse liver burden proxy (`F_liv`) — primary negative endpoint.
 4. Other off-target proxy (`F_off`) — initially heart and kidney.
+
+Brain and spinal-cord heads are trained separately and combined only after endpoint-specific
+validation. Their labels are early (two-hour) mouse-organ vector-genome biodistribution proxies,
+not motor-neuron transduction measurements.
 
 Human liver-cell predictions and immune-footprint proximity are annotations unless the data audit
 provides evidence for a validated role in the primary objective.
@@ -38,8 +46,8 @@ reported using both a presentation score and a Pareto analysis. The final set sh
 
 ## Decision gates
 
-1. **Data gate:** required Fit4Function labels and sequence metadata are present and interpretable.
+1. **Data gate:** SRA-derived organ labels reproduce the public liver labels and expected replicate
+   structure; the processed multi-organ workbooks alone do not pass this gate.
 2. **Baseline gate:** held-out predictions outperform naive baselines without sequence leakage.
 3. **Screening gate:** candidates pass packaging, distance, uncertainty, and diversity checks.
 4. **Communication gate:** every figure and claim is consistent with the available evidence.
-

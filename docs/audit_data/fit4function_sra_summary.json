@@ -1,0 +1,97 @@
+{
+  "run_count": 270,
+  "total_bytes": 120315410709,
+  "libraries": {
+    "NNK": 18,
+    "shark3": 18,
+    "Winghead": 6,
+    "Multifunction": 83,
+    "shark2": 18,
+    "Hammerhead": 127
+  },
+  "assay_types": {
+    "Transduction": 43,
+    "Binding": 46,
+    "Virus DNA": 45,
+    "Biodistribution": 118,
+    "Plasmid DNA": 18
+  },
+  "groups": {
+    "Hammerhead__Binding": {
+      "runs": 18,
+      "bytes": 3075978644
+    },
+    "Hammerhead__Biodistribution": {
+      "runs": 88,
+      "bytes": 34478843084
+    },
+    "Hammerhead__Plasmid DNA": {
+      "runs": 3,
+      "bytes": 6055545963
+    },
+    "Hammerhead__Transduction": {
+      "runs": 9,
+      "bytes": 3594509198
+    },
+    "Hammerhead__Virus DNA": {
+      "runs": 9,
+      "bytes": 14287878453
+    },
+    "Multifunction__Binding": {
+      "runs": 16,
+      "bytes": 5193896273
+    },
+    "Multifunction__Biodistribution": {
+      "runs": 30,
+      "bytes": 6903902355
+    },
+    "Multifunction__Plasmid DNA": {
+      "runs": 3,
+      "bytes": 2961076511
+    },
+    "Multifunction__Transduction": {
+      "runs": 28,
+      "bytes": 8522023082
+    },
+    "Multifunction__Virus DNA": {
+      "runs": 6,
+      "bytes": 4757695743
+    },
+    "NNK__Binding": {
+      "runs": 12,
+      "bytes": 2092458907
+    },
+    "NNK__Transduction": {
+      "runs": 3,
+      "bytes": 198504386
+    },
+    "NNK__Virus DNA": {
+      "runs": 3,
+      "bytes": 875594813
+    },
+    "Winghead__Transduction": {
+      "runs": 3,
+      "bytes": 1432311341
+    },
+    "Winghead__Virus DNA": {
+      "runs": 3,
+      "bytes": 4665485638
+    },
+    "shark2__Plasmid DNA": {
+      "runs": 6,
+      "bytes": 2233023073
+    },
+    "shark2__Virus DNA": {
+      "runs": 12,
+      "bytes": 8134059198
+    },
+    "shark3__Plasmid DNA": {
+      "runs": 6,
+      "bytes": 1937844257
+    },
+    "shark3__Virus DNA": {
+      "runs": 12,
+      "bytes": 8914779790
+    }
+  }
+}

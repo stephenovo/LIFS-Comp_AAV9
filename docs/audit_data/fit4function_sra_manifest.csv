@@ -1,0 +1,271 @@
+experiment_accession,experiment_alias,experiment_title,biosample_accession,run_accession,bytes,spots,library,assay_type,sample,lab_host
+SRX25195750,f4f_nnk_HEK-transduction_2,NNK library HEK293 transduction,SRS21884654,SRR29692419,64432375,1194876,NNK,Transduction,HEK (t),Homo sapiens HEK293 cells
+SRX25195749,f4f_nnk_HEK-transduction_1,NNK library HEK293 transduction,SRS21884654,SRR29692436,69548767,1298080,NNK,Transduction,HEK (t),Homo sapiens HEK293 cells
+SRX25195748,f4f_nnk_Primary-human-brain-endo_3,NNK library hBMVEC binding,SRS21884687,SRR29692437,148439930,2712651,NNK,Binding,hBMVEC (b),Homo sapiens hBMVEC primary cells
+SRX25195747,IT-Virus2-Shark3_2,Shark3 assessment library virus DNA,SRS21884673,SRR29692542,852299042,14862360,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195746,IT-Virus2-Shark3_1,Shark3 assessment library virus DNA,SRS21884673,SRR29692439,847152990,14848385,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195745,winghead_Liver_medial_1,Winghead library macaque liver transduction,SRS21884694,SRR29692440,470976701,10431425,Winghead,Transduction,liver (macaque),Macaca fascicularis
+SRX25195744,winghead_Liver_lateral,Winghead library macaque liver transduction,SRS21884694,SRR29692441,685638151,13587389,Winghead,Transduction,liver (macaque),Macaca fascicularis
+SRX25195743,winghead_Liver_dorsal,Winghead library macaque liver transduction,SRS21884694,SRR29692442,275696489,5425251,Winghead,Transduction,liver (macaque),Macaca fascicularis
+SRX25195742,winghead_starter_virus3,Winghead library virus DNA,SRS21884693,SRR29692443,1519104363,30503477,Winghead,Virus DNA,Production,Homo sapiens HEK293 cells
+SRX25195741,winghead_starter_virus2,Winghead library virus DNA,SRS21884693,SRR29692444,1456921214,28801679,Winghead,Virus DNA,Production,Homo sapiens HEK293 cells
+SRX25195740,winghead_starter_virus1,Winghead library virus DNA,SRS21884693,SRR29692445,1689460061,33629614,Winghead,Virus DNA,Production,Homo sapiens HEK293 cells
+SRX25195739,Octopus_A4_Liver_Transduction_R3,Multifunction library mouse liver transduction,SRS21884692,SRR29692446,195678101,4389397,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195738,Octopus_A4_Liver_Transduction_R2,Multifunction library mouse liver transduction,SRS21884692,SRR29692447,160825929,3540451,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195737,Octopus_A4_Liver_Transduction_R1,Multifunction library mouse liver transduction,SRS21884692,SRR29692448,137706997,3080421,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195736,Octopus_A3_Liver_Transduction_R3,Multifunction library mouse liver transduction,SRS21884692,SRR29692449,234919752,5260478,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195735,IT-Virus1-Shark3_3,Shark3 assessment library virus DNA,SRS21884673,SRR29692450,728051284,12668789,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195734,Octopus_A3_Liver_Transduction_R2,Multifunction library mouse liver transduction,SRS21884692,SRR29692451,322929707,7328363,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195733,Octopus_A3_Liver_Transduction_R1,Multifunction library mouse liver transduction,SRS21884692,SRR29692452,247501566,5570570,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195732,Octopus_A2_Liver_Transduction_R3,Multifunction library mouse liver transduction,SRS21884692,SRR29692453,718138583,16311991,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195731,Octopus_A2_Liver_Transduction_R2,Multifunction library mouse liver transduction,SRS21884692,SRR29692454,644859404,14362965,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195730,Octopus_A2_Liver_Transduction_R1,Multifunction library mouse liver transduction,SRS21884692,SRR29692455,426005822,9521657,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195729,Octopus_A1_Liver_Transduction_R3,Multifunction library mouse liver transduction,SRS21884692,SRR29692456,482190211,10876301,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195728,Octopus_A1_Liver_Transduction_R2,Multifunction library mouse liver transduction,SRS21884692,SRR29692457,446640976,10132571,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195727,Octopus_A1_Liver_Transduction_R1,Multifunction library mouse liver transduction,SRS21884692,SRR29692458,283613262,6380783,Multifunction,Transduction,liver (mouse) - transduction,Mus musculus
+SRX25195726,Octo_BioD-A4_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692459,135726264,2113731,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195725,Octo_BioD-A4_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692460,94279237,1474903,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195724,IT-Virus1-Shark3_2,Shark3 assessment library virus DNA,SRS21884673,SRR29692461,686693163,11999669,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195723,HighOcto_BioD-A2_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692613,445460332,7723372,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195722,HighOcto_BioD-A2_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692463,358703483,6211882,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195721,HighOcto_BioD-A2_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692464,521131842,9162995,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195720,HighOcto_BioD-A1_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692465,394691441,6859616,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195719,HighOcto_BioD-A1_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692466,497201989,8680581,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195718,HighOcto_BioD-A1_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692467,453125999,7868764,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195717,octopus_run2_THLE_T4,Multifunction library THLE2 transduction,SRS21884691,SRR29692468,268571258,5103387,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195716,octopus_run2_THLE_T3,Multifunction library THLE2 transduction,SRS21884691,SRR29692469,373088755,7187644,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195715,KC-DNA-Shark3_2,Shark3 assessment library plasmid DNA,SRS21884672,SRR29692470,260791385,4429011,shark3,Plasmid DNA,missing,not applicable
+SRX25195714,octopus_run2_THLE_T2,Multifunction library THLE2 transduction,SRS21884691,SRR29692471,198194461,3809819,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195713,octopus_run2_THLE_T1,Multifunction library THLE2 transduction,SRS21884691,SRR29692472,322178937,6244576,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195712,octopus_run1_THLE_T4,Multifunction library THLE2 transduction,SRS21884691,SRR29692473,217698481,3225392,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195711,octopus_run1_THLE_T3,Multifunction library THLE2 transduction,SRS21884691,SRR29692474,326506629,4791805,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195710,octopus_run1_THLE_T2,Multifunction library THLE2 transduction,SRS21884691,SRR29692475,168238680,2476330,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195709,octopus_run1_THLE_T1,Multifunction library THLE2 transduction,SRS21884691,SRR29692476,273460296,4022765,Multifunction,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195708,octopus_run2_HepG2_T4,Multifunction library HEPG2 transduction,SRS21884690,SRR29692477,236363240,4577238,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195707,octopus_run2_HepG2_T3,Multifunction library HEPG2 transduction,SRS21884690,SRR29692478,389206669,7460762,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195706,octopus_run2_HepG2_T2,Multifunction library HEPG2 transduction,SRS21884690,SRR29692479,397167998,7585887,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195705,octopus_run2_HepG2_T1,Multifunction library HEPG2 transduction,SRS21884690,SRR29692480,93601580,1794153,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195704,KC-DNA-Shark3_1,Shark3 assessment library plasmid DNA,SRS21884672,SRR29692481,320244364,5508012,shark3,Plasmid DNA,missing,not applicable
+SRX25195703,octopus_run1_HepG2_T4,Multifunction library HEPG2 transduction,SRS21884690,SRR29692482,205096730,3010814,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195702,octopus_run1_HepG2_T3,Multifunction library HEPG2 transduction,SRS21884690,SRR29692483,331432064,4898391,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195701,octopus_run1_HepG2_T2,Multifunction library HEPG2 transduction,SRS21884690,SRR29692484,341005381,5002085,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195700,octopus_run1_HepG2_T1,Multifunction library HEPG2 transduction,SRS21884690,SRR29692485,79201613,1156373,Multifunction,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195699,octopus_run2_THLE_B4,Multifunction library THLE2 binding,SRS21884689,SRR29692486,401072876,7645302,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195698,octopus_run2_THLE_B3,Multifunction library THLE2 binding,SRS21884689,SRR29692487,407150659,7858085,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195697,octopus_run2_THLE_B2,Multifunction library THLE2 binding,SRS21884689,SRR29692488,433849672,8364796,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195696,octopus_run2_THLE_B1,Multifunction library THLE2 binding,SRS21884689,SRR29692489,330946276,6421754,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195695,octopus_run1_THLE_B4,Multifunction library THLE2 binding,SRS21884689,SRR29692490,344857029,5122607,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195694,octopus_run1_THLE_B3,Multifunction library THLE2 binding,SRS21884689,SRR29692491,355281005,5218844,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195693,IT-DNA-Shark3_3,Shark3 assessment library plasmid DNA,SRS21884672,SRR29692492,491133400,8561048,shark3,Plasmid DNA,missing,not applicable
+SRX25195692,IT-DNA-Shark2_3,Shark2 modeling library plasmid DNA,SRS21884662,SRR29692493,385253051,6688331,shark2,Plasmid DNA,missing,not applicable
+SRX25195691,octopus_run1_THLE_B2,Multifunction library THLE2 binding,SRS21884689,SRR29692494,386009984,5694088,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195690,octopus_run1_THLE_B1,Multifunction library THLE2 binding,SRS21884689,SRR29692495,287777569,4231637,Multifunction,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195689,octopus_run2_HepG2_B4,Multifunction library HEPG2 binding,SRS21884688,SRR29692496,328451312,6369723,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195688,octopus_run2_HepG2_B3,Multifunction library HEPG2 binding,SRS21884688,SRR29692497,294050419,5635309,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195687,octopus_run2_HepG2_B2,Multifunction library HEPG2 binding,SRS21884688,SRR29692498,345447105,6592056,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195686,octopus_run2_HepG2_B1,Multifunction library HEPG2 binding,SRS21884688,SRR29692499,237361701,4564168,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195685,octopus_run1_HepG2_B4,Multifunction library HEPG2 binding,SRS21884688,SRR29692500,283941691,4170116,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195684,octopus_run1_HepG2_B3,Multifunction library HEPG2 binding,SRS21884688,SRR29692501,252502944,3730239,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195683,octopus_run1_HepG2_B2,Multifunction library HEPG2 binding,SRS21884688,SRR29692502,295300503,4325509,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195682,octopus_run1_HepG2_B1,Multifunction library HEPG2 binding,SRS21884688,SRR29692503,209895528,3070705,Multifunction,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195681,IT-DNA-Shark3_2,Shark3 assessment library plasmid DNA,SRS21884672,SRR29692504,265144629,4595850,shark3,Plasmid DNA,missing,not applicable
+SRX25195680,octopus_starter_3,Multifunction library virus DNA,SRS21884682,SRR29692505,473074693,8278184,Multifunction,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195679,octopus_starter_3_rerun,Multifunction library virus DNA,SRS21884682,SRR29692506,815627503,15821064,Multifunction,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195678,octopus_starter_2,Multifunction library virus DNA,SRS21884682,SRR29692507,664881296,11548348,Multifunction,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195677,octopus_starter_2_rerun,Multifunction library virus DNA,SRS21884682,SRR29692508,1141917762,22002357,Multifunction,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195676,octopus_starter_1,Multifunction library virus DNA,SRS21884682,SRR29692509,614448468,10717813,Multifunction,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195675,hammerhead_Spleen_a2_r3,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692510,454273434,7420668,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195674,hammerhead_Spleen_a2_r2,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692512,124408084,2080061,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195673,hammerhead_Spleen_a2_r1,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692513,220569570,3712603,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195672,hammerhead_Spleen_a1_r3,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692514,258706251,4351552,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195671,hammerhead_Spleen_a1_r2,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692515,284108359,4831393,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195670,hammerhead_Spleen_a1_r1,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692516,588715998,9860529,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195669,hammerhead_Liver_a4_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692517,630071690,10550752,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195668,KC-DNA-Shark2_3,Shark2 modeling library plasmid DNA,SRS21884662,SRR29692438,383132127,6650312,shark2,Plasmid DNA,missing,not applicable
+SRX25195667,f4f_nnk_Primary-human-brain-endo_2,NNK library hBMVEC binding,SRS21884687,SRR29692519,231452895,4293124,NNK,Binding,hBMVEC (b),Homo sapiens hBMVEC primary cells
+SRX25195666,f4f_nnk_Primary-human-brain-endo_1,NNK library hBMVEC binding,SRS21884687,SRR29692520,219327114,4045766,NNK,Binding,hBMVEC (b),Homo sapiens hBMVEC primary cells
+SRX25195665,f4f_nnk_C57-brain-endo-binding_3,NNK library mBMVEC binding,SRS21884686,SRR29692521,114637174,2103184,NNK,Binding,mBMVEC (b),Mus musculus mBMVEC primary cells
+SRX25195664,f4f_nnk_C57-brain-endo-binding_2,NNK library mBMVEC binding,SRS21884686,SRR29692522,149707811,2769654,NNK,Binding,mBMVEC (b),Mus musculus mBMVEC primary cells
+SRX25195663,f4f_nnk_C57-brain-endo-binding_1,NNK library mBMVEC binding,SRS21884686,SRR29692523,145495617,2709588,NNK,Binding,mBMVEC (b),Mus musculus mBMVEC primary cells
+SRX25195662,f4f_nnk_hCMEC-D3-binding_3,NNK library hCMEC Binding,SRS21884685,SRR29692524,196748364,3608496,NNK,Binding,hCMEC (b),Homo sapiens hCMEC/d3 cells
+SRX25195661,f4f_nnk_hCMEC-D3-binding_2,NNK library hCMEC Binding,SRS21884685,SRR29692525,201164268,3720000,NNK,Binding,hCMEC (b),Homo sapiens hCMEC/d3 cells
+SRX25195660,f4f_nnk_hCMEC-D3-binding_1,NNK library hCMEC Binding,SRS21884685,SRR29692526,209251344,3873751,NNK,Binding,hCMEC (b),Homo sapiens hCMEC/d3 cells
+SRX25195659,f4f_nnk_HEK-binding_3,NNK library HEK293 Binding,SRS21884684,SRR29692527,176564008,3240331,NNK,Binding,HEK (b),Homo sapiens HEK293 cells
+SRX25195658,f4f_nnk_HEK-binding_2,NNK library HEK293 Binding,SRS21884684,SRR29692528,132523042,2446600,NNK,Binding,HEK (b),Homo sapiens HEK293 cells
+SRX25195657,KC-DNA-Shark2_2,Shark2 modeling library plasmid DNA,SRS21884662,SRR29692529,345431350,6026799,shark2,Plasmid DNA,missing,not applicable
+SRX25195656,f4f_nnk_HEK-binding_1,NNK library HEK293 Binding,SRS21884684,SRR29692530,167147340,3092458,NNK,Binding,HEK (b),Homo sapiens HEK293 cells
+SRX25195655,f4f_nnk_starter_virus_3,NNK library virus DNA,SRS21884683,SRR29692531,347335858,6424398,NNK,Virus DNA,missing,not applicable
+SRX25195654,f4f_nnk_starter_virus_2,NNK library virus DNA,SRS21884683,SRR29692532,305403226,5589741,NNK,Virus DNA,missing,not applicable
+SRX25195653,f4f_nnk_starter_virus_1,NNK library virus DNA,SRS21884683,SRR29692533,222855729,3973597,NNK,Virus DNA,missing,not applicable
+SRX25195652,KC-Virus2-Shark3_3,Shark3 assessment library virus DNA,SRS21884673,SRR29692534,542919247,9367396,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195651,KC-Virus2-Shark3_2,Shark3 assessment library virus DNA,SRS21884673,SRR29692535,535611373,9230290,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195650,KC-Virus2-Shark3_1,Shark3 assessment library virus DNA,SRS21884673,SRR29692536,774053982,13422068,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195649,KC-Virus1-Shark3_3,Shark3 assessment library virus DNA,SRS21884673,SRR29692537,626403981,10821610,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195648,KC-Virus1-Shark3_2,Shark3 assessment library virus DNA,SRS21884673,SRR29692538,725990820,12308978,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195647,KC-Virus1-Shark3_1,Shark3 assessment library virus DNA,SRS21884673,SRR29692539,924387305,15790829,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195646,KC-DNA-Shark2_1,Shark2 modeling library plasmid DNA,SRS21884662,SRR29692540,379300678,6571930,shark2,Plasmid DNA,missing,not applicable
+SRX25195645,IT-Virus2-Shark3_3,Shark3 assessment library virus DNA,SRS21884673,SRR29692541,838115173,14391084,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195644,octopus_starter_1_rerun,Multifunction library virus DNA,SRS21884682,SRR29692511,1047746021,20286162,Multifunction,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195643,octopus_DNA_3,Multifunction library plasmid DNA,SRS21884681,SRR29692543,813020045,13487513,Multifunction,Plasmid DNA,Production,not applicable
+SRX25195642,octopus_DNA_2,Multifunction library plasmid DNA,SRS21884681,SRR29692544,752453404,12521451,Multifunction,Plasmid DNA,Production,not applicable
+SRX25195641,octopus_DNA_1,Multifunction library plasmid DNA,SRS21884681,SRR29692545,1395603062,24382748,Multifunction,Plasmid DNA,Production,not applicable
+SRX25195640,hammerhead_THLE_tr_r3,Hammerhead library THLE2 transduction,SRS21884680,SRR29692546,218431947,3644651,Hammerhead,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195639,IT-DNA-Shark3_1,Shark3 assessment library plasmid DNA,SRS21884672,SRR29692547,356053294,6126029,shark3,Plasmid DNA,missing,not applicable
+SRX25195638,hammerhead_THLE_tr_r2,Hammerhead library THLE2 transduction,SRS21884680,SRR29692548,188886931,3126978,Hammerhead,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195637,hammerhead_THLE_tr_r1,Hammerhead library THLE2 transduction,SRS21884680,SRR29692549,224695642,3761459,Hammerhead,Transduction,THLE2 (t),Homo sapiens THLE-2 cells
+SRX25195636,hammerhead_hepG2_Transduction_r3,Hammerhead library HEPG2 transduction,SRS21884679,SRR29692550,891410388,14509373,Hammerhead,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195635,hammerhead_hepG2_Transduction_r2,Hammerhead library HEPG2 transduction,SRS21884679,SRR29692551,1005308010,16197373,Hammerhead,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195634,hammerhead_hepG2_Transduction_r1,Hammerhead library HEPG2 transduction,SRS21884679,SRR29692552,586606717,9477371,Hammerhead,Transduction,HEPG2 (t),Homo sapiens HepG2 cells
+SRX25195633,hammerhead_THLE_bind_r3,Hammerhead library THLE2 binding,SRS21884678,SRR29692553,207662881,3490056,Hammerhead,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195632,hammerhead_THLE_bind_r2,Hammerhead library THLE2 binding,SRS21884678,SRR29692554,163472941,2673461,Hammerhead,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195631,hammerhead_THLE_bind_r1,Hammerhead library THLE2 binding,SRS21884678,SRR29692555,120583487,1970960,Hammerhead,Binding,THLE2 (b),Homo sapiens THLE-2 cells
+SRX25195630,hammerhead_hepG2_Binding_r3,Hammerhead library HEPG2 binding,SRS21884677,SRR29692556,180674408,2955424,Hammerhead,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195629,hammerhead_hepG2_Binding_r2,Hammerhead library HEPG2 binding,SRS21884677,SRR29692557,173771003,2826437,Hammerhead,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195628,KC-Virus2-Shark2_3,Shark2 modeling library virus DNA,SRS21884657,SRR29692558,879777325,15045202,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195627,hammerhead_hepG2_Binding_r1,Hammerhead library HEPG2 binding,SRS21884677,SRR29692559,217035689,3537253,Hammerhead,Binding,HEPG2 (b),Homo sapiens HepG2 cells
+SRX25195626,hammerhead_start_virus_prod3_r3,Hammerhead library production round 3 virus DNA,SRS21884676,SRR29692560,313947166,5130759,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells
+SRX25195625,hammerhead_start_virus_prod3_r2,Hammerhead library production round 3 virus DNA,SRS21884676,SRR29692561,372717841,6070071,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells
+SRX25195624,hammerhead_start_virus_prod3_r1,Hammerhead library production round 3 virus DNA,SRS21884676,SRR29692562,319767009,5219156,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells
+SRX25195623,hammerhead_Brain_a4_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692563,408754593,6568051,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195622,hammerhead_Brain_a4_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692564,460414073,7425744,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195621,hammerhead_Brain_a4_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692565,330192086,5277932,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195620,hammerhead_Brain_a3_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692566,241455304,3848677,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195619,hammerhead_Brain_a3_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692567,174220916,2741942,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195618,hammerhead_Brain_a3_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692568,258036562,4077330,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195617,KC-Virus2-Shark2_2,Shark2 modeling library virus DNA,SRS21884657,SRR29692569,644317860,11152482,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195616,hammerhead_Brain_a2_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692570,220105382,3446846,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195615,hammerhead_Brain_a2_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692571,187633804,2951666,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195614,hammerhead_Brain_a2_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692572,213629799,3429470,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195613,hammerhead_Brain_a1_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692573,134656748,2169647,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195612,hammerhead_Brain_a1_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692574,180770084,2890580,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195611,hammerhead_Brain_a1_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692575,248717916,3967992,Hammerhead,Biodistribution,Brain,Mus musculus
+SRX25195610,hammerhead_SpinalCord_a4_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692576,505827290,8172607,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195609,hammerhead_SpinalCord_a4_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692577,287885967,4624593,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195608,hammerhead_SpinalCord_a4_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692578,252785813,4046360,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195607,hammerhead_SpinalCord_a3_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692579,192850861,3067292,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195606,KC-Virus2-Shark2_1,Shark2 modeling library virus DNA,SRS21884657,SRR29692580,697214461,12114248,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195605,hammerhead_SpinalCord_a3_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692581,161202394,2525917,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195604,hammerhead_SpinalCord_a3_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692582,176196482,2779944,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195603,hammerhead_SpinalCord_a2_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692583,204858070,3193319,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195602,hammerhead_SpinalCord_a2_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692584,279012975,4407374,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195601,hammerhead_SpinalCord_a2_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692585,260707964,4210390,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195600,hammerhead_SpinalCord_a1_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692586,111186595,1787085,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195599,hammerhead_SpinalCord_a1_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692587,257692062,4127521,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195598,hammerhead_SpinalCord_a1_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692588,211081225,3358864,Hammerhead,Biodistribution,Spinal cord,Mus musculus
+SRX25195597,hammerhead_Lung_a4_r3,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692589,366740662,5875147,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195596,Octo_BioD-A4_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692462,128163768,2011129,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195595,Octo_BioD-A3_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692590,177350755,2779189,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195594,Octo_BioD-A3_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692591,191806798,3004125,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195593,Octo_BioD-A3_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692592,242531642,3789732,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195592,Octo_BioD-A2_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692593,138882115,2181853,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195591,Octo_BioD-A2_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692594,81620979,1276571,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195590,Octo_BioD-A2_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692595,88796153,1385587,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195589,Octo_BioD-A1_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692596,131032706,2056450,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195588,Octo_BioD-A1_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692597,126217679,1965665,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195587,Octo_BioD-A1_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692598,212633514,3336010,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195586,IT-Virus1-Shark3_1,Shark3 assessment library virus DNA,SRS21884673,SRR29692599,833101430,14575097,shark3,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195585,LowOcto_BioD-A4_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692600,306171897,5313340,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195584,LowOcto_BioD-A4_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692601,318120505,5515996,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195583,LowOcto_BioD-A4_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692602,304310567,5309277,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195582,LowOcto_BioD-A3_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692603,515001827,8981968,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195581,LowOcto_BioD-A3_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692604,469272434,8226936,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195580,LowOcto_BioD-A3_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692605,439824870,7670660,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195579,HighOcto_BioD-A4_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692606,15787700,267854,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195578,HighOcto_BioD-A4_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692607,28344280,487019,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195577,HighOcto_BioD-A4_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692608,21116153,364712,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195576,HighOcto_BioD-A3_Liver_3,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692609,15755257,265343,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195575,KC-DNA-Shark3_3,Shark3 assessment library plasmid DNA,SRS21884672,SRR29692610,244477185,4132563,shark3,Plasmid DNA,missing,not applicable
+SRX25195574,HighOcto_BioD-A3_Liver_2,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692611,21426837,365403,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195573,HighOcto_BioD-A3_Liver_1,Multifunction library mouse liver biodistribution,SRS21884671,SRR29692612,29413332,507608,Multifunction,Biodistribution,liver (mouse) - biodistribution,Mus musculus
+SRX25195572,hammerhead_Liver_a4_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692518,330262995,5571181,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195571,hammerhead_Liver_a4_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692614,583388799,9819836,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195570,hammerhead_Liver_a3_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692615,119953084,2020796,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195569,IT-Virus2-Shark2_1,Shark2 modeling library virus DNA,SRS21884657,SRR29692616,675673736,11739446,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195568,hammerhead_Liver_a3_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692617,111124953,1867965,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195567,hammerhead_Liver_a3_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692618,428349983,7244275,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195566,hammerhead_Liver_a2_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692619,473257397,8011325,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195565,hammerhead_Liver_a2_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692620,526033394,8850793,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195564,hammerhead_Liver_a2_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692621,536727091,8988849,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195563,hammerhead_Liver_a1_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692622,527298311,8969785,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195562,hammerhead_Liver_a1_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692623,590201920,10012231,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195561,hammerhead_Liver_a1_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692624,607457154,10327483,Hammerhead,Biodistribution,Liver,Mus musculus
+SRX25195560,hammerhead_Serum_a4_r1,Hammerhead library mouse serum biodistribution,SRS21884669,SRR29692625,438407664,7359664,Hammerhead,Biodistribution,Serum,Mus musculus
+SRX25195559,hammerhead_Serum_a3_r1,Hammerhead library mouse serum biodistribution,SRS21884669,SRR29692626,1221921133,20828369,Hammerhead,Biodistribution,Serum,Mus musculus
+SRX25195558,IT-Virus1-Shark2_3,Shark2 modeling library virus DNA,SRS21884657,SRR29692627,637772333,11018485,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195557,hammerhead_Serum_a2_r1,Hammerhead library mouse serum biodistribution,SRS21884669,SRR29692628,1611179014,27124434,Hammerhead,Biodistribution,Serum,Mus musculus
+SRX25195556,hammerhead_Serum_a1_r1,Hammerhead library mouse serum biodistribution,SRS21884669,SRR29692629,813335769,13701713,Hammerhead,Biodistribution,Serum,Mus musculus
+SRX25195555,hammerhead_HEK_tr_rep3,Hammerhead library HEK293 transduction,SRS21884668,SRR29692630,169571791,3154324,Hammerhead,Transduction,HEK (t),Homo sapiens HEK293 cells
+SRX25195554,hammerhead_HEK_tr_rep2,Hammerhead library HEK293 transduction,SRS21884668,SRR29692631,175899751,3289388,Hammerhead,Transduction,HEK (t),Homo sapiens HEK293 cells
+SRX25195553,hammerhead_HEK_tr_rep1,Hammerhead library HEK293 transduction,SRS21884668,SRR29692632,133698021,2432579,Hammerhead,Transduction,HEK (t),Homo sapiens HEK293 cells
+SRX25195552,hammerhead_primary_human_brain_endo_bind_rep3,Hammerhead library hBMVEC binding,SRS21884667,SRR29692633,179875638,3301661,Hammerhead,Binding,hBMVEC (b),Homo sapiens hBMVEC primary cells
+SRX25195551,hammerhead_primary_human_brain_endo_bind_rep2,Hammerhead library hBMVEC binding,SRS21884667,SRR29692634,136762374,2595444,Hammerhead,Binding,hBMVEC (b),Homo sapiens hBMVEC primary cells
+SRX25195550,hammerhead_primary_human_brain_endo_bind_rep1,Hammerhead library hBMVEC binding,SRS21884667,SRR29692635,116445589,2150150,Hammerhead,Binding,hBMVEC (b),Homo sapiens hBMVEC primary cells
+SRX25195549,hammerhead_C57_brain_endo_bind_rep3,Hammerhead library mBMVEC binding,SRS21884661,SRR29692636,177613510,3287113,Hammerhead,Binding,mBMVEC (b),Mus musculus mBMVEC primary cells
+SRX25195548,hammerhead_Lung_a4_r2,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692637,637574245,10276667,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195547,KC-Virus1-Shark2_3,Shark2 modeling library virus DNA,SRS21884657,SRR29692638,664111965,11532280,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195546,hammerhead_Lung_a4_r1,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692639,396731872,6331810,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195545,hammerhead_Lung_a3_r3,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692640,443125922,7060072,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195544,hammerhead_Lung_a3_r2,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692641,254788401,4001085,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195543,hammerhead_Lung_a3_r1,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692642,404630552,6376786,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195542,hammerhead_Lung_a2_r3,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692643,135490089,2113270,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195541,hammerhead_Lung_a2_r2,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692644,159852344,2505746,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195540,hammerhead_Lung_a2_r1,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692645,129211389,2064594,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195539,hammerhead_Lung_a1_r3,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692646,214394962,3441248,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195538,hammerhead_Lung_a1_r2,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692647,48191081,763376,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195537,hammerhead_Lung_a1_r1,Hammerhead library mouse lung biodistribution,SRS21884666,SRR29692648,112025158,1777538,Hammerhead,Biodistribution,Lung,Mus musculus
+SRX25195536,KC-Virus1-Shark2_2,Shark2 modeling library virus DNA,SRS21884657,SRR29692649,761001258,13274463,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195535,hammerhead_Heart_a4_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692650,629871611,10515205,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195534,hammerhead_Heart_a4_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692651,629401397,10636172,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195533,hammerhead_Heart_a4_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692652,814477012,13677922,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195532,hammerhead_Heart_a3_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692653,332036105,5628859,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195531,hammerhead_Heart_a3_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692654,357797299,5993764,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195530,hammerhead_Heart_a3_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692655,898238076,14780586,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195529,hammerhead_Heart_a2_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692656,282094338,4627946,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195528,hammerhead_Heart_a2_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692657,317644288,5315065,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195527,hammerhead_Heart_a2_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692658,342283089,5727043,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195526,hammerhead_Heart_a1_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692659,145763067,2442306,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195525,KC-Virus1-Shark2_1,Shark2 modeling library virus DNA,SRS21884657,SRR29692660,560520027,9745025,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195524,hammerhead_Heart_a1_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692661,266403993,4492446,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195523,hammerhead_Heart_a1_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692662,232508752,3887865,Hammerhead,Biodistribution,Heart,Mus musculus
+SRX25195522,hammerhead_Kidney_a4_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692663,477775380,7845068,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195521,hammerhead_Kidney_a4_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692664,295627953,4975705,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195520,hammerhead_Kidney_a4_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692665,610370416,10366601,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195519,hammerhead_Kidney_a3_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692666,628012161,10574486,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195518,hammerhead_Kidney_a3_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692667,587787742,9924138,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195517,hammerhead_Kidney_a3_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692668,519962482,8763657,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195516,hammerhead_Kidney_a2_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692669,416493652,6872364,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195515,hammerhead_Kidney_a2_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692670,359363170,5906644,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195514,IT-Virus2-Shark2_3,Shark2 modeling library virus DNA,SRS21884657,SRR29692671,675299588,11823871,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195513,hammerhead_Kidney_a2_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692672,346138685,5805373,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195512,hammerhead_Kidney_a1_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692673,395299311,6666110,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195511,hammerhead_Kidney_a1_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692674,213532315,3597981,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195510,hammerhead_Kidney_a1_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692675,344403992,5819014,Hammerhead,Biodistribution,Kidney,Mus musculus
+SRX25195509,hammerhead_Spleen_a4_r3,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692676,757567211,12742891,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195508,hammerhead_Spleen_a4_r2,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692677,572797389,9614031,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195507,hammerhead_Spleen_a4_r1,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692678,532570582,9040183,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195506,hammerhead_Spleen_a3_r3,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692679,603592354,10089070,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195505,hammerhead_Spleen_a3_r2,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692680,256988756,4291786,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195504,hammerhead_Spleen_a3_r1,Hammerhead library mouse spleen biodistribution,SRS21884663,SRR29692681,569656817,9389983,Hammerhead,Biodistribution,Spleen,Mus musculus
+SRX25195503,IT-Virus2-Shark2_2,Shark2 modeling library virus DNA,SRS21884657,SRR29692682,660356578,11428157,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195502,IT-DNA-Shark2_2,Shark2 modeling library plasmid DNA,SRS21884662,SRR29692683,367385023,6251187,shark2,Plasmid DNA,missing,not applicable
+SRX25195501,IT-DNA-Shark2_1,Shark2 modeling library plasmid DNA,SRS21884662,SRR29692684,372520844,6331611,shark2,Plasmid DNA,missing,not applicable
+SRX25195500,hammerhead_C57_brain_endo_bind_rep2,Hammerhead library mBMVEC binding,SRS21884661,SRR29692415,165451413,3069677,Hammerhead,Binding,mBMVEC (b),Mus musculus mBMVEC primary cells
+SRX25195499,IT-Virus1-Shark2_2,Shark2 modeling library virus DNA,SRS21884657,SRR29692416,571978761,9911549,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195498,hammerhead_C57_brain_endo_bind_rep1,Hammerhead library mBMVEC binding,SRS21884661,SRR29692417,175651436,3217734,Hammerhead,Binding,mBMVEC (b),Mus musculus mBMVEC primary cells
+SRX25195497,hammerhead_hCMECD3_bind_rep3,Hammerhead library hCMEC binding,SRS21884660,SRR29692418,162008454,2971580,Hammerhead,Binding,hCMEC (b),Homo sapiens hCMEC/d3 cells
+SRX25195496,hammerhead_hCMECD3_bind_rep2,Hammerhead library hCMEC binding,SRS21884660,SRR29692420,203800828,3749346,Hammerhead,Binding,hCMEC (b),Homo sapiens hCMEC/d3 cells
+SRX25195495,hammerhead_hCMECD3_bind_rep1,Hammerhead library hCMEC binding,SRS21884660,SRR29692421,184971306,3416129,Hammerhead,Binding,hCMEC (b),Homo sapiens hCMEC/d3 cells
+SRX25195494,hammerhead_HEK_bind_rep3,Hammerhead library HEK293 binding,SRS21884659,SRR29692422,139612440,2597623,Hammerhead,Binding,HEK (b),Homo sapiens HEK293 cells
+SRX25195493,hammerhead_HEK_bind_rep2,Hammerhead library HEK293 binding,SRS21884659,SRR29692423,198479697,3632511,Hammerhead,Binding,HEK (b),Homo sapiens HEK293 cells
+SRX25195492,hammerhead_HEK_bind_rep1,Hammerhead library HEK293 binding,SRS21884659,SRR29692424,172105550,3168864,Hammerhead,Binding,HEK (b),Homo sapiens HEK293 cells
+SRX25195491,hammerhead_starter_virus_prod2_3,Hammerhead library production round 2 virus DNA,SRS21884658,SRR29692425,420675790,7975016,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells
+SRX25195490,hammerhead_starter_virus_prod2_2,Hammerhead library production round 2 virus DNA,SRS21884658,SRR29692426,403174887,7709092,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells
+SRX25195489,hammerhead_starter_virus_prod2_1,Hammerhead library production round 2 virus DNA,SRS21884658,SRR29692427,426493051,8124698,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells
+SRX25195488,IT-Virus1-Shark2_1,Shark2 modeling library virus DNA,SRS21884657,SRR29692428,706035306,12201472,shark2,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195487,hammerhead_starter_virus_prod1_3,Hammerhead library virus DNA,SRS21884656,SRR29692429,4140431544,78784162,Hammerhead,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195486,hammerhead_starter_virus_prod1_2,Hammerhead library virus DNA,SRS21884656,SRR29692430,3792827088,70777352,Hammerhead,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195485,hammerhead_starter_virus_prod1_1,Hammerhead library virus DNA,SRS21884656,SRR29692431,4097844077,75274294,Hammerhead,Virus DNA,,Homo sapiens HEK293 cells
+SRX25195484,hammerhead_DNA_3,Hammerhead library plasmid DNA,SRS21884655,SRR29692432,2184132511,38565738,Hammerhead,Plasmid DNA,missing,not applicable
+SRX25195483,hammerhead_DNA_2,Hammerhead library plasmid DNA,SRS21884655,SRR29692433,2081670711,37495258,Hammerhead,Plasmid DNA,missing,not applicable
+SRX25195482,hammerhead_DNA_1,Hammerhead library plasmid DNA,SRS21884655,SRR29692434,1789742741,32223649,Hammerhead,Plasmid DNA,missing,not applicable
+SRX25195481,f4f_nnk_HEK-transduction_3,NNK library HEK293 transduction,SRS21884654,SRR29692435,64523244,1198487,NNK,Transduction,HEK (t),Homo sapiens HEK293 cells

@@ -8,6 +8,8 @@
     <a href="README.zh-CN.md"><strong>简体中文</strong></a>
     ·
     <a href="docs/PROJECT_SPEC.md">项目定义</a>
+    ·
+    <a href="docs/FIT4FUNCTION_AUDIT.md">Fit4Function 审计</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
@@ -146,7 +148,10 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] 标准数据字段
 - [x] 数据审计、序列编码和基线模型骨架
 - [x] 包装门槛、展示分和帕累托工具
-- [ ] Fit4Function 原始数据审计
+- [x] Fit4Function 处理表、Zenodo 与 SRA 深度审计
+- [x] 单条脊髓 FASTQ 的 21-nt / 7-mer 提取 pilot
+- [x] 100K 带序列表的 Ridge / Random Forest sanity check
+- [ ] 69-run 多器官原始数据重建
 - [ ] 防数据泄漏的基线评估
 - [ ] 多任务模型比较
 - [ ] 候选生成和最终候选集

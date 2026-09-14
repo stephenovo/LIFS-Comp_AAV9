@@ -8,6 +8,8 @@
     <a href="README.zh-CN.md">简体中文</a>
     ·
     <a href="docs/PROJECT_SPEC.md">Project specification</a>
+    ·
+    <a href="docs/FIT4FUNCTION_AUDIT.md">Fit4Function audit</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />

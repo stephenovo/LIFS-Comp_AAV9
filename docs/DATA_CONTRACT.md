@@ -11,6 +11,9 @@ are verified against the paper and supplementary metadata.
 | `peptide_7mer` | string | Seven standard amino acids, uppercase |
 | `source_split` | string, optional | Source-defined train/test/library role |
 | `experiment_batch` | string, optional | Experimental batch identifier |
+| `animal_id` | string, optional | Mouse identifier; required for organ-label reconstruction |
+| `technical_replicate` | string, optional | FASTQ technical-replicate identifier |
+| `sra_run` | string, optional | NCBI SRA run accession for provenance |
 
 ## Primary label columns
 
@@ -22,6 +25,25 @@ are verified against the paper and supplementary metadata.
 | `liver_mouse` | float | Mouse liver negative target |
 | `heart_mouse` | float | Mouse heart off-target |
 | `kidney_mouse` | float | Mouse kidney off-target |
+
+For Fit4Function, the mouse-organ labels refer to two-hour post-injection vector-genome DNA
+biodistribution, not cell-type-resolved transduction. Processed multi-organ workbooks do not contain
+amino-acid sequences or a public ID-to-sequence lookup. These labels must therefore be rebuilt from
+BioProject `PRJNA1131359` before being mapped into the canonical columns.
+
+## Raw-count reconstruction columns
+
+| Column | Type | Meaning |
+|---|---|---|
+| `raw_read_count` | integer | Valid reads assigned to a 7-mer in one SRA run |
+| `rpm` | float | Reads per million within one technical replicate |
+| `replicate_mean_rpm` | float | Mean RPM across technical replicates for one biological sample |
+| `virus_reference_rpm` | float | Production-virus abundance used as enrichment denominator |
+| `log2_enrichment` | float | `log2(replicate_mean_rpm / virus_reference_rpm)` after documented zero handling |
+| `detected` | boolean | Whether the variant passed the analysis detection rule |
+
+The virus-reference batch rule remains provisional until reconstructed liver values reproduce the
+public sequence-linked `Liver` column.
 
 ## Optional annotation columns
 
@@ -46,4 +68,3 @@ are verified against the paper and supplementary metadata.
 
 Do not rename an unclear source column into a canonical biological claim. Record unresolved fields
 in the audit report until their meanings are confirmed.
-

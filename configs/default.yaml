@@ -1,7 +1,7 @@
 project:
   random_seed: 42
   peptide_length: 7
-  insertion_site_note: "Verify Fit4Function residue numbering before analysis."
+  insertion_site_note: "AAV9 (K449R), 7-mer inserted between VP1 residues 588 and 589."
 
 targets:
   packaging: f_pack
@@ -32,4 +32,3 @@ screening:
 validation:
   split_strategy: sequence_cluster
   primate_data_role: blind_test_only
-

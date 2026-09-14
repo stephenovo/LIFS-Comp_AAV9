@@ -1,0 +1,70 @@
+experiment_accession,experiment_alias,experiment_title,biosample_accession,run_accession,bytes,spots,library,assay_type,sample,lab_host,project_role
+SRX25195611,hammerhead_Brain_a1_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692575,248717916,3967992,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195612,hammerhead_Brain_a1_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692574,180770084,2890580,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195613,hammerhead_Brain_a1_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692573,134656748,2169647,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195614,hammerhead_Brain_a2_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692572,213629799,3429470,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195615,hammerhead_Brain_a2_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692571,187633804,2951666,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195616,hammerhead_Brain_a2_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692570,220105382,3446846,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195618,hammerhead_Brain_a3_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692568,258036562,4077330,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195619,hammerhead_Brain_a3_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692567,174220916,2741942,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195620,hammerhead_Brain_a3_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692566,241455304,3848677,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195621,hammerhead_Brain_a4_r1,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692565,330192086,5277932,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195622,hammerhead_Brain_a4_r2,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692564,460414073,7425744,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195623,hammerhead_Brain_a4_r3,Hammerhead library mouse brain biodistribution,SRS21884675,SRR29692563,408754593,6568051,Hammerhead,Biodistribution,Brain,Mus musculus,Brain
+SRX25195523,hammerhead_Heart_a1_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692662,232508752,3887865,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195524,hammerhead_Heart_a1_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692661,266403993,4492446,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195526,hammerhead_Heart_a1_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692659,145763067,2442306,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195527,hammerhead_Heart_a2_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692658,342283089,5727043,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195528,hammerhead_Heart_a2_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692657,317644288,5315065,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195529,hammerhead_Heart_a2_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692656,282094338,4627946,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195530,hammerhead_Heart_a3_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692655,898238076,14780586,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195531,hammerhead_Heart_a3_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692654,357797299,5993764,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195532,hammerhead_Heart_a3_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692653,332036105,5628859,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195533,hammerhead_Heart_a4_r1,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692652,814477012,13677922,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195534,hammerhead_Heart_a4_r2,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692651,629401397,10636172,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195535,hammerhead_Heart_a4_r3,Hammerhead library mouse heart biodistribution,SRS21884665,SRR29692650,629871611,10515205,Hammerhead,Biodistribution,Heart,Mus musculus,Heart
+SRX25195510,hammerhead_Kidney_a1_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692675,344403992,5819014,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195511,hammerhead_Kidney_a1_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692674,213532315,3597981,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195512,hammerhead_Kidney_a1_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692673,395299311,6666110,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195513,hammerhead_Kidney_a2_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692672,346138685,5805373,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195515,hammerhead_Kidney_a2_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692670,359363170,5906644,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195516,hammerhead_Kidney_a2_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692669,416493652,6872364,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195517,hammerhead_Kidney_a3_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692668,519962482,8763657,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195518,hammerhead_Kidney_a3_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692667,587787742,9924138,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195519,hammerhead_Kidney_a3_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692666,628012161,10574486,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195520,hammerhead_Kidney_a4_r1,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692665,610370416,10366601,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195521,hammerhead_Kidney_a4_r2,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692664,295627953,4975705,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195522,hammerhead_Kidney_a4_r3,Hammerhead library mouse kidney biodistribution,SRS21884664,SRR29692663,477775380,7845068,Hammerhead,Biodistribution,Kidney,Mus musculus,Kidney
+SRX25195561,hammerhead_Liver_a1_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692624,607457154,10327483,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195562,hammerhead_Liver_a1_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692623,590201920,10012231,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195563,hammerhead_Liver_a1_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692622,527298311,8969785,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195564,hammerhead_Liver_a2_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692621,536727091,8988849,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195565,hammerhead_Liver_a2_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692620,526033394,8850793,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195566,hammerhead_Liver_a2_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692619,473257397,8011325,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195567,hammerhead_Liver_a3_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692618,428349983,7244275,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195568,hammerhead_Liver_a3_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692617,111124953,1867965,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195570,hammerhead_Liver_a3_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692615,119953084,2020796,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195571,hammerhead_Liver_a4_r1,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692614,583388799,9819836,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195572,hammerhead_Liver_a4_r2,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692518,330262995,5571181,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195669,hammerhead_Liver_a4_r3,Hammerhead library mouse liver biodistribution,SRS21884670,SRR29692517,630071690,10550752,Hammerhead,Biodistribution,Liver,Mus musculus,Liver
+SRX25195598,hammerhead_SpinalCord_a1_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692588,211081225,3358864,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195599,hammerhead_SpinalCord_a1_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692587,257692062,4127521,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195600,hammerhead_SpinalCord_a1_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692586,111186595,1787085,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195601,hammerhead_SpinalCord_a2_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692585,260707964,4210390,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195602,hammerhead_SpinalCord_a2_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692584,279012975,4407374,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195603,hammerhead_SpinalCord_a2_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692583,204858070,3193319,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195604,hammerhead_SpinalCord_a3_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692582,176196482,2779944,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195605,hammerhead_SpinalCord_a3_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692581,161202394,2525917,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195607,hammerhead_SpinalCord_a3_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692579,192850861,3067292,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195608,hammerhead_SpinalCord_a4_r1,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692578,252785813,4046360,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195609,hammerhead_SpinalCord_a4_r2,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692577,287885967,4624593,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195610,hammerhead_SpinalCord_a4_r3,Hammerhead library mouse spinal cord biodistributiobn,SRS21884674,SRR29692576,505827290,8172607,Hammerhead,Biodistribution,Spinal cord,Mus musculus,Spinal cord
+SRX25195624,hammerhead_start_virus_prod3_r1,Hammerhead library production round 3 virus DNA,SRS21884676,SRR29692562,319767009,5219156,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells,Virus reference
+SRX25195625,hammerhead_start_virus_prod3_r2,Hammerhead library production round 3 virus DNA,SRS21884676,SRR29692561,372717841,6070071,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells,Virus reference
+SRX25195626,hammerhead_start_virus_prod3_r3,Hammerhead library production round 3 virus DNA,SRS21884676,SRR29692560,313947166,5130759,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells,Virus reference
+SRX25195485,hammerhead_starter_virus_prod1_1,Hammerhead library virus DNA,SRS21884656,SRR29692431,4097844077,75274294,Hammerhead,Virus DNA,,Homo sapiens HEK293 cells,Virus reference
+SRX25195486,hammerhead_starter_virus_prod1_2,Hammerhead library virus DNA,SRS21884656,SRR29692430,3792827088,70777352,Hammerhead,Virus DNA,,Homo sapiens HEK293 cells,Virus reference
+SRX25195487,hammerhead_starter_virus_prod1_3,Hammerhead library virus DNA,SRS21884656,SRR29692429,4140431544,78784162,Hammerhead,Virus DNA,,Homo sapiens HEK293 cells,Virus reference
+SRX25195489,hammerhead_starter_virus_prod2_1,Hammerhead library production round 2 virus DNA,SRS21884658,SRR29692427,426493051,8124698,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells,Virus reference
+SRX25195490,hammerhead_starter_virus_prod2_2,Hammerhead library production round 2 virus DNA,SRS21884658,SRR29692426,403174887,7709092,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells,Virus reference
+SRX25195491,hammerhead_starter_virus_prod2_3,Hammerhead library production round 2 virus DNA,SRS21884658,SRR29692425,420675790,7975016,Hammerhead,Virus DNA,missing,Homo sapiens HEK293 cells,Virus reference

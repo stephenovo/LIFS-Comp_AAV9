@@ -1,83 +1,149 @@
-# AAV9–SMA Tropism Screening
+<div align="center">
+  <h1>LIFS-Comp_AAV9</h1>
+  <p><strong>Tissue-specific AAV9 capsid design for spinal muscular atrophy</strong></p>
+  <p>CNS enrichment proxy · Lower liver burden proxy · Packaging-aware virtual screening</p>
+  <p>
+    <a href="README.md"><strong>English</strong></a>
+    ·
+    <a href="README.zh-CN.md">简体中文</a>
+    ·
+    <a href="docs/PROJECT_SPEC.md">Project specification</a>
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
+    <img src="https://github.com/stephenovo/LIFS-Comp_AAV9/actions/workflows/ci.yml/badge.svg" alt="CI status" />
+    <img src="https://img.shields.io/badge/design-7--mer%20insertion-7357D3" alt="7-mer insertion" />
+    <img src="https://img.shields.io/badge/status-computational%20research-16A085" alt="Computational research" />
+  </p>
+</div>
 
-面向脊髓性肌萎缩症（SMA）应用场景的 AAV9 衣壳组织特异性计算设计项目。
+<p align="center">
+  <img src="docs/assets/project-overview.svg" width="1000" alt="AAV9 SMA virtual-screening overview" />
+</p>
 
-本项目计划在 AAV9 表面插入位点设计 7-mer 候选，以包装能力为硬门槛，利用公开数据训练多任务模型，奖励小鼠脑/脊髓富集代理，惩罚肝脏和其他器官脱靶，最终输出 24–30 条值得进一步实验验证的候选。
+## Overview
 
-## 研究边界
+`LIFS-Comp_AAV9` is a four-person, four-week computational research project for
+the LIFS Competition. It explores AAV9 capsid variants carrying a constrained
+7-amino-acid insertion near the intended surface site and asks one focused
+question:
 
-- `F_pack`：可生产/包装预测，作为硬门槛；
-- `F_CNS`：小鼠脑与脊髓标签构成的中枢富集代理；
-- `F_liv`：小鼠肝脏标签，人肝细胞标签作为辅助注释；
-- `F_off`：心、肾等其他器官脱靶代理；
-- `R_imm`：抗体足迹或免疫相关风险，仅作为注释。
+> Can we retain predicted capsid packaging fitness while shifting the available
+> mouse-organ proxy profile toward brain/spinal cord and away from liver and
+> other off-target organs?
 
-本项目不把小鼠器官信号称为“人运动神经元靶向”，不把低肝脏预测称为“已经降低肝毒性”，也不声称替代 Zolgensma。计算结果用于缩小后续实验搜索空间。
+The motivating application is future **SMN1 delivery for spinal muscular
+atrophy (SMA)**. The project engineers the delivery vehicle, not the SMN1 cargo.
 
-## 技术栈
+## Why this direction?
 
-- Python 3.11+
-- NumPy、pandas：数据处理
-- scikit-learn：Ridge、Random Forest 等基线模型
-- LightGBM：可选增强基线
-- PyTorch：可选共享编码器多任务模型
-- pytest、ruff：测试和代码质量
-- GitHub Actions：持续集成
+Existing systemic AAV9 therapy establishes a real SMA application context, but
+the computational opportunity here is more specific: use multi-organ labels to
+search for capsids with a more favorable predicted distribution profile.
 
-复杂模型不是第一周的默认选择。项目先用可解释的基线验证数据是否含有可学习信号，再决定是否使用神经网络。
+| Objective | Role in screening | Current proxy |
+| --- | --- | --- |
+| `F_pack` | **Hard gate** | Packaging/production label |
+| `F_CNS` | Reward | Mean of mouse brain and spinal-cord predictions |
+| `F_liv` | Primary penalty | Mouse liver prediction |
+| `F_off` | Secondary penalty | Mean of mouse heart and kidney predictions |
+| `R_imm` | Annotation only | Antibody-footprint or immune-risk proximity |
 
-## 代码结构
+Human liver-cell predictions are retained as a secondary warning, not counted
+twice as another large objective.
 
-```text
-.
-├── .github/workflows/ci.yml
-├── configs/default.yaml
-├── data/
-│   ├── raw/          # 原始数据，不提交到 Git
-│   ├── interim/      # 中间数据，不提交到 Git
-│   └── processed/    # 建模表，不提交到 Git
-├── docs/
-│   ├── PROJECT_SPEC.md
-│   ├── DATA_CONTRACT.md
-│   └── TEAM_WORKFLOW.md
-├── notebooks/        # 探索性分析；正式逻辑进入 src/
-├── src/aav9_sma/
-│   ├── data/audit.py
-│   ├── features/encode.py
-│   ├── models/baseline.py
-│   ├── screening/pareto.py
-│   ├── screening/score.py
-│   └── cli.py
-├── tests/
-└── pyproject.toml
+## Screening loop
+
+```mermaid
+flowchart LR
+    A["Fit4Function data"] --> B["Data audit\nand label mapping"]
+    B --> C["7-mer encoding"]
+    C --> D["Four prediction heads"]
+    D --> E{"Packaging\ngate"}
+    E -->|fail| X["Reject"]
+    E -->|pass| F["CNS ↑ · liver ↓\noff-target ↓"]
+    F --> G["Pareto · diversity\nuncertainty"]
+    G --> H["24–30 candidates"]
 ```
 
-## 本地启动
+Models predict individual endpoints. The presentation score is calculated
+after training and is not inserted into the training loss:
+
+```text
+S  = 0.45 × F_CNS − 0.35 × F_liv − 0.20 × F_off
+SI = F_CNS / (F_liv + ε)
+```
+
+The weights are working assumptions. Candidate stability will be tested under
+weight perturbations, and the scientific result will retain three Pareto groups:
+**CNS-favoring**, **liver-minimizing**, and **balanced**.
+
+## Technical approach
+
+| Layer | Initial implementation | Later comparison |
+| --- | --- | --- |
+| Data | pandas, canonical schema, missing-label audit | Batch and replicate-aware mapping |
+| Sequence | 7-mer one-hot encoding | Physicochemical or pretrained embeddings |
+| Models | Ridge and Random Forest per endpoint | LightGBM or shared PyTorch encoder |
+| Validation | Sequence-aware split, held-out metrics | Uncertainty and primate blind test |
+| Screening | Packaging gate, score, SI, Pareto | Diversity, distance and structural checks |
+
+Simple baselines come first. A neural model is justified only if it improves
+held-out performance without sequence leakage.
+
+## Repository layout
+
+```text
+LIFS-Comp_AAV9/
+├── configs/default.yaml        # Targets, weights and validation policy
+├── data/                       # Local data stages; contents ignored by Git
+├── docs/
+│   ├── PROJECT_SPEC.md         # Scientific question and claim boundaries
+│   ├── DATA_CONTRACT.md        # Canonical labels and audit questions
+│   └── TEAM_WORKFLOW.md        # Four-person ownership and Git workflow
+├── notebooks/                  # Exploratory work only
+├── src/aav9_sma/
+│   ├── data/audit.py           # Schema and coverage audit
+│   ├── features/encode.py      # Deterministic 7-mer encoding
+│   ├── models/baseline.py      # Ridge/Random Forest baselines
+│   └── screening/              # Packaging gate, score and Pareto analysis
+├── tests/                      # Unit tests
+└── pyproject.toml              # Python dependencies and tooling
+```
+
+## Quick start
 
 ```bash
+git clone https://github.com/stephenovo/LIFS-Comp_AAV9.git
+cd LIFS-Comp_AAV9
+
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+python -m pip install ".[dev]"
+
+ruff check .
 pytest
 ```
 
-可选模型依赖：
+Optional model dependencies:
 
 ```bash
-python -m pip install -e ".[dev,models]"
+python -m pip install ".[dev,models]"
 ```
 
-## 命令行骨架
+## Command-line scaffold
 
-审计已经映射到标准字段的数据：
+Audit a dataset after its source columns have been mapped to the canonical
+schema:
 
 ```bash
 aav9-sma audit-data data/processed/fit4function.csv \
   --output artifacts/data_audit.json
 ```
 
-对模型预测结果执行包装过滤、综合评分和帕累托筛选：
+Rank model predictions after choosing a packaging threshold from training and
+validation evidence:
 
 ```bash
 aav9-sma rank-candidates artifacts/predictions.csv \
@@ -85,26 +151,39 @@ aav9-sma rank-candidates artifacts/predictions.csv \
   --output artifacts/ranked_candidates.csv
 ```
 
-`--packaging-threshold` 的正式数值必须由训练数据和验证结果确定；示例中的 `0.50` 不是预设生物学阈值。
+`0.50` is an interface example, not a biological threshold.
 
-## 默认展示分
+## Current status
 
-在各任务标签标准化到可比较尺度后：
+- [x] Research question and claim boundaries
+- [x] Python package and continuous integration
+- [x] Canonical data contract
+- [x] Data-audit, encoding and baseline-model scaffold
+- [x] Packaging gate, display score and Pareto utilities
+- [ ] Fit4Function source-data audit
+- [ ] Leakage-safe baseline benchmark
+- [ ] Multi-task model comparison
+- [ ] Candidate generation and final shortlist
 
-```text
-S = 0.45 × F_CNS − 0.35 × F_liv − 0.20 × F_off
-SI = F_CNS / (F_liv + ε)
-```
+## Scientific boundary
 
-综合分只用于展示和候选漏斗。科学交付同时保留偏中枢、偏低肝和折中三类帕累托候选，并进行权重敏感性分析。
+This repository contains **computational hypotheses**, not a validated therapy.
 
-## 当前里程碑
+- Mouse brain/spinal-cord enrichment is a CNS proxy, not demonstrated human
+  motor-neuron specificity.
+- Reduced predicted liver enrichment is not demonstrated reduction of liver
+  toxicity.
+- Packaging and tropism predictions require experimental validation.
+- The project does not claim to replace or outperform Zolgensma.
 
-1. Fit4Function 数据可行性审计；
-2. 建立标准数据映射和无泄漏切分；
-3. 训练四个任务的简单基线；
-4. 比较独立模型与共享编码器多任务模型；
-5. 生成候选并完成包装硬过滤；
-6. 综合评分、帕累托、多样性和不确定性筛选；
-7. 输出候选卡、报告和答辩材料。
+## Selected references
 
+- [Fit4Function: data-driven AAV capsid engineering](https://pmc.ncbi.nlm.nih.gov/articles/PMC11297966/)
+- [Engineering adeno-associated virus vectors for gene therapy](https://www.nature.com/articles/s41576-019-0205-4)
+- [FDA Zolgensma prescribing information](https://www.fda.gov/media/126109/download)
+
+---
+
+<div align="center">
+  <strong>Package first. Shift the proxy profile. Keep every claim testable.</strong>
+</div>

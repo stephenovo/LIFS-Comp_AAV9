@@ -52,6 +52,28 @@ manifest 是下载和批次映射的唯一入口。不要手工复制 69 个 acc
 [`audit_data/fit4function_sra_target_manifest.csv`](audit_data/fit4function_sra_target_manifest.csv)，
 其中只有本项目所需的 60 个器官 runs 和 9 个病毒库分母 runs。
 
+先把 ENA 的 FASTQ 地址、压缩大小和 MD5 加入 manifest：
+
+```bash
+aav9-sma resolve-ena-fastq \
+  docs/audit_data/fit4function_sra_target_manifest.csv \
+  --output docs/audit_data/fit4function_ena_fastq_manifest.csv
+```
+
+第一轮只下载 12 个 Liver 和 prod2/prod3 的 6 个 Virus DNA runs，共约 6.26 GB：
+
+```bash
+aav9-sma download-ena-fastq \
+  docs/audit_data/fit4function_ena_fastq_manifest.csv \
+  --output-dir data/raw/sra_samples \
+  --workers 6 \
+  --project-roles Liver "Virus reference" \
+  --exclude-alias-regex prod1 \
+  --output data/interim/fit4function_liver_downloads.json
+```
+
+下载器支持 HTTP 断点续传，并对每个完成文件同时核对字节数与 ENA MD5。
+
 ## 5. 单个 FASTQ pilot
 
 下面是本次已验证的脊髓 run。FASTQ 可以从 ENA 镜像按 accession 获取：
@@ -85,9 +107,52 @@ aav9-sma benchmark-fit4function \
 
 这是随机留出 sanity check，不是最终评估。最终版本需要序列距离切分和动物留出。
 
-## 7. 下一版完整 raw-data 管线
+## 7. 论文参数 Bowtie2 与 Liver 重建
 
-后续实现顺序固定为：
+先安装 Bowtie2，然后建立论文 149 nt 短参考的索引：
+
+```bash
+brew install bowtie2
+
+aav9-sma prepare-bowtie2-reference \
+  --output-prefix data/interim/bowtie2/fit4function \
+  --output docs/audit_data/fit4function_bowtie2_reference.json
+```
+
+批量比对 18 个第一轮 FASTQ。SAM 通过内存流直接解析，不会写入磁盘：
+
+```bash
+aav9-sma count-bowtie2-batch \
+  docs/audit_data/fit4function_ena_fastq_manifest.csv \
+  --fastq-dir data/raw/sra_samples \
+  --index-prefix data/interim/bowtie2/fit4function \
+  --whitelist-csv data/raw/fit4function_official/data/fit4function_library_screens.csv \
+  --counts-dir data/interim/bowtie2_counts \
+  --summaries-dir data/interim/bowtie2_summaries \
+  --workers 4 \
+  --threads-per-worker 2 \
+  --project-roles Liver "Virus reference" \
+  --exclude-alias-regex prod1
+```
+
+最后同时计算“全部合格 7-mer reads 分母”和“公开 100K 白名单 reads 分母”，并遍历
+Animal 1–4、Animal 1–3、单动物以及 prod2/prod3 病毒分母，避免手工挑一个最顺眼的组合：
+
+```bash
+aav9-sma reconstruct-liver \
+  docs/audit_data/fit4function_ena_fastq_manifest.csv \
+  --counts-dir data/interim/bowtie2_counts \
+  --summaries-dir data/interim/bowtie2_summaries \
+  --public-screens data/raw/fit4function_official/data/fit4function_library_screens.csv \
+  --exclude-alias-regex prod1 \
+  --output-reconstruction data/processed/fit4function_liver_reconstructed.csv.gz \
+  --output-metrics docs/audit_data/fit4function_liver_validation_metrics.csv \
+  --output-qc docs/audit_data/fit4function_liver_run_qc.csv
+```
+
+## 8. 完整 raw-data 管线顺序
+
+本轮已实现前 8 步；Liver 验收通过后再进入第 9 步：
 
 1. 从 manifest 只选 `Hammerhead`；
 2. 先下载 12 个 Liver runs + 9 个 Virus DNA runs；

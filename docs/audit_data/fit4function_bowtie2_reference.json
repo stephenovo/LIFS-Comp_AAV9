@@ -1,0 +1,9 @@
+{
+  "reference_name": "fit4function_aav9_k449r_insert",
+  "reference_length": 149,
+  "insertion_reference_start_zero_based": 83,
+  "insertion_reference_stop_zero_based_exclusive": 104,
+  "fasta_path": "data/interim/bowtie2/fit4function.fasta",
+  "index_prefix": "data/interim/bowtie2/fit4function",
+  "bowtie2_build_stderr": ""
+}

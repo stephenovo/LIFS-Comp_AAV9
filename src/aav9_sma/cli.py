@@ -4,13 +4,21 @@ from __future__ import annotations
 
 import argparse
 import json
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
 
+from aav9_sma.data.alignment import count_bowtie2_fastq, write_bowtie2_reference
 from aav9_sma.data.audit import audit_csv
+from aav9_sma.data.ena import download_fastq_manifest, resolve_ena_fastqs
 from aav9_sma.data.fastq import count_fastq
 from aav9_sma.data.fit4function import audit_official_release
+from aav9_sma.data.reconstruct import (
+    load_count_matrix,
+    reconstruct_liver,
+    reconstruct_multiorgan,
+)
 from aav9_sma.data.sra import fetch_sra_manifest, summarize_sra_manifest
 from aav9_sma.models.evaluate import (
     SCREEN_TASKS,
@@ -41,6 +49,23 @@ def _build_parser() -> argparse.ArgumentParser:
     sra_parser.add_argument("--output-csv", type=Path, required=True)
     sra_parser.add_argument("--output-summary", type=Path, required=True)
 
+    ena_parser = subparsers.add_parser(
+        "resolve-ena-fastq", help="Attach ENA FASTQ URLs and checksums to an SRA manifest"
+    )
+    ena_parser.add_argument("input", type=Path)
+    ena_parser.add_argument("--accession", default="PRJNA1131359")
+    ena_parser.add_argument("--output", type=Path, required=True)
+
+    download_parser = subparsers.add_parser(
+        "download-ena-fastq", help="Download resolved ENA FASTQs with resume and MD5 checks"
+    )
+    download_parser.add_argument("input", type=Path)
+    download_parser.add_argument("--output-dir", type=Path, required=True)
+    download_parser.add_argument("--workers", type=int, default=4)
+    download_parser.add_argument("--project-roles", nargs="+")
+    download_parser.add_argument("--exclude-alias-regex")
+    download_parser.add_argument("--output", type=Path)
+
     fastq_parser = subparsers.add_parser(
         "count-fastq", help="Pilot extraction of Fit4Function insertions from FASTQ"
     )
@@ -50,6 +75,77 @@ def _build_parser() -> argparse.ArgumentParser:
     fastq_parser.add_argument("--whitelist-column", default="AA")
     fastq_parser.add_argument("--counts-output", type=Path)
     fastq_parser.add_argument("--output", type=Path)
+
+    reference_parser = subparsers.add_parser(
+        "prepare-bowtie2-reference", help="Build the published short-reference Bowtie2 index"
+    )
+    reference_parser.add_argument("--output-prefix", type=Path, required=True)
+    reference_parser.add_argument("--output", type=Path)
+
+    bowtie_parser = subparsers.add_parser(
+        "count-bowtie2", help="Count Q20 7-mers after the published Bowtie2 alignment"
+    )
+    bowtie_parser.add_argument("input", type=Path)
+    bowtie_parser.add_argument("--index-prefix", type=Path, required=True)
+    bowtie_parser.add_argument("--whitelist-csv", type=Path, required=True)
+    bowtie_parser.add_argument("--whitelist-column", default="AA")
+    bowtie_parser.add_argument("--counts-output", type=Path, required=True)
+    bowtie_parser.add_argument("--threads", type=int, default=2)
+    bowtie_parser.add_argument("--output", type=Path)
+
+    batch_parser = subparsers.add_parser(
+        "count-fastq-batch", help="Count whitelist 7-mers across downloaded ENA FASTQs"
+    )
+    batch_parser.add_argument("manifest", type=Path)
+    batch_parser.add_argument("--fastq-dir", type=Path, required=True)
+    batch_parser.add_argument("--whitelist-csv", type=Path, required=True)
+    batch_parser.add_argument("--whitelist-column", default="AA")
+    batch_parser.add_argument("--counts-dir", type=Path, required=True)
+    batch_parser.add_argument("--summaries-dir", type=Path, required=True)
+    batch_parser.add_argument("--workers", type=int, default=4)
+    batch_parser.add_argument("--project-roles", nargs="+")
+    batch_parser.add_argument("--exclude-alias-regex")
+    batch_parser.add_argument("--overwrite", action="store_true")
+
+    bowtie_batch_parser = subparsers.add_parser(
+        "count-bowtie2-batch", help="Run published Bowtie2 counting across an ENA manifest"
+    )
+    bowtie_batch_parser.add_argument("manifest", type=Path)
+    bowtie_batch_parser.add_argument("--fastq-dir", type=Path, required=True)
+    bowtie_batch_parser.add_argument("--index-prefix", type=Path, required=True)
+    bowtie_batch_parser.add_argument("--whitelist-csv", type=Path, required=True)
+    bowtie_batch_parser.add_argument("--whitelist-column", default="AA")
+    bowtie_batch_parser.add_argument("--counts-dir", type=Path, required=True)
+    bowtie_batch_parser.add_argument("--summaries-dir", type=Path, required=True)
+    bowtie_batch_parser.add_argument("--workers", type=int, default=2)
+    bowtie_batch_parser.add_argument("--threads-per-worker", type=int, default=2)
+    bowtie_batch_parser.add_argument("--project-roles", nargs="+")
+    bowtie_batch_parser.add_argument("--exclude-alias-regex")
+    bowtie_batch_parser.add_argument("--overwrite", action="store_true")
+
+    reconstruct_parser = subparsers.add_parser(
+        "reconstruct-liver", help="Reconstruct liver enrichments and validate public labels"
+    )
+    reconstruct_parser.add_argument("manifest", type=Path)
+    reconstruct_parser.add_argument("--counts-dir", type=Path, required=True)
+    reconstruct_parser.add_argument("--summaries-dir", type=Path, required=True)
+    reconstruct_parser.add_argument("--public-screens", type=Path, required=True)
+    reconstruct_parser.add_argument("--output-reconstruction", type=Path, required=True)
+    reconstruct_parser.add_argument("--output-metrics", type=Path, required=True)
+    reconstruct_parser.add_argument("--output-qc", type=Path, required=True)
+    reconstruct_parser.add_argument("--exclude-alias-regex")
+
+    multiorgan_parser = subparsers.add_parser(
+        "reconstruct-multiorgan",
+        help="Reconstruct animal-level multi-organ enrichments from raw counts",
+    )
+    multiorgan_parser.add_argument("manifest", type=Path)
+    multiorgan_parser.add_argument("--counts-dir", type=Path, required=True)
+    multiorgan_parser.add_argument("--summaries-dir", type=Path, required=True)
+    multiorgan_parser.add_argument("--virus-round", type=int, default=2)
+    multiorgan_parser.add_argument("--output-reconstruction", type=Path, required=True)
+    multiorgan_parser.add_argument("--output-metrics", type=Path, required=True)
+    multiorgan_parser.add_argument("--output-qc", type=Path, required=True)
 
     benchmark_parser = subparsers.add_parser(
         "benchmark-fit4function", help="Benchmark models on the sequence-linked 100K screen"
@@ -87,6 +183,59 @@ def _write_json(payload: dict[str, object], output: Path | None) -> None:
     output.write_text(rendered + "\n", encoding="utf-8")
 
 
+def _count_one_fastq(
+    fastq_path: Path,
+    whitelist: set[str],
+    counts_path: Path,
+    summary_path: Path,
+) -> dict[str, object]:
+    result = count_fastq(
+        fastq_path,
+        peptide_whitelist=whitelist,
+        counts_output=counts_path,
+    )
+    _write_json(result, summary_path)
+    return result
+
+
+def _count_one_bowtie2_fastq(
+    fastq_path: Path,
+    index_prefix: Path,
+    whitelist: set[str],
+    counts_path: Path,
+    summary_path: Path,
+    threads: int,
+) -> dict[str, object]:
+    result = count_bowtie2_fastq(
+        fastq_path,
+        index_prefix,
+        peptide_whitelist=whitelist,
+        counts_output=counts_path,
+        threads=threads,
+    )
+    _write_json(result, summary_path)
+    return result
+
+
+def _filter_manifest(
+    frame: pd.DataFrame, roles: list[str] | None, excluded_alias_pattern: str | None
+) -> pd.DataFrame:
+    filtered = frame
+    if roles is not None:
+        if "project_role" not in filtered:
+            raise ValueError("Manifest must contain project_role for role filtering")
+        filtered = filtered.loc[filtered["project_role"].isin(roles)]
+    if excluded_alias_pattern is not None:
+        if "experiment_alias" not in filtered:
+            raise ValueError("Manifest must contain experiment_alias for alias filtering")
+        filtered = filtered.loc[
+            ~filtered["experiment_alias"].str.contains(
+                excluded_alias_pattern, regex=True, na=False
+            )
+        ]
+    return filtered.copy()
+
+
 def main() -> None:
     args = _build_parser().parse_args()
     if args.command == "audit-data":
@@ -101,6 +250,21 @@ def main() -> None:
         pd.DataFrame(rows).to_csv(args.output_csv, index=False)
         _write_json(summarize_sra_manifest(rows), args.output_summary)
         return
+    if args.command == "resolve-ena-fastq":
+        target = pd.read_csv(args.input)
+        resolved = resolve_ena_fastqs(target, args.accession)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        resolved.to_csv(args.output, index=False)
+        return
+    if args.command == "download-ena-fastq":
+        manifest = _filter_manifest(
+            pd.read_csv(args.input), args.project_roles, args.exclude_alias_regex
+        )
+        results = download_fastq_manifest(
+            manifest.to_dict(orient="records"), args.output_dir, workers=args.workers
+        )
+        _write_json({"downloads": results}, args.output)
+        return
     if args.command == "count-fastq":
         whitelist = None
         if args.whitelist_csv is not None:
@@ -114,6 +278,125 @@ def main() -> None:
             ),
             args.output,
         )
+        return
+    if args.command == "prepare-bowtie2-reference":
+        _write_json(write_bowtie2_reference(args.output_prefix), args.output)
+        return
+    if args.command == "count-bowtie2":
+        whitelist = set(pd.read_csv(args.whitelist_csv)[args.whitelist_column].dropna())
+        _write_json(
+            count_bowtie2_fastq(
+                args.input,
+                args.index_prefix,
+                peptide_whitelist=whitelist,
+                counts_output=args.counts_output,
+                threads=args.threads,
+            ),
+            args.output,
+        )
+        return
+    if args.command == "count-fastq-batch":
+        manifest = _filter_manifest(
+            pd.read_csv(args.manifest), args.project_roles, args.exclude_alias_regex
+        )
+        whitelist = set(pd.read_csv(args.whitelist_csv)[args.whitelist_column].dropna())
+        args.counts_dir.mkdir(parents=True, exist_ok=True)
+        args.summaries_dir.mkdir(parents=True, exist_ok=True)
+        futures = {}
+        with ProcessPoolExecutor(max_workers=args.workers) as executor:
+            for row in manifest.to_dict(orient="records"):
+                run = str(row["run_accession"])
+                fastq_path = args.fastq_dir / f"{run}.fastq.gz"
+                if not fastq_path.exists():
+                    raise FileNotFoundError(f"Missing FASTQ: {fastq_path}")
+                counts_path = args.counts_dir / f"{run}.counts.csv.gz"
+                summary_path = args.summaries_dir / f"{run}.json"
+                if counts_path.exists() and summary_path.exists() and not args.overwrite:
+                    print(f"{run}: cached")
+                    continue
+                futures[
+                    executor.submit(
+                        _count_one_fastq,
+                        fastq_path,
+                        whitelist,
+                        counts_path,
+                        summary_path,
+                    )
+                ] = run
+            for future in as_completed(futures):
+                run = futures[future]
+                result = future.result()
+                print(f"{run}: {result['reads_examined']} reads")
+        return
+    if args.command == "count-bowtie2-batch":
+        manifest = _filter_manifest(
+            pd.read_csv(args.manifest), args.project_roles, args.exclude_alias_regex
+        )
+        whitelist = set(pd.read_csv(args.whitelist_csv)[args.whitelist_column].dropna())
+        args.counts_dir.mkdir(parents=True, exist_ok=True)
+        args.summaries_dir.mkdir(parents=True, exist_ok=True)
+        futures = {}
+        with ProcessPoolExecutor(max_workers=args.workers) as executor:
+            for row in manifest.to_dict(orient="records"):
+                run = str(row["run_accession"])
+                fastq_path = args.fastq_dir / f"{run}.fastq.gz"
+                if not fastq_path.exists():
+                    raise FileNotFoundError(f"Missing FASTQ: {fastq_path}")
+                counts_path = args.counts_dir / f"{run}.counts.csv.gz"
+                summary_path = args.summaries_dir / f"{run}.json"
+                if counts_path.exists() and summary_path.exists() and not args.overwrite:
+                    print(f"{run}: cached")
+                    continue
+                futures[
+                    executor.submit(
+                        _count_one_bowtie2_fastq,
+                        fastq_path,
+                        args.index_prefix,
+                        whitelist,
+                        counts_path,
+                        summary_path,
+                        args.threads_per_worker,
+                    )
+                ] = run
+            for future in as_completed(futures):
+                run = futures[future]
+                result = future.result()
+                print(f"{run}: {result['reads_examined']} aligned records")
+        return
+    if args.command == "reconstruct-liver":
+        manifest = _filter_manifest(
+            pd.read_csv(args.manifest),
+            ["Liver", "Virus reference"],
+            args.exclude_alias_regex,
+        )
+        counts, qc = load_count_matrix(manifest, args.counts_dir, args.summaries_dir)
+        public = pd.read_csv(args.public_screens, usecols=["AA", "Liver"])
+        reconstructed, metrics = reconstruct_liver(counts, qc, public)
+        for path in (args.output_reconstruction, args.output_metrics, args.output_qc):
+            path.parent.mkdir(parents=True, exist_ok=True)
+        reconstructed.to_csv(args.output_reconstruction, index=False)
+        metrics.to_csv(args.output_metrics, index=False)
+        qc.to_csv(args.output_qc, index=False)
+        return
+    if args.command == "reconstruct-multiorgan":
+        manifest = pd.read_csv(args.manifest)
+        roles = ["Brain", "Spinal cord", "Liver", "Heart", "Kidney"]
+        organ = manifest.loc[manifest["project_role"].isin(roles)]
+        virus = manifest.loc[
+            manifest["experiment_alias"].str.contains(
+                f"virus_prod{args.virus_round}", regex=False, na=False
+            )
+        ]
+        selected = pd.concat([organ, virus], ignore_index=True)
+        counts, qc = load_count_matrix(selected, args.counts_dir, args.summaries_dir)
+        reconstructed, metrics = reconstruct_multiorgan(
+            counts, qc, virus_round=args.virus_round
+        )
+        for path in (args.output_reconstruction, args.output_metrics, args.output_qc):
+            path.parent.mkdir(parents=True, exist_ok=True)
+        reconstructed.to_csv(args.output_reconstruction, index=False)
+        metrics.to_csv(args.output_metrics, index=False)
+        qc.to_csv(args.output_qc, index=False)
         return
     if args.command == "benchmark-fit4function":
         rows = benchmark_screen_models(

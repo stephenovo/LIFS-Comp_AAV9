@@ -80,6 +80,12 @@ def _open_fastq(path: Path) -> TextIO:
     return path.open("r", encoding="ascii")
 
 
+def _open_counts_output(path: Path) -> TextIO:
+    if path.suffix in {".gz", ".gzip"}:
+        return gzip.open(path, "wt", newline="", encoding="utf-8")
+    return path.open("w", newline="", encoding="utf-8")
+
+
 def count_fastq(
     path: str | Path,
     max_reads: int | None = None,
@@ -142,7 +148,7 @@ def count_fastq(
         if counts_output is not None:
             counts_path = Path(counts_output)
             counts_path.parent.mkdir(parents=True, exist_ok=True)
-            with counts_path.open("w", newline="", encoding="utf-8") as stream:
+            with _open_counts_output(counts_path) as stream:
                 writer = csv.writer(stream)
                 writer.writerow(["peptide_7mer", "raw_read_count"])
                 writer.writerows(

@@ -162,7 +162,11 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] Canonical data contract
 - [x] Data-audit, encoding and baseline-model scaffold
 - [x] Packaging gate, display score and Pareto utilities
-- [ ] Fit4Function source-data audit
+- [x] Fit4Function processed-data, Zenodo, and SRA audit
+- [x] Exact-anchor and paper-parameter Bowtie2 FASTQ pilots
+- [x] Reproducible ENA manifest, resumable downloader, and MD5 checks
+- [x] Liver + virus-reference reconstruction validated against the public label (`r = 0.978`)
+- [ ] 69-run multi-organ raw-label reconstruction
 - [ ] Leakage-safe baseline benchmark
 - [ ] Multi-task model comparison
 - [ ] Candidate generation and final shortlist

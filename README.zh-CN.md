@@ -150,7 +150,9 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] 包装门槛、展示分和帕累托工具
 - [x] Fit4Function 处理表、Zenodo 与 SRA 深度审计
 - [x] 单条脊髓 FASTQ 的 21-nt / 7-mer 提取 pilot
+- [x] 论文参数 Bowtie2 pilot、ENA 断点续传与 MD5 校验
 - [x] 100K 带序列表的 Ridge / Random Forest sanity check
+- [x] Liver + 病毒库重建通过公开标签验收（`r = 0.978`）
 - [ ] 69-run 多器官原始数据重建
 - [ ] 防数据泄漏的基线评估
 - [ ] 多任务模型比较

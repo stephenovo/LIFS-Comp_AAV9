@@ -1,6 +1,6 @@
 # Fit4Function 深度数据可行性审计
 
-> 审计日期：2026-09-14  
+> 审计日期：2026-09-14；原始数据验证更新：2026-09-15
 > 项目：LIFS-Comp_AAV9  
 > 结论等级：**黄灯转绿 - 科学路线可行，但公开处理表不能直接训练 CNS 多任务模型，必须先重建 SRA 原始测序数据。**
 
@@ -13,7 +13,7 @@ Fit4Function 官方 GitHub 的处理后数据分成两类：
 1. **带 7-mer 序列的数据**：包装、鼠肝、HepG2、THLE-2 等标签可以立即训练；
 2. **多器官数据**：脑、脊髓、肝、心、肾等表只有匿名 `SequenceID`，没有 7-mer，也没有公开映射表，因此不能直接训练序列模型。
 
-真正让项目重新可行的是 NCBI SRA。BioProject `PRJNA1131359` 已公开 270 个实验、约 120.32 GB 测序数据，包含 Fit4Function 库在四只小鼠的脑、脊髓、肝、心、肾等原始 reads。[^1][^5] 我们已经下载并实跑了一条脊髓技术重复，证明能够从 R1 中提取 21 nt 插入、翻译成 7-mer，并映射回公开的 10 万条序列清单。
+真正让项目重新可行的是 NCBI SRA。BioProject `PRJNA1131359` 已公开 270 个实验、约 120.32 GB 测序数据，包含 Fit4Function 库在四只小鼠的脑、脊髓、肝、心、肾等原始 reads。[^1][^5] 我们先用一条脊髓技术重复验证 R1 → 21 nt → 7-mer，再完整重建 12 个 Liver 与 6 个 prod2/prod3 Virus DNA runs。以 prod2 为分母得到的 100K 肝标签与官方 `Liver` 标签达到 Pearson `r = 0.9778`，因此原始数据重建路线已经得到外部标签验收。
 
 ### 最终判断
 
@@ -190,7 +190,51 @@ NCBI 当前公开 270 个 runs、41 个 BioSamples、约 318 Gbases/0.12 TB。[^
 
 完整机器结果见 [`audit_data/SRR29692586_spinal_cord_pilot.json`](audit_data/SRR29692586_spinal_cord_pilot.json)。
 
-这一步证明“raw read → 21 nt → 7-mer → 公开 100K 序列”的链路可走通。但当前 pilot 还没有复刻论文的 Bowtie2 容错比对，也没有完整 240K 合成库白名单，因此**不能把 57.27% 当作论文复现率**。最终管线应按论文参数运行 Bowtie2，并用 100K 公开子集做主要建模集合。
+随后我们用论文公开参数补跑了 Bowtie2 流式比对。它对同一批 1,787,085 reads 的总体
+比对率为 99.77%，Q20、无插入区 indel 且无终止密码子的有效率为 59.00%；其中
+419,561 reads 落入公开 100K 清单，检测到 70,742 条白名单序列。与保守锚点法相比，
+白名单原始计数的 Pearson 相关系数为 0.9985，`log1p(count)` 相关系数为 0.9977。
+这说明轻量 pilot 没有扭曲主要丰度结构，同时 Bowtie2 找回了锚点含少量错配的 reads。
+机器结果见
+[`audit_data/SRR29692586_bowtie2_pilot.json`](audit_data/SRR29692586_bowtie2_pilot.json)。
+
+这一步证明“raw read → Bowtie2 → 21 nt → 7-mer → 公开 100K 序列”的链路可走通。
+但我们仍没有完整 240K 合成库白名单，因此 59.00% 只能当作公开子集重建的管线指标，
+不能写成对作者原始过滤率的精确复现。
+
+### 6.2 Liver 外部标签验收
+
+第一轮完整批次包含 12 个 Liver runs（4 只动物 × 3 个技术重复）以及 prod2、prod3
+各 3 个 Virus DNA runs。18 个 ENA FASTQ 共 6.258 GB；下载器逐文件验证压缩字节数和
+ENA MD5。Bowtie2 共处理 132,464,063 reads，其中 Liver 组 92,235,271 reads、
+prod2 病毒库 23,808,806 reads、prod3 病毒库 16,419,986 reads。
+
+我们没有先指定一个“最有利”的分母，而是同时比较：
+
+- 全部有效 7-mer reads 或公开 100K 白名单 reads 作为 RPM 分母；
+- Liver Animal 1–4、Animal 1–3 和单动物；
+- prod2、prod3 或两个可用生产轮次均值作为病毒库分母。
+
+最佳且与官方数据定义一致的组合是：白名单 RPM、四只动物均值、prod2 病毒库分母。
+在 97,873 条双方均为有限值的序列上：
+
+| 验收指标 | 结果 |
+| --- | ---: |
+| Pearson r | **0.9778** |
+| Spearman r | **0.9822** |
+| 线性校准斜率 | 0.9546 |
+| 线性校准截距 | -0.0258 |
+| 校准后 RMSE | 0.3092 |
+
+“全部有效 reads”分母得到的 Pearson r 也为 0.9778，说明公开 100K 子集并没有通过
+分母选择制造相关性。Animal 1–3 均值对官方标签仍有 `r = 0.9605`，但四只动物均值更高，
+符合官方 `Liver` 列使用全部动物聚合的解释。prod3 单独作分母只有 `r = 0.8658`，
+因此后续多器官重建固定使用 **prod2**，不需要额外下载体积约 8.78 GB 的 prod1。
+
+完整组合结果见
+[`audit_data/fit4function_liver_validation_metrics.csv`](audit_data/fit4function_liver_validation_metrics.csv)，
+逐 run 质量控制见
+[`audit_data/fit4function_liver_run_qc.csv`](audit_data/fit4function_liver_run_qc.csv)。
 
 ## 7. 已跑的序列基线
 

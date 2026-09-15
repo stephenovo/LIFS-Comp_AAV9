@@ -21,7 +21,9 @@ from aav9_sma.data.reconstruct import (
 )
 from aav9_sma.data.sra import fetch_sra_manifest, summarize_sra_manifest
 from aav9_sma.models.evaluate import (
+    MULTIORGAN_ENDPOINTS,
     SCREEN_TASKS,
+    benchmark_multiorgan_animal_holdout,
     benchmark_production_generalization,
     benchmark_screen_models,
 )
@@ -166,6 +168,19 @@ def _build_parser() -> argparse.ArgumentParser:
         "--models", nargs="+", choices=("ridge", "random_forest"), default=["ridge"]
     )
     production_parser.add_argument("--output", type=Path, required=True)
+
+    multiorgan_benchmark_parser = subparsers.add_parser(
+        "benchmark-multiorgan",
+        help="Evaluate unseen sequences against held-out animal 4 labels",
+    )
+    multiorgan_benchmark_parser.add_argument("input", type=Path)
+    multiorgan_benchmark_parser.add_argument(
+        "--models", nargs="+", choices=("ridge", "random_forest"), default=["ridge"]
+    )
+    multiorgan_benchmark_parser.add_argument(
+        "--endpoints", nargs="+", default=list(MULTIORGAN_ENDPOINTS)
+    )
+    multiorgan_benchmark_parser.add_argument("--output", type=Path, required=True)
 
     rank_parser = subparsers.add_parser("rank-candidates", help="Rank model predictions")
     rank_parser.add_argument("input", type=Path)
@@ -412,6 +427,15 @@ def main() -> None:
             args.modeling_csv,
             args.assessment_csv,
             model_names=tuple(args.models),
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(rows).to_csv(args.output, index=False)
+        return
+    if args.command == "benchmark-multiorgan":
+        rows = benchmark_multiorgan_animal_holdout(
+            args.input,
+            model_names=tuple(args.models),
+            endpoints=tuple(args.endpoints),
         )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(rows).to_csv(args.output, index=False)

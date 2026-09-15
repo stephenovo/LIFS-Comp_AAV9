@@ -32,7 +32,8 @@ def parse_hammerhead_alias(alias: str) -> RunDesign:
     """Parse the biological and technical replicate encoded in an SRA alias."""
     organ = ORGAN_ALIAS.fullmatch(alias)
     if organ:
-        endpoint = organ.group("organ").replace("_", " ")
+        raw_endpoint = organ.group("organ").replace("_", " ")
+        endpoint = "Spinal cord" if raw_endpoint.lower() == "spinalcord" else raw_endpoint
         return RunDesign(
             kind="organ",
             endpoint=endpoint,
@@ -128,11 +129,14 @@ def _aggregate_rpm(
         raise ValueError("denominator_mode must be all_valid or whitelist")
     rpm = count_matrix.div(denominators.reindex(count_matrix.columns), axis=1) * 1_000_000
     aggregated: dict[str, pd.Series] = {}
-    for (kind, replicate), group in qc.groupby(["kind", "biological_replicate"], dropna=False):
-        if kind != "organ" or pd.isna(replicate):
+    organ_qc = qc.loc[qc["kind"] == "organ"]
+    for (endpoint_label, replicate), group in organ_qc.groupby(
+        ["endpoint", "biological_replicate"], dropna=False
+    ):
+        if pd.isna(replicate):
             continue
         runs = group.sort_values("technical_replicate")["run_accession"].tolist()
-        endpoint = str(group["endpoint"].iloc[0]).lower().replace(" ", "_")
+        endpoint = str(endpoint_label).lower().replace(" ", "_")
         aggregated[f"{endpoint}_a{int(replicate)}"] = rpm[runs].mean(axis=1)
     for production, group in qc.loc[qc["kind"] == "virus"].groupby("production_round"):
         runs = group.sort_values("technical_replicate")["run_accession"].tolist()
@@ -219,8 +223,7 @@ def reconstruct_multiorgan(
     virus_round: int = 2,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Reconstruct animal-level organ enrichments using a validated virus round."""
-    output = pd.DataFrame(index=count_matrix.index)
-    output.index.name = "AA"
+    output_columns: dict[str, pd.Series] = {}
     metrics: list[dict[str, object]] = []
 
     for denominator_mode in denominator_modes:
@@ -230,7 +233,7 @@ def reconstruct_multiorgan(
             raise ValueError(f"Missing virus reference: {virus_key}")
         virus_rpm = aggregated[virus_key]
         prefix = f"rpm_{denominator_mode}"
-        output[f"{prefix}__{virus_key}"] = virus_rpm
+        output_columns[f"{prefix}__{virus_key}"] = virus_rpm
         endpoints = sorted(
             {
                 key.rsplit("_a", maxsplit=1)[0]
@@ -246,11 +249,11 @@ def reconstruct_multiorgan(
             for key in animal_keys:
                 rpm = aggregated[key]
                 enrichment = _safe_log2_ratio(rpm, virus_rpm)
-                output[f"{prefix}__{key}"] = rpm
+                output_columns[f"{prefix}__{key}"] = rpm
                 enrichment_key = (
                     f"log2enr_{denominator_mode}__{key}__over__{virus_key}"
                 )
-                output[enrichment_key] = enrichment
+                output_columns[enrichment_key] = enrichment
                 animal_enrichments[key] = enrichment
 
             groups = {"all_animals": animal_keys}
@@ -260,8 +263,8 @@ def reconstruct_multiorgan(
                 mean_rpm = pd.concat([aggregated[key] for key in selected], axis=1).mean(
                     axis=1
                 )
-                output[f"{prefix}__{endpoint}_{group_name}"] = mean_rpm
-                output[
+                output_columns[f"{prefix}__{endpoint}_{group_name}"] = mean_rpm
+                output_columns[
                     f"log2enr_{denominator_mode}__{endpoint}_{group_name}__over__{virus_key}"
                 ] = _safe_log2_ratio(mean_rpm, virus_rpm)
 
@@ -287,4 +290,6 @@ def reconstruct_multiorgan(
                 }
             )
 
+    output = pd.DataFrame(output_columns, index=count_matrix.index)
+    output.index.name = "AA"
     return output.reset_index(), pd.DataFrame(metrics)

@@ -111,16 +111,19 @@ def download_fastq(
     offset = partial.stat().st_size if partial.exists() else 0
     if offset > expected_bytes:
         raise ValueError(f"Partial {partial} is larger than the ENA file")
-    headers = {"Range": f"bytes={offset}-"} if offset else {}
-    response = requests.get(str(row["fastq_url"]), headers=headers, stream=True, timeout=(30, 180))
-    response.raise_for_status()
-    if offset and response.status_code != 206:
-        offset = 0
-    mode = "ab" if offset and response.status_code == 206 else "wb"
-    with partial.open(mode) as stream:
-        for chunk in response.iter_content(chunk_size=chunk_size):
-            if chunk:
-                stream.write(chunk)
+    if offset < expected_bytes:
+        headers = {"Range": f"bytes={offset}-"} if offset else {}
+        response = requests.get(
+            str(row["fastq_url"]), headers=headers, stream=True, timeout=(30, 180)
+        )
+        response.raise_for_status()
+        if offset and response.status_code != 206:
+            offset = 0
+        mode = "ab" if offset and response.status_code == 206 else "wb"
+        with partial.open(mode) as stream:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    stream.write(chunk)
 
     observed_bytes = partial.stat().st_size
     if observed_bytes != expected_bytes:

@@ -1,0 +1,11 @@
+{
+  "run_accession": "SRR29692586",
+  "ena_count_rows": 100000,
+  "ncbi_sra_count_rows": 100000,
+  "ena_total_reads": 419561,
+  "ncbi_sra_total_reads": 419561,
+  "mismatched_sequence_rows": 0,
+  "maximum_absolute_count_difference": 0,
+  "raw_count_pearson_r": 1.0,
+  "conclusion": "ENA FASTQ and NCBI SRA conversion produced identical whitelist counts."
+}

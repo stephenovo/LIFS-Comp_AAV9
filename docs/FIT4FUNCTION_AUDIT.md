@@ -2,7 +2,7 @@
 
 > 审计日期：2026-09-14；原始数据验证更新：2026-09-15
 > 项目：LIFS-Comp_AAV9  
-> 结论等级：**黄灯转绿 - 科学路线可行，但公开处理表不能直接训练 CNS 多任务模型，必须先重建 SRA 原始测序数据。**
+> 结论等级：**绿灯 - 公开处理表本身不能训练 CNS 多任务模型，但 SRA 重建、Liver 外部验收与 Animal 4 严格基线均已通过。**
 
 ## 1. 最先看这一页：我们到底能不能做？
 
@@ -22,8 +22,8 @@ Fit4Function 官方 GitHub 的处理后数据分成两类：
 | `F_pack` 包装 | 可训练 | 可复核 | 绿灯 |
 | `F_liv` 小鼠肝 | 可训练，100K 条带序列标签 | 可重建并交叉验证 | 绿灯 |
 | 人肝细胞辅助惩罚 | 可训练 | 可复核 | 绿灯 |
-| `F_CNS` 脑/脊髓 | **不可直接训练** | 可从 raw reads 重建 | 黄灯转绿 |
-| `F_off` 心/肾 | **不可直接训练** | 可从 raw reads 重建 | 黄灯转绿 |
+| `F_CNS` 脑/脊髓 | **不可直接训练** | 已从 raw reads 重建 | 绿灯 |
+| `F_off` 心/肾 | **不可直接训练** | 已从 raw reads 重建 | 绿灯 |
 | 人运动神经元特异性 | 没有数据 | SRA 也没有 | 红灯，不能声称 |
 | 肝毒性降低 | 没有毒性终点 | SRA 也没有 | 红灯，只能说“肝分布代理下降” |
 
@@ -198,6 +198,12 @@ NCBI 当前公开 270 个 runs、41 个 BioSamples、约 318 Gbases/0.12 TB。[^
 机器结果见
 [`audit_data/SRR29692586_bowtie2_pilot.json`](audit_data/SRR29692586_bowtie2_pilot.json)。
 
+同一 run 还分别从 ENA FASTQ 与 NCBI SRA Open Data 读取，再独立执行 SRA 转换和
+Bowtie2 计数。两条路径都得到 419,561 条白名单 reads，100,000 个逐序列 raw counts
+**逐行完全一致**：差异行数为 0，最大绝对差为 0，Pearson `r = 1.0`。因此本轮可安全
+混用两个官方镜像来源来绕过单一下载节点限速。结果见
+[`audit_data/SRR29692586_ena_sra_crosscheck.json`](audit_data/SRR29692586_ena_sra_crosscheck.json)。
+
 这一步证明“raw read → Bowtie2 → 21 nt → 7-mer → 公开 100K 序列”的链路可走通。
 但我们仍没有完整 240K 合成库白名单，因此 59.00% 只能当作公开子集重建的管线指标，
 不能写成对作者原始过滤率的精确复现。
@@ -254,6 +260,30 @@ prod2 病毒库 23,808,806 reads、prod3 病毒库 16,419,986 reads。
 Supplementary Fig. 9 还显示，一阶残基效应不能解释全部预测；加入二阶相互作用后，对原模型预测的解释度明显提高。[^6] 因此 Ridge 适合作为可解释下限，但最终模型至少需要显式成对特征、树模型或能学习位置间相互作用的 MLP/LSTM。
 
 包装模型还做了更严格的独立库外 sanity check：固定抽取 modeling library 的 24,000 条训练，排除与其重叠的序列后，在 assessment library 的 57,724 条序列上测试。Ridge 得到 `r = 0.767`，Random Forest 得到 `r = 0.780`。结果见 [`audit_data/fit4function_production_generalization.csv`](audit_data/fit4function_production_generalization.csv)。这说明我们的轻量实现有泛化信号，但尚未追平论文专门为该任务训练的 LSTM；当前应把它当作管线基准，而不是最终包装头。
+
+### 7.2 完整多器官重建与 Animal 4 严格基线
+
+最终建模表使用 60 个器官 runs 与 prod2 的 3 个病毒库 runs，共处理
+385,983,540 条比对记录，96,169,266 条 reads 落入公开 100K 白名单。重建输出包含
+100,000 条 7-mer 和 123 个逐动物、聚合、RPM 与 enrichment 字段。
+
+严格评估同时隔离两个维度：标签只用 Animal 1–3 聚合训练，Animal 4 完全留到测试；
+测试集由稳定哈希确定，并从训练集移除与任一测试 7-mer Hamming distance 为 1 的邻居。
+
+| 器官 | 四动物聚合有限标签 | Animal 1–3 vs 4 `r` | Ridge vs 4 `r` | RF vs 4 `r` |
+| --- | ---: | ---: | ---: | ---: |
+| Brain | 96,621 | 0.621 | 0.429 | **0.445** |
+| Spinal cord | 97,397 | 0.640 | 0.446 | **0.476** |
+| Liver | 97,874 | 0.823 | 0.680 | **0.715** |
+| Heart | 98,309 | 0.598 | 0.330 | **0.359** |
+| Kidney | 98,332 | 0.730 | **0.561** | 0.539 |
+
+这些结果有两个直接含义：第一，5 个组织头都存在可学习的序列信号；第二，脑和脊髓的
+实验重复性及模型表现确实低于肝，后续不能只报一个综合分，必须保留分头指标与不确定性。
+机器结果见
+[`audit_data/fit4function_multiorgan_replicate_metrics.csv`](audit_data/fit4function_multiorgan_replicate_metrics.csv)、
+[`audit_data/fit4function_multiorgan_run_qc.csv`](audit_data/fit4function_multiorgan_run_qc.csv) 和
+[`audit_data/fit4function_multiorgan_baseline_metrics.csv`](audit_data/fit4function_multiorgan_baseline_metrics.csv)。
 
 ## 8. 对 SMA 项目最重要的科学边界
 
@@ -316,17 +346,20 @@ F_brain / F_spinal / F_liv / F_heart / F_kidney
 包装硬门槛 → 帕累托、多样性、不确定性
 ```
 
-### 病毒库分母尚需验证
+### 病毒库分母已验证
 
-SRA 中有 3 组 production、每组 3 个技术重复，共 9 个 Virus DNA runs。公开材料没有在文件名层面明确指出每只动物对应哪一组生产批次。不能拍脑袋选分母。
+SRA 中有 3 组 production、每组 3 个技术重复，共 9 个 Virus DNA runs。我们没有按模型分数挑分母，而是先用公开、带序列的 `Liver` 标签做独立处理链验收。
 
-我们会透明比较以下候选：
+实际透明比较了以下候选：
 
 1. 各 production 组三重复平均；
 2. 九个 runs 总体平均；
 3. 若元数据或实验批次能建立匹配，则按批次配对。
 
-使用公开 100K `Liver` 列作为外部校准：选择能复现公开肝标签且在重复性上合理的规则，并把选择过程记录下来。这个校准只确定数据处理，不用于调高模型测试分数。
+prod2 三技术重复均值在四只动物聚合后复现公开 `Liver` 标签，Pearson
+`r = 0.9778`、Spearman `r = 0.9822`；prod3 单独作分母只有 `r = 0.8658`。
+因此后续 5 器官表固定使用 **prod2**。这个选择只确定数据处理，并未查看或调高
+Animal 4 模型测试分数；prod1 也因此不再需要下载。
 
 ## 10. Go / No-Go 验收条件
 
@@ -334,14 +367,15 @@ SRA 中有 3 组 production、每组 3 个技术重复，共 9 个 Virus DNA run
 
 | 检查 | 建议门槛 | 失败意味着什么 |
 | --- | --- | --- |
-| FASTQ 完整性 | MD5 全通过 | 文件不可用 |
-| 100K 清单覆盖 | 每个器官聚合后覆盖足够训练，目标 ≥80% | 数据太稀疏，需要改删失建模或缩小集合 |
-| Liver 重建一致性 | 与公开 `Liver` 标签 Pearson r 建议 ≥0.80 | 分母、批次或处理流程有误 |
-| 动物重复性 | 接近本审计表中的器官范围 | 重建方法未复现论文数据性质 |
-| 官方测试性能 | Brain 约 0.61、spinal 约 0.65 为参考，不要求逐点相同 | 若明显更低，先修数据再换模型 |
-| 数据泄漏 | 7-mer 不跨 train/test 重复；动物 4 不参与调参 | 否则结果不可答辩 |
+| FASTQ / SRA 完整性 | ENA MD5 或 NCBI `vdb-validate` 全通过 | **通过** |
+| 100K 清单覆盖 | 每个器官聚合后覆盖足够训练，目标 ≥80% | **通过：96.6%–98.3%** |
+| Liver 重建一致性 | 与公开 `Liver` 标签 Pearson r 建议 ≥0.80 | **通过：0.9778** |
+| 动物重复性 | 接近论文公开数据的器官层级 | **通过：肝最高，CNS/心较低** |
+| 严格测试性能 | 在 Animal 4 上明显高于无信号水平 | **通过：五头 r=0.330–0.715** |
+| 数据泄漏 | 测试 7-mer 及其一步突变邻居不进训练；Animal 4 不参与训练 | **通过** |
 
-若 Liver 一致性无法达到合理水平，主路线应暂停；届时只能做“包装 + 肝脏去靶向”的处理表项目，不能声称已经建立 CNS 序列模型。
+本轮所有数据门槛均已通过，因此可以进入多任务模型比较。这里的“通过”仍只说明
+重建标签可用于计算研究，不改变小鼠早期器官 DNA 分布并非人运动神经元转导的边界。
 
 ## 11. 四周项目应如何调整
 
@@ -399,13 +433,31 @@ aav9-sma benchmark-fit4function \
   data/raw/fit4function_official/data/fit4function_library_screens.csv \
   --models ridge random_forest \
   --output docs/audit_data/baseline_metrics.csv
+
+# 从已计数的 60 个器官 runs + prod2 重建逐动物标签
+aav9-sma reconstruct-multiorgan \
+  docs/audit_data/fit4function_ena_fastq_manifest.csv \
+  --counts-dir data/interim/bowtie2_counts \
+  --summaries-dir data/interim/bowtie2_summaries \
+  --virus-round 2 \
+  --output-reconstruction data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --output-metrics docs/audit_data/fit4function_multiorgan_replicate_metrics.csv \
+  --output-qc docs/audit_data/fit4function_multiorgan_run_qc.csv
+
+# 序列距离隔离 + Animal 4 生物学留出
+aav9-sma benchmark-multiorgan \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --models ridge random_forest \
+  --output docs/audit_data/fit4function_multiorgan_baseline_metrics.csv
 ```
 
-当前 FASTQ 提取器是为了验证链路的轻量实现。完整重建阶段将增加与论文一致的 Bowtie2 路径、每 run 稀疏计数表、RPM/重复聚合、分母选择验证和动物留出数据集生成。
+论文参数 Bowtie2 路径、每 run 计数表、RPM/重复聚合、prod2 分母验证、逐动物标签和
+Animal 4 留出评估均已实现。ENA 受限时，`scripts/process_sra_to_counts.py` 可从 NCBI
+SRA Open Data 下载、执行 `vdb-validate`、转换 FASTQ、计数并只在成功后清理临时文件。
 
 ## 13. 一句话给队友或评委
 
-> Fit4Function 的公开处理表足以直接训练包装和肝相关模型，却隐藏了多器官标签与 7-mer 的映射；我们通过审计 270 个公开 SRA runs，并实跑脊髓 FASTQ，确认可从原始 reads 重建这层映射。因此本项目的第一项真正工作不是“换一个更复杂的神经网络”，而是建立一条可验证的多器官序列标签重建管线，再在严格动物留出下做 CNS 奖励、肝脏和其他器官惩罚的多目标设计。
+> Fit4Function 的公开处理表隐藏了多器官标签与 7-mer 的映射；我们从 SRA 原始 reads 重建了 60 个器官 runs，以公开 Liver 标签完成外部验收，并在序列距离隔离和 Animal 4 生物学留出下证明 5 个组织头均有可学习信号。项目现在可以从“数据是否可用”进入“哪些模型和候选在严格测试下最稳健”的阶段。
 
 ## Sources
 

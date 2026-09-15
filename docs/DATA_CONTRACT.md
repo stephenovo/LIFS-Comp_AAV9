@@ -42,8 +42,9 @@ BioProject `PRJNA1131359` before being mapped into the canonical columns.
 | `log2_enrichment` | float | `log2(replicate_mean_rpm / virus_reference_rpm)` after documented zero handling |
 | `detected` | boolean | Whether the variant passed the analysis detection rule |
 
-The virus-reference batch rule remains provisional until reconstructed liver values reproduce the
-public sequence-linked `Liver` column.
+The virus-reference rule is fixed to production round 2 after reconstructed liver values reproduced
+the public sequence-linked `Liver` column (`Pearson r = 0.9778`). Production round 3 is retained for
+denominator sensitivity analysis, not used in the final five-organ table.
 
 ## Optional annotation columns
 

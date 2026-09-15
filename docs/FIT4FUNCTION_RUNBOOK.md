@@ -74,6 +74,30 @@ aav9-sma download-ena-fastq \
 
 下载器支持 HTTP 断点续传，并对每个完成文件同时核对字节数与 ENA MD5。
 
+若 ENA 节点限速，可使用仓库中的 NCBI SRA 流水线。先按 NCBI 官方说明下载
+macOS/Linux 对应的 SRA Toolkit，并把 `--sra-bin` 指向其 `bin/`。脚本会对每个归档运行
+`vdb-validate`，随后转换、Bowtie2 计数，并只在成功写出 counts 和 QC 后删除临时文件：
+
+```bash
+PYTHONPATH=src python scripts/process_sra_to_counts.py \
+  docs/audit_data/fit4function_ena_fastq_manifest.csv \
+  --roles Brain "Spinal cord" Heart Kidney \
+  --sra-bin /path/to/sratoolkit/bin \
+  --s3-ip CURRENT_S3_IP \
+  --work-dir tmp/sra_pipeline \
+  --index-prefix data/interim/bowtie2/fit4function \
+  --whitelist-csv data/raw/fit4function_official/data/fit4function_library_screens.csv \
+  --counts-dir data/interim/bowtie2_counts \
+  --summaries-dir data/interim/bowtie2_summaries \
+  --workers 3 \
+  --threads-per-worker 2
+```
+
+`--s3-ip` 是网络 DNS 失效时的恢复参数，不应长期写死；每次运行前应重新解析官方
+`sra-pub-run-odp.s3.amazonaws.com`。直接 IP 路径仍以 `vdb-validate` 作为完整性硬门槛。
+同一脊髓 run 的 ENA 与 SRA 路径已经做过逐 7-mer 交叉验证，100,000 行计数完全一致；
+机器结果见 [`audit_data/SRR29692586_ena_sra_crosscheck.json`](audit_data/SRR29692586_ena_sra_crosscheck.json)。
+
 ## 5. 单个 FASTQ pilot
 
 下面是本次已验证的脊髓 run。FASTQ 可以从 ENA 镜像按 accession 获取：
@@ -152,7 +176,7 @@ aav9-sma reconstruct-liver \
 
 ## 8. 完整 raw-data 管线顺序
 
-本轮已实现前 8 步；Liver 验收通过后再进入第 9 步：
+本轮 10 步均已完成：
 
 1. 从 manifest 只选 `Hammerhead`；
 2. 先下载 12 个 Liver runs + 9 个 Virus DNA runs；
@@ -165,4 +189,33 @@ aav9-sma reconstruct-liver \
 9. 通过后再扩展到 Brain、Spinal cord、Heart、Kidney；
 10. Animal 1–3 训练，Animal 4 盲测。
 
-不要在第 8 步通过前批量训练 CNS 模型。数据处理链没有得到外部验证时，模型分数没有意义。
+最终建模表使用 60 个器官 runs 与 prod2 的 3 个病毒库 runs。prod3 只参与 Liver
+分母敏感性分析；prod1 在 prod2 已通过公开 Liver 验收后无需下载。
+
+## 9. 重建 5 个器官的逐动物标签
+
+```bash
+aav9-sma reconstruct-multiorgan \
+  docs/audit_data/fit4function_ena_fastq_manifest.csv \
+  --counts-dir data/interim/bowtie2_counts \
+  --summaries-dir data/interim/bowtie2_summaries \
+  --virus-round 2 \
+  --output-reconstruction data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --output-metrics docs/audit_data/fit4function_multiorgan_replicate_metrics.csv \
+  --output-qc docs/audit_data/fit4function_multiorgan_run_qc.csv
+```
+
+输出表有 100,000 行、123 列，包含两种 RPM 分母定义、四只动物、Animal 1–3 聚合、
+四动物聚合及 5 个器官的 log2 enrichment。
+
+## 10. 严格基线
+
+```bash
+aav9-sma benchmark-multiorgan \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --models ridge random_forest \
+  --output docs/audit_data/fit4function_multiorgan_baseline_metrics.csv
+```
+
+该命令用 Animal 1–3 标签训练、Animal 4 标签测试，并从训练集中排除与测试序列只有
+一个氨基酸差异的 7-mer。不要用普通随机切分结果替代这张表。

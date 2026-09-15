@@ -21,6 +21,23 @@ def test_download_fastq_accepts_valid_cached_file(tmp_path: Path) -> None:
     assert result["bytes"] == 4
 
 
+def test_download_fastq_finalizes_complete_partial_without_network(tmp_path: Path) -> None:
+    partial = tmp_path / "SRR1.fastq.gz.part"
+    partial.write_bytes(b"test")
+    row = {
+        "run_accession": "SRR1",
+        "fastq_url": "https://example.invalid/SRR1.fastq.gz",
+        "fastq_md5": "098f6bcd4621d373cade4e832627b4f6",
+        "fastq_bytes": 4,
+    }
+
+    result = download_fastq(row, tmp_path)
+
+    assert result["status"] == "downloaded"
+    assert (tmp_path / "SRR1.fastq.gz").read_bytes() == b"test"
+    assert not partial.exists()
+
+
 def test_resolved_manifest_columns_are_machine_readable() -> None:
     frame = pd.DataFrame(
         [{"run_accession": "SRR1", "fastq_bytes": 4, "fastq_md5": "abc"}]

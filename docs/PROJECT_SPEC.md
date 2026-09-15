@@ -51,3 +51,7 @@ reported using both a presentation score and a Pareto analysis. The final set sh
 2. **Baseline gate:** held-out predictions outperform naive baselines without sequence leakage.
 3. **Screening gate:** candidates pass packaging, distance, uncertainty, and diversity checks.
 4. **Communication gate:** every figure and claim is consistent with the available evidence.
+
+Current checkpoint: the data gate passed through public-Liver reconstruction (`r = 0.9778`), and
+the baseline gate passed for all five organ heads under a distance-separated sequence holdout with
+animal 4 untouched. Multi-task model comparison and screening gates remain open.

@@ -166,10 +166,30 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] Exact-anchor and paper-parameter Bowtie2 FASTQ pilots
 - [x] Reproducible ENA manifest, resumable downloader, and MD5 checks
 - [x] Liver + virus-reference reconstruction validated against the public label (`r = 0.978`)
-- [ ] 69-run multi-organ raw-label reconstruction
-- [ ] Leakage-safe baseline benchmark
+- [x] 60 organ runs + 3 validated prod2 reference runs reconstructed into sequence-linked labels
+- [x] Distance-separated sequence holdout with animal 4 as an untouched biological test
 - [ ] Multi-task model comparison
 - [ ] Candidate generation and final shortlist
+
+### Reconstructed-data checkpoint
+
+The current table links 100,000 7-mers to animal-level brain, spinal-cord,
+liver, heart, and kidney enrichments. It was reconstructed from 385,983,540
+aligned records across 63 runs; 96,169,266 reads mapped to the public 100K
+sequence set. The final benchmark trains on animals 1–3, removes one-mutation
+neighbors of test sequences from training, and evaluates only against animal 4.
+
+| Endpoint | Finite 4-animal labels | Animals 1–3 vs animal 4 `r` | Ridge vs animal 4 `r` | Random Forest vs animal 4 `r` |
+| --- | ---: | ---: | ---: | ---: |
+| Brain | 96,621 | 0.621 | 0.429 | **0.445** |
+| Spinal cord | 97,397 | 0.640 | 0.446 | **0.476** |
+| Liver | 97,874 | 0.823 | 0.680 | **0.715** |
+| Heart | 98,309 | 0.598 | 0.330 | **0.359** |
+| Kidney | 98,332 | 0.730 | **0.561** | 0.539 |
+
+Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv),
+[run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv), and
+[strict baselines](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv).
 
 ## Scientific boundary
 

@@ -14,9 +14,11 @@ from aav9_sma.data.reconstruct import (
 
 def test_parses_organ_and_virus_aliases() -> None:
     organ = parse_hammerhead_alias("hammerhead_Spinal_cord_a4_r3")
+    compact_spinal = parse_hammerhead_alias("hammerhead_SpinalCord_a4_r1")
     virus = parse_hammerhead_alias("hammerhead_starter_virus_prod2_1")
 
     assert organ.endpoint == "Spinal cord"
+    assert compact_spinal.endpoint == "Spinal cord"
     assert organ.biological_replicate == 4
     assert organ.technical_replicate == 3
     assert virus.kind == "virus"
@@ -47,14 +49,20 @@ def test_reconstructs_liver_enrichment_and_validation(tmp_path: Path) -> None:
     rows = []
     for technical in (1, 2, 3):
         liver_run = f"L{technical}"
+        brain_run = f"B{technical}"
         virus_run = f"V{technical}"
         _write_run(tmp_path, liver_run, [40, 10, 20])
+        _write_run(tmp_path, brain_run, [20, 20, 20])
         _write_run(tmp_path, virus_run, [10, 40, 20])
         rows.extend(
             [
                 {
                     "run_accession": liver_run,
                     "experiment_alias": f"hammerhead_Liver_a1_r{technical}",
+                },
+                {
+                    "run_accession": brain_run,
+                    "experiment_alias": f"hammerhead_Brain_a1_r{technical}",
                 },
                 {
                     "run_accession": virus_run,
@@ -77,4 +85,5 @@ def test_reconstructs_liver_enrichment_and_validation(tmp_path: Path) -> None:
     multiorgan, animal_metrics = reconstruct_multiorgan(counts, qc, virus_round=3)
     multiorgan_column = "log2enr_whitelist__liver_a1__over__virus_prod3"
     assert np.allclose(multiorgan[multiorgan_column], [2.0, -2.0, 0.0])
-    assert animal_metrics["endpoint"].tolist() == ["liver", "liver"]
+    assert "log2enr_whitelist__brain_a1__over__virus_prod3" in multiorgan
+    assert set(animal_metrics["endpoint"]) == {"brain", "liver"}

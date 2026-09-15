@@ -153,10 +153,29 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] 论文参数 Bowtie2 pilot、ENA 断点续传与 MD5 校验
 - [x] 100K 带序列表的 Ridge / Random Forest sanity check
 - [x] Liver + 病毒库重建通过公开标签验收（`r = 0.978`）
-- [ ] 69-run 多器官原始数据重建
-- [ ] 防数据泄漏的基线评估
+- [x] 60 个器官 runs + 3 个已验证 prod2 分母 runs 的序列标签重建
+- [x] 序列距离隔离 + Animal 4 生物学盲测基线
 - [ ] 多任务模型比较
 - [ ] 候选生成和最终候选集
+
+### 多器官数据阶段结果
+
+当前重建表把 100,000 条 7-mer 与脑、脊髓、肝、心、肾的逐动物富集标签连接起来。
+63 个 runs 共处理 385,983,540 条比对记录，其中 96,169,266 条落入公开 100K
+序列清单。严格基线只用 Animal 1–3 训练，从训练集中移除测试序列的一步突变邻居，
+最终只在从未参与训练的 Animal 4 上评价。
+
+| 终点 | 四动物聚合有限标签 | Animal 1–3 vs Animal 4 `r` | Ridge vs Animal 4 `r` | 随机森林 vs Animal 4 `r` |
+| --- | ---: | ---: | ---: | ---: |
+| 脑 | 96,621 | 0.621 | 0.429 | **0.445** |
+| 脊髓 | 97,397 | 0.640 | 0.446 | **0.476** |
+| 肝 | 97,874 | 0.823 | 0.680 | **0.715** |
+| 心 | 98,309 | 0.598 | 0.330 | **0.359** |
+| 肾 | 98,332 | 0.730 | **0.561** | 0.539 |
+
+机器可读结果见：[动物重复性](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv)、
+[逐 run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv) 和
+[严格基线](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv)。
 
 ## 科学边界
 

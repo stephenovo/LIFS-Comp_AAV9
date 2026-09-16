@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import re
+from collections import Counter
 from collections.abc import Collection
 
 import numpy as np
@@ -394,6 +395,8 @@ def run_virtual_screen(
     ranked = rank_candidates(candidates, packaging_threshold=packaging_threshold)
     ranked = add_weight_sensitivity(ranked)
     shortlist = select_diverse_shortlist(ranked)
+    residue_counts = Counter("".join(shortlist["AA"]))
+    residue_total = sum(residue_counts.values())
     summary: dict[str, object] = {
         "random_state": random_state,
         "pool_size": pool_size,
@@ -425,6 +428,13 @@ def run_virtual_screen(
             if len(shortlist) > 1
             else 0
         ),
+        "shortlist_residue_frequencies": {
+            residue: residue_counts[residue] / residue_total
+            for residue in AMINO_ACIDS
+        },
+        "shortlist_missing_residues": [
+            residue for residue in AMINO_ACIDS if residue_counts[residue] == 0
+        ],
         "immune_annotation": "not_scored_no_validated_7mer_neutralization_table",
         "claim_boundary": (
             "Computational mouse-organ biodistribution hypotheses; not human motor-neuron "

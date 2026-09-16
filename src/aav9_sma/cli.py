@@ -25,10 +25,12 @@ from aav9_sma.models.evaluate import (
     SCREEN_TASKS,
     benchmark_multiorgan_animal_holdout,
     benchmark_multitask_animal_holdout,
+    benchmark_multitask_ensemble_animal_holdout,
     benchmark_production_generalization,
     benchmark_screen_models,
 )
 from aav9_sma.screening.score import rank_candidates
+from aav9_sma.screening.virtual import run_virtual_screen
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -194,10 +196,36 @@ def _build_parser() -> argparse.ArgumentParser:
     multitask_benchmark_parser.add_argument("--max-iter", type=int, default=80)
     multitask_benchmark_parser.add_argument("--output", type=Path, required=True)
 
+    ensemble_benchmark_parser = subparsers.add_parser(
+        "benchmark-multitask-ensemble",
+        help="Evaluate the shared MLP ensemble used by virtual screening",
+    )
+    ensemble_benchmark_parser.add_argument("input", type=Path)
+    ensemble_benchmark_parser.add_argument(
+        "--endpoints", nargs="+", default=list(MULTIORGAN_ENDPOINTS)
+    )
+    ensemble_benchmark_parser.add_argument("--ensemble-size", type=int, default=5)
+    ensemble_benchmark_parser.add_argument("--max-iter", type=int, default=80)
+    ensemble_benchmark_parser.add_argument("--output", type=Path, required=True)
+
     rank_parser = subparsers.add_parser("rank-candidates", help="Rank model predictions")
     rank_parser.add_argument("input", type=Path)
     rank_parser.add_argument("--packaging-threshold", type=float, required=True)
     rank_parser.add_argument("--output", type=Path, required=True)
+
+    virtual_parser = subparsers.add_parser(
+        "screen-virtual",
+        help="Generate, predict, rank, and diversify virtual 7-mer candidates",
+    )
+    virtual_parser.add_argument("screen_csv", type=Path)
+    virtual_parser.add_argument("reconstructed_csv", type=Path)
+    virtual_parser.add_argument("--pool-size", type=int, default=200_000)
+    virtual_parser.add_argument("--ensemble-size", type=int, default=5)
+    virtual_parser.add_argument("--max-iter", type=int, default=80)
+    virtual_parser.add_argument("--output-ranked", type=Path, required=True)
+    virtual_parser.add_argument("--output-pareto", type=Path)
+    virtual_parser.add_argument("--output-shortlist", type=Path, required=True)
+    virtual_parser.add_argument("--output-summary", type=Path, required=True)
     return parser
 
 
@@ -461,11 +489,42 @@ def main() -> None:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(rows).to_csv(args.output, index=False)
         return
+    if args.command == "benchmark-multitask-ensemble":
+        rows = benchmark_multitask_ensemble_animal_holdout(
+            args.input,
+            endpoints=tuple(args.endpoints),
+            ensemble_size=args.ensemble_size,
+            max_iter=args.max_iter,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(rows).to_csv(args.output, index=False)
+        return
     if args.command == "rank-candidates":
         predictions = pd.read_csv(args.input)
         ranked = rank_candidates(predictions, packaging_threshold=args.packaging_threshold)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         ranked.to_csv(args.output, index=False)
+        return
+    if args.command == "screen-virtual":
+        screen = pd.read_csv(args.screen_csv)
+        reconstructed = pd.read_csv(args.reconstructed_csv)
+        ranked, shortlist, summary = run_virtual_screen(
+            screen,
+            reconstructed,
+            pool_size=args.pool_size,
+            ensemble_size=args.ensemble_size,
+            max_iter=args.max_iter,
+        )
+        output_paths = [args.output_ranked, args.output_shortlist, args.output_summary]
+        if args.output_pareto is not None:
+            output_paths.append(args.output_pareto)
+        for path in output_paths:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        ranked.to_csv(args.output_ranked, index=False)
+        if args.output_pareto is not None:
+            ranked.loc[ranked["is_pareto"]].to_csv(args.output_pareto, index=False)
+        shortlist.to_csv(args.output_shortlist, index=False)
+        _write_json(summary, args.output_summary)
         return
     raise RuntimeError(f"Unhandled command: {args.command}")
 

@@ -311,3 +311,96 @@ def benchmark_multitask_animal_holdout(
             }
         )
     return rows
+
+
+def benchmark_multitask_ensemble_animal_holdout(
+    reconstructed_csv: str | Path,
+    endpoints: tuple[str, ...] = MULTIORGAN_ENDPOINTS,
+    ensemble_size: int = 5,
+    denominator_mode: str = "whitelist",
+    virus_round: int = 2,
+    random_state: int = 42,
+    test_fraction: float = 0.2,
+    max_iter: int = 80,
+) -> list[dict[str, object]]:
+    """Evaluate the exact shared-MLP ensemble used by virtual screening."""
+    if ensemble_size < 2:
+        raise ValueError("ensemble_size must be at least two")
+    frame = pd.read_csv(reconstructed_csv)
+    peptides = frame["AA"].tolist()
+    train_split, test_split = sequence_distance_split(
+        peptides,
+        test_fraction=test_fraction,
+        random_state=random_state,
+        minimum_hamming_distance=2,
+    )
+    features = one_hot_7mer(peptides)
+    train_columns = [
+        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3"
+        f"__over__virus_prod{virus_round}"
+        for endpoint in endpoints
+    ]
+    animal4_columns = [
+        f"log2enr_{denominator_mode}__{endpoint}_a4__over__virus_prod{virus_round}"
+        for endpoint in endpoints
+    ]
+    missing = [column for column in train_columns + animal4_columns if column not in frame]
+    if missing:
+        raise ValueError(f"Missing reconstructed columns: {missing}")
+    train_targets = frame[train_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+    animal4_targets = (
+        frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+    )
+    complete_train_rows = train_split & np.isfinite(train_targets).all(axis=1)
+    scaler = StandardScaler().fit(train_targets[complete_train_rows])
+    scaled_targets = scaler.transform(train_targets[complete_train_rows])
+    member_predictions = []
+    iterations = []
+    for member in range(ensemble_size):
+        model = build_shared_mlp(
+            random_state=random_state + member,
+            max_iter=max_iter,
+        )
+        model.fit(features[complete_train_rows], scaled_targets)
+        member_predictions.append(scaler.inverse_transform(model.predict(features)))
+        iterations.append(int(model.n_iter_))
+    stacked = np.stack(member_predictions)
+    prediction_mean = stacked.mean(axis=0)
+    prediction_std = stacked.std(axis=0)
+
+    rows: list[dict[str, object]] = []
+    for endpoint_index, endpoint in enumerate(endpoints):
+        test_rows = (
+            test_split
+            & np.isfinite(train_targets[:, endpoint_index])
+            & np.isfinite(animal4_targets[:, endpoint_index])
+        )
+        targets = animal4_targets[test_rows, endpoint_index]
+        predictions = prediction_mean[test_rows, endpoint_index]
+        disagreement = prediction_std[test_rows, endpoint_index]
+        absolute_error = np.abs(targets - predictions)
+        rows.append(
+            {
+                "task": endpoint,
+                "model": f"shared_mlp_64_32_ensemble_{ensemble_size}",
+                "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+                "random_state": random_state,
+                "train_rows": int(complete_train_rows.sum()),
+                "test_rows": int(test_rows.sum()),
+                "ensemble_size": ensemble_size,
+                "member_iterations": "|".join(map(str, iterations)),
+                "model_vs_animal4_pearson_r": _pearson(targets, predictions),
+                "model_vs_animal4_r2": float(r2_score(targets, predictions)),
+                "model_vs_animal4_mae": float(mean_absolute_error(targets, predictions)),
+                "animal_mean_vs_animal4_pearson_r": _pearson(
+                    targets, train_targets[test_rows, endpoint_index]
+                ),
+                "model_vs_animal_mean_pearson_r": _pearson(
+                    train_targets[test_rows, endpoint_index], predictions
+                ),
+                "disagreement_vs_absolute_error_pearson_r": _pearson(
+                    absolute_error, disagreement
+                ),
+            }
+        )
+    return rows

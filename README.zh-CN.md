@@ -64,10 +64,12 @@ flowchart LR
 
 ```text
 S  = 0.45 × F_CNS − 0.35 × F_liv − 0.20 × F_off
-SI = F_CNS / (F_liv + ε)
+log2(SI) = F_CNS − F_liv
+SI       = 2^(F_CNS − F_liv)
 ```
 
-权重只是当前工作假设。项目会进行权重扰动测试，并同时保留三类帕累托候选：**偏中枢、偏低肝和折中型**。
+权重只是当前工作假设。项目用 27 组权重组合检查排序稳定性。最终清单分为
+**偏中枢、偏低肝和折中型**，同时单独保留严格帕累托标记，不强迫每一条都属于前沿。
 
 ## 技术路线
 
@@ -75,9 +77,9 @@ SI = F_CNS / (F_liv + ε)
 | --- | --- | --- |
 | 数据 | pandas、标准字段、缺失标签审计 | 批次和重复实验映射 |
 | 序列 | 7-mer one-hot 编码 | 理化性质或预训练蛋白表示 |
-| 模型 | 各终点 Ridge、Random Forest | LightGBM 或共享 PyTorch 编码器 |
-| 验证 | 序列感知切分、留出集指标 | 不确定性、猕猴盲测 |
-| 筛选 | 包装门槛、S、SI、帕累托 | 多样性、训练距离和结构抽检 |
+| 模型 | 各终点 Ridge、Random Forest | 共享 `64→32` MLP 集成 |
+| 验证 | 距离-2 序列切分、Animal 4 留出 | 有数据时做猕猴盲测 |
+| 筛选 | 校准包装下界、S、SI、帕累托 | 权重稳定性、训练距离和多样性 |
 
 项目先建立简单、可解释的基线。只有在无数据泄漏的留出测试中确实改善，才引入神经网络。
 
@@ -141,6 +143,19 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 
 这里的 `0.50` 只是命令示例，不是预先确定的生物学阈值。
 
+运行可复现的 100 万序列虚拟筛选：
+
+```bash
+aav9-sma screen-virtual \
+  data/raw/fit4function_official/data/fit4function_library_screens.csv \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --pool-size 1000000 --ensemble-size 5 \
+  --output-ranked artifacts/virtual_screen_ranked.csv.gz \
+  --output-pareto docs/audit_data/virtual_screen_pareto.csv \
+  --output-shortlist docs/audit_data/virtual_screen_shortlist.csv \
+  --output-summary docs/audit_data/virtual_screen_summary.json
+```
+
 ## 当前进度
 
 - [x] 研究问题和声明边界
@@ -154,16 +169,17 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] 100K 带序列表的 Ridge / Random Forest sanity check
 - [x] Liver + 病毒库重建通过公开标签验收（`r = 0.978`）
 - [x] 60 个器官 runs + 3 个已验证 prod2 分母 runs 的序列标签重建
-- [x] 序列距离隔离 + Animal 4 生物学盲测基线
-- [ ] 多任务模型比较
-- [ ] 候选生成和最终候选集
+- [x] 序列距离隔离 + Animal 4 生物学留出测试
+- [x] 共享多任务模型与五模型集成比较
+- [x] 100 万序列虚拟筛选和 30 条计算候选
 
 ### 多器官数据阶段结果
 
 当前重建表把 100,000 条 7-mer 与脑、脊髓、肝、心、肾的逐动物富集标签连接起来。
 63 个 runs 共处理 385,983,540 条比对记录，其中 96,169,266 条落入公开 100K
 序列清单。严格基线只用 Animal 1–3 训练，从训练集中移除测试序列的一步突变邻居，
-最终只在从未参与训练的 Animal 4 上评价。
+最终只在不参与训练的 Animal 4 上评价。Animal 4 已用于本轮模型比较，后续不再把它
+称为从未查看的最终盲测。
 
 | 终点 | 四动物聚合有限标签 | Animal 1–3 vs Animal 4 `r` | Ridge vs Animal 4 `r` | 随机森林 vs Animal 4 `r` |
 | --- | ---: | ---: | ---: | ---: |
@@ -176,6 +192,29 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 机器可读结果见：[动物重复性](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv)、
 [逐 run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv) 和
 [严格基线](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv)。
+
+### 多任务与虚拟筛选结果
+
+| 终点 | 最佳单任务 `r` | 共享 MLP `r` | 五模型集成 `r` |
+| --- | ---: | ---: | ---: |
+| 脑 | 0.445 | 0.527 | **0.554** |
+| 脊髓 | 0.476 | 0.546 | **0.571** |
+| 肝 | 0.715 | 0.778 | **0.785** |
+| 心 | 0.359 | 0.439 | **0.458** |
+| 肾 | 0.561 | 0.622 | **0.635** |
+
+正式筛选从 12.8 亿种理论 7-mer 空间中固定随机种子生成 1,000,000 条未见序列。
+其中 6,016 条通过包装置信下界硬门槛，169 条位于严格帕累托前沿。最终 30 条分为
+偏中枢、偏低肝和折中型各 10 条；全部与训练序列至少相差 2 位、候选之间至少相差
+3 位，并处于过包装线序列综合分前 5%。其中 6 条属于严格帕累托前沿，其余 24 条
+明确标记为兼顾得分与多样性的近前沿计算假设。
+
+![虚拟筛选总结图](docs/assets/virtual_screen_summary.png)
+
+机器可读结果见：[集成留出测试](docs/audit_data/fit4function_multitask_ensemble_metrics.csv)、
+[169 条帕累托表](docs/audit_data/virtual_screen_pareto.csv)、
+[30 条候选清单](docs/audit_data/virtual_screen_shortlist.csv) 和
+[筛选摘要](docs/audit_data/virtual_screen_summary.json)。
 
 ## 科学边界
 

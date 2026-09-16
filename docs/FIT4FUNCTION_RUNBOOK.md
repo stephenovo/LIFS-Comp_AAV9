@@ -219,3 +219,34 @@ aav9-sma benchmark-multiorgan \
 
 该命令用 Animal 1–3 标签训练、Animal 4 标签测试，并从训练集中排除与测试序列只有
 一个氨基酸差异的 7-mer。不要用普通随机切分结果替代这张表。
+
+## 11. 多任务集成与虚拟筛选
+
+先评价筛选实际使用的五模型集成：
+
+```bash
+aav9-sma benchmark-multitask-ensemble \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --ensemble-size 5 \
+  --output docs/audit_data/fit4function_multitask_ensemble_metrics.csv
+```
+
+再运行 100 万条候选的完整漏斗。全量排序表较大，写入 Git 忽略的 `artifacts/`；
+帕累托表、30 条清单和 JSON 摘要可以提交：
+
+```bash
+aav9-sma screen-virtual \
+  data/raw/fit4function_official/data/fit4function_library_screens.csv \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --pool-size 1000000 \
+  --ensemble-size 5 \
+  --max-iter 80 \
+  --output-ranked artifacts/virtual_screen_ranked.csv.gz \
+  --output-pareto docs/audit_data/virtual_screen_pareto.csv \
+  --output-shortlist docs/audit_data/virtual_screen_shortlist.csv \
+  --output-summary docs/audit_data/virtual_screen_summary.json
+```
+
+`pred_pack_lcb` 是在距离-2 校准集上估计的单侧 95% 下界。`uncertainty_*` 是五个
+MLP 的模型分歧，不是校准置信区间。筛选逻辑和限制见
+[`VIRTUAL_SCREEN_REPORT.md`](VIRTUAL_SCREEN_REPORT.md)。

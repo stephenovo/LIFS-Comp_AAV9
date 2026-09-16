@@ -73,12 +73,14 @@ after training and is not inserted into the training loss:
 
 ```text
 S  = 0.45 × F_CNS − 0.35 × F_liv − 0.20 × F_off
-SI = F_CNS / (F_liv + ε)
+log2(SI) = F_CNS − F_liv
+SI       = 2^(F_CNS − F_liv)
 ```
 
-The weights are working assumptions. Candidate stability will be tested under
-weight perturbations, and the scientific result will retain three Pareto groups:
-**CNS-favoring**, **liver-minimizing**, and **balanced**.
+The weights are working assumptions. Candidate stability is tested across 27
+weight combinations. The shortlist contains **CNS-favoring**,
+**liver-minimizing**, and **balanced** groups, while strict Pareto membership is
+reported separately rather than forced for every row.
 
 ## Technical approach
 
@@ -86,9 +88,9 @@ weight perturbations, and the scientific result will retain three Pareto groups:
 | --- | --- | --- |
 | Data | pandas, canonical schema, missing-label audit | Batch and replicate-aware mapping |
 | Sequence | 7-mer one-hot encoding | Physicochemical or pretrained embeddings |
-| Models | Ridge and Random Forest per endpoint | LightGBM or shared PyTorch encoder |
-| Validation | Sequence-aware split, held-out metrics | Uncertainty and primate blind test |
-| Screening | Packaging gate, score, SI, Pareto | Diversity, distance and structural checks |
+| Models | Ridge and Random Forest per endpoint | Shared `64→32` MLP ensemble |
+| Validation | Distance-2 sequence split and Animal 4 holdout | Primate blind test if available |
+| Screening | Calibrated packaging lower bound and Pareto | Weight stability, distance and diversity |
 
 Simple baselines come first. A neural model is justified only if it improves
 held-out performance without sequence leakage.
@@ -155,6 +157,19 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 
 `0.50` is an interface example, not a biological threshold.
 
+Run the reproducible one-million-sequence virtual screen:
+
+```bash
+aav9-sma screen-virtual \
+  data/raw/fit4function_official/data/fit4function_library_screens.csv \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --pool-size 1000000 --ensemble-size 5 \
+  --output-ranked artifacts/virtual_screen_ranked.csv.gz \
+  --output-pareto docs/audit_data/virtual_screen_pareto.csv \
+  --output-shortlist docs/audit_data/virtual_screen_shortlist.csv \
+  --output-summary docs/audit_data/virtual_screen_summary.json
+```
+
 ## Current status
 
 - [x] Research question and claim boundaries
@@ -167,9 +182,9 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] Reproducible ENA manifest, resumable downloader, and MD5 checks
 - [x] Liver + virus-reference reconstruction validated against the public label (`r = 0.978`)
 - [x] 60 organ runs + 3 validated prod2 reference runs reconstructed into sequence-linked labels
-- [x] Distance-separated sequence holdout with animal 4 as an untouched biological test
-- [x] Shared multi-task MLP comparison on the untouched Animal 4 test
-- [ ] Candidate generation and final shortlist
+- [x] Distance-separated sequence holdout with Animal 4 as a biological test
+- [x] Shared multi-task MLP comparison on the held-out Animal 4 test
+- [x] One-million-sequence virtual screen and 30-candidate computational shortlist
 
 ### Reconstructed-data checkpoint
 
@@ -193,24 +208,39 @@ A shared `64→32` MLP was trained once on the 73,553 distance-filtered rows
 with complete five-organ labels. Its hidden layers are shared across brain,
 spinal cord, liver, heart, and kidney; targets are standardized from training
 data only. It stopped after 31 iterations and improved Pearson correlation on
-the untouched Animal 4 test for every endpoint:
+the held-out Animal 4 test for every endpoint:
 
-| Endpoint | Best single-task baseline `r` | Shared MLP `r` | Change |
+| Endpoint | Best single-task `r` | Shared MLP `r` | Five-model ensemble `r` |
 | --- | ---: | ---: | ---: |
-| Brain | 0.445 | **0.527** | +0.082 |
-| Spinal cord | 0.476 | **0.546** | +0.070 |
-| Liver | 0.715 | **0.778** | +0.063 |
-| Heart | 0.359 | **0.439** | +0.080 |
-| Kidney | 0.561 | **0.622** | +0.061 |
+| Brain | 0.445 | 0.527 | **0.554** |
+| Spinal cord | 0.476 | 0.546 | **0.571** |
+| Liver | 0.715 | 0.778 | **0.785** |
+| Heart | 0.359 | 0.439 | **0.458** |
+| Kidney | 0.561 | 0.622 | **0.635** |
 
-This passes the multi-task comparison gate, but does not yet pass the
-screening gate. Candidate generation, calibrated packaging uncertainty,
-weight sensitivity, and diversity selection remain separate work.
+The five-model ensemble is the model used for virtual-screen predictions.
+
+### Virtual-screen checkpoint
+
+The deterministic screen sampled 1,000,000 legal, unique 7-mers outside the
+observed 100K library. A distance-2 calibration split set the one-sided 95%
+packaging lower-bound offset. Of the generated pool, 6,016 passed the hard
+packaging gate and 169 were strictly Pareto-optimal. The final 30 rows contain
+10 candidates per presentation group, all at training-distance lower bound
+`≥2`, with pairwise Hamming distance `≥3`, and all within the top 5% of eligible
+candidates under the default display score. Six of the 30 are on the strict
+Pareto front; the other 24 are explicitly marked high-scoring, diverse
+near-front hypotheses.
+
+![Virtual-screen summary](docs/assets/virtual_screen_summary.png)
 
 Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv),
 [run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv), and
 [strict baselines](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv), and
-[multi-task results](docs/audit_data/fit4function_multitask_metrics.csv).
+[single multi-task results](docs/audit_data/fit4function_multitask_metrics.csv),
+[ensemble results](docs/audit_data/fit4function_multitask_ensemble_metrics.csv),
+[Pareto table](docs/audit_data/virtual_screen_pareto.csv), and
+[30-candidate shortlist](docs/audit_data/virtual_screen_shortlist.csv).
 
 ## Scientific boundary
 

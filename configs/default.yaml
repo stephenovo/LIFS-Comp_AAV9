@@ -23,8 +23,13 @@ screening:
     cns: 0.45
     liver: 0.35
     off_target: 0.20
-  epsilon: 1.0e-6
   weight_sensitivity_delta: 0.10
+  weight_sensitivity_scenarios: 27
+  virtual_pool_size: 1000000
+  packaging_lower_bound_coverage: 0.95
+  shortlist_quality_quantile: 0.95
+  minimum_training_hamming_distance: 2
+  minimum_shortlist_pairwise_hamming_distance: 3
   final_candidate_count:
     minimum: 24
     maximum: 30

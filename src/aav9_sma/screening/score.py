@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 from aav9_sma.screening.pareto import pareto_mask
@@ -42,7 +43,10 @@ def rank_candidates(
         - liver_weight * ranked["f_liv"]
         - off_target_weight * ranked["f_off"]
     )
-    ranked["specificity_index"] = ranked["f_cns"] / (ranked["f_liv"] + epsilon)
+    ranked["log2_specificity"] = ranked["f_cns"] - ranked["f_liv"]
+    ranked["specificity_index"] = np.exp2(
+        ranked["log2_specificity"].clip(lower=-30, upper=30)
+    )
     ranked["is_pareto"] = False
 
     eligible = ranked["passes_packaging_gate"]
@@ -56,4 +60,3 @@ def rank_candidates(
         ascending=[False, False, False],
         kind="stable",
     ).reset_index(drop=True)
-

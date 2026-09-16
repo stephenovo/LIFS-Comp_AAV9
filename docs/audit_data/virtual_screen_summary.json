@@ -1,0 +1,50 @@
+{
+  "random_state": 42,
+  "pool_size": 1000000,
+  "sequence_space_size": 1280000000,
+  "observed_sequences_excluded": 100000,
+  "packaging": {
+    "model": "ridge",
+    "split": "distance-2-sequence-calibration",
+    "train_rows": 78219,
+    "calibration_rows": 19883,
+    "pearson_r": 0.65442989355086,
+    "r2": 0.4281143011994486,
+    "mae": 1.0470980905244789,
+    "lower_bound_target_coverage": 0.95,
+    "lower_bound_empirical_coverage": 0.9500075441331791,
+    "lower_bound_offset": 2.5503787498840333,
+    "packaging_threshold": -0.769888015,
+    "threshold_definition": "median observed Production2"
+  },
+  "organ_ensemble": {
+    "architecture": "shared_mlp_64_32",
+    "members": 5,
+    "train_rows": 92725,
+    "iterations": [
+      33,
+      30,
+      29,
+      37,
+      27
+    ]
+  },
+  "human_liver_warning_threshold": -0.3450046877930836,
+  "weight_scenarios": 27,
+  "packaging_gate_passed": 6016,
+  "pareto_candidates": 169,
+  "distance_two_or_more": 989682,
+  "shortlist_rows": 30,
+  "shortlist_groups": {
+    "balanced": 10,
+    "cns_favoring": 10,
+    "low_liver": 10
+  },
+  "immune_annotation": "not_scored_no_validated_7mer_neutralization_table",
+  "claim_boundary": "Computational mouse-organ biodistribution hypotheses; not human motor-neuron specificity, reduced hepatotoxicity, or therapeutic efficacy.",
+  "sequence_space_fraction": 0.00078125,
+  "shortlist_pareto_rows": 6,
+  "shortlist_human_liver_warnings": 1,
+  "shortlist_quality_cutoff": -0.667253792285919,
+  "shortlist_minimum_pairwise_hamming": 3
+}

@@ -69,3 +69,29 @@ denominator sensitivity analysis, not used in the final five-organ table.
 
 Do not rename an unclear source column into a canonical biological claim. Record unresolved fields
 in the audit report until their meanings are confirmed.
+
+## Virtual-screen output columns
+
+| Column | Type | Meaning |
+|---|---|---|
+| `AA` | string | Generated legal 7-mer, absent from the observed 100K library |
+| `pred_pack` | float | Final Ridge packaging prediction |
+| `pred_pack_lcb` | float | One-sided lower bound using the distance-2 calibration residual |
+| `passes_packaging_gate` | boolean | Whether `pred_pack_lcb` reaches the observed `Production2` median |
+| `pred_*_mouse` | float | Five-member shared-MLP ensemble mean for one mouse organ |
+| `uncertainty_*_mouse` | float | Ensemble-member standard deviation; model disagreement only |
+| `f_cns` | float | Mean brain and spinal-cord prediction |
+| `f_liv` | float | Mouse-liver prediction |
+| `f_off` | float | Mean heart and kidney prediction |
+| `display_score` | float | `0.45*f_cns - 0.35*f_liv - 0.20*f_off` |
+| `log2_specificity` | float | `f_cns - f_liv` |
+| `specificity_index` | float | `2**(f_cns - f_liv)`; a prediction ratio on the enrichment scale |
+| `is_pareto` | boolean | Non-dominated across higher CNS, lower liver, and lower off-target predictions |
+| `training_distance_lower_bound` | integer | `0`, `1`, or `2`; `2` means Hamming distance at least two |
+| `weight_stability_top_fraction` | float | Fraction of 27 weight settings where the row remains in the eligible top 5% |
+| `human_liver_warning` | boolean | Human liver-cell annotation above the finite-label training 75th percentile |
+| `selection_group` | string | `cns_favoring`, `low_liver`, or `balanced` for shortlisted rows |
+
+`pred_pack_lcb` is a computational calibration bound, not a guarantee of physical packaging.
+`uncertainty_*` is not a calibrated confidence interval. The complete interpretation and claim
+boundaries are in [`VIRTUAL_SCREEN_REPORT.md`](VIRTUAL_SCREEN_REPORT.md).

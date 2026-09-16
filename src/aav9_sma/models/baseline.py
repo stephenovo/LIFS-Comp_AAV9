@@ -8,6 +8,7 @@ import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge
+from sklearn.neural_network import MLPRegressor
 
 
 def build_regressor(name: str, random_state: int = 42) -> RegressorMixin:
@@ -22,6 +23,26 @@ def build_regressor(name: str, random_state: int = 42) -> RegressorMixin:
             random_state=random_state,
         )
     raise ValueError(f"Unknown baseline model: {name}")
+
+
+def build_shared_mlp(
+    random_state: int = 42,
+    hidden_layer_sizes: tuple[int, ...] = (64, 32),
+    max_iter: int = 80,
+) -> MLPRegressor:
+    """Create a shared-encoder, multi-output MLP for the five organ tasks."""
+    return MLPRegressor(
+        hidden_layer_sizes=hidden_layer_sizes,
+        activation="relu",
+        solver="adam",
+        batch_size=512,
+        learning_rate_init=1.0e-3,
+        early_stopping=True,
+        validation_fraction=0.1,
+        n_iter_no_change=8,
+        max_iter=max_iter,
+        random_state=random_state,
+    )
 
 
 def fit_task_models(
@@ -48,4 +69,3 @@ def predict_task_models(
 ) -> dict[str, np.ndarray]:
     """Predict all independently fitted task models."""
     return {task_name: model.predict(features) for task_name, model in models.items()}
-

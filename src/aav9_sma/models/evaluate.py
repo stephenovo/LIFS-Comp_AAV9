@@ -10,9 +10,10 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from aav9_sma.features.encode import one_hot_7mer
-from aav9_sma.models.baseline import build_regressor
+from aav9_sma.models.baseline import build_regressor, build_shared_mlp
 
 MULTIORGAN_ENDPOINTS = ("brain", "spinal_cord", "liver", "heart", "kidney")
 
@@ -219,4 +220,94 @@ def benchmark_multiorgan_animal_holdout(
                     ),
                 }
             )
+    return rows
+
+
+def benchmark_multitask_animal_holdout(
+    reconstructed_csv: str | Path,
+    endpoints: tuple[str, ...] = MULTIORGAN_ENDPOINTS,
+    denominator_mode: str = "whitelist",
+    virus_round: int = 2,
+    random_state: int = 42,
+    test_fraction: float = 0.2,
+    max_iter: int = 80,
+) -> list[dict[str, object]]:
+    """Evaluate one shared multi-output MLP on the strict animal-4 holdout.
+
+    The network shares both hidden layers across organs and has one output per
+    endpoint. Targets are standardized using training rows only so high-range
+    organs do not dominate optimization. Since scikit-learn's MLP requires a
+    complete target matrix, training uses rows observed for every endpoint.
+    """
+    frame = pd.read_csv(reconstructed_csv)
+    peptides = frame["AA"].tolist()
+    train_split, test_split = sequence_distance_split(
+        peptides,
+        test_fraction=test_fraction,
+        random_state=random_state,
+        minimum_hamming_distance=2,
+    )
+    features = one_hot_7mer(peptides)
+    train_columns = [
+        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3"
+        f"__over__virus_prod{virus_round}"
+        for endpoint in endpoints
+    ]
+    animal4_columns = [
+        f"log2enr_{denominator_mode}__{endpoint}_a4__over__virus_prod{virus_round}"
+        for endpoint in endpoints
+    ]
+    missing = [column for column in train_columns + animal4_columns if column not in frame]
+    if missing:
+        raise ValueError(f"Missing reconstructed columns: {missing}")
+
+    train_targets = frame[train_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+    animal4_targets = (
+        frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+    )
+    complete_train_rows = train_split & np.isfinite(train_targets).all(axis=1)
+    if complete_train_rows.sum() < 2:
+        raise ValueError("Fewer than two complete multi-organ training rows")
+
+    target_scaler = StandardScaler()
+    scaled_targets = target_scaler.fit_transform(train_targets[complete_train_rows])
+    model = build_shared_mlp(random_state=random_state, max_iter=max_iter)
+    model.fit(features[complete_train_rows], scaled_targets)
+    predictions = target_scaler.inverse_transform(model.predict(features))
+
+    rows: list[dict[str, object]] = []
+    for endpoint_index, endpoint in enumerate(endpoints):
+        test_rows = (
+            test_split
+            & np.isfinite(train_targets[:, endpoint_index])
+            & np.isfinite(animal4_targets[:, endpoint_index])
+        )
+        held_out_targets = animal4_targets[test_rows, endpoint_index]
+        endpoint_predictions = predictions[test_rows, endpoint_index]
+        rows.append(
+            {
+                "task": endpoint,
+                "model": "shared_mlp_64_32",
+                "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+                "random_state": random_state,
+                "train_rows": int(complete_train_rows.sum()),
+                "test_rows": int(test_rows.sum()),
+                "iterations": int(model.n_iter_),
+                "model_vs_animal4_pearson_r": _pearson(
+                    held_out_targets, endpoint_predictions
+                ),
+                "model_vs_animal4_r2": float(
+                    r2_score(held_out_targets, endpoint_predictions)
+                ),
+                "model_vs_animal4_mae": float(
+                    mean_absolute_error(held_out_targets, endpoint_predictions)
+                ),
+                "animal_mean_vs_animal4_pearson_r": _pearson(
+                    held_out_targets, train_targets[test_rows, endpoint_index]
+                ),
+                "model_vs_animal_mean_pearson_r": _pearson(
+                    train_targets[test_rows, endpoint_index], endpoint_predictions
+                ),
+            }
+        )
     return rows

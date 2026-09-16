@@ -168,7 +168,7 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 - [x] Liver + virus-reference reconstruction validated against the public label (`r = 0.978`)
 - [x] 60 organ runs + 3 validated prod2 reference runs reconstructed into sequence-linked labels
 - [x] Distance-separated sequence holdout with animal 4 as an untouched biological test
-- [ ] Multi-task model comparison
+- [x] Shared multi-task MLP comparison on the untouched Animal 4 test
 - [ ] Candidate generation and final shortlist
 
 ### Reconstructed-data checkpoint
@@ -187,9 +187,30 @@ neighbors of test sequences from training, and evaluates only against animal 4.
 | Heart | 98,309 | 0.598 | 0.330 | **0.359** |
 | Kidney | 98,332 | 0.730 | **0.561** | 0.539 |
 
+### Multi-task checkpoint
+
+A shared `64→32` MLP was trained once on the 73,553 distance-filtered rows
+with complete five-organ labels. Its hidden layers are shared across brain,
+spinal cord, liver, heart, and kidney; targets are standardized from training
+data only. It stopped after 31 iterations and improved Pearson correlation on
+the untouched Animal 4 test for every endpoint:
+
+| Endpoint | Best single-task baseline `r` | Shared MLP `r` | Change |
+| --- | ---: | ---: | ---: |
+| Brain | 0.445 | **0.527** | +0.082 |
+| Spinal cord | 0.476 | **0.546** | +0.070 |
+| Liver | 0.715 | **0.778** | +0.063 |
+| Heart | 0.359 | **0.439** | +0.080 |
+| Kidney | 0.561 | **0.622** | +0.061 |
+
+This passes the multi-task comparison gate, but does not yet pass the
+screening gate. Candidate generation, calibrated packaging uncertainty,
+weight sensitivity, and diversity selection remain separate work.
+
 Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv),
 [run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv), and
-[strict baselines](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv).
+[strict baselines](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv), and
+[multi-task results](docs/audit_data/fit4function_multitask_metrics.csv).
 
 ## Scientific boundary
 

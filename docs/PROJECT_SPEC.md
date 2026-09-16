@@ -54,4 +54,5 @@ reported using both a presentation score and a Pareto analysis. The final set sh
 
 Current checkpoint: the data gate passed through public-Liver reconstruction (`r = 0.9778`), and
 the baseline gate passed for all five organ heads under a distance-separated sequence holdout with
-animal 4 untouched. Multi-task model comparison and screening gates remain open.
+animal 4 untouched. A shared multi-task MLP then improved Animal 4 Pearson `r` over the best
+single-task baseline by `0.061–0.082` for all five endpoints. The screening gate remains open.

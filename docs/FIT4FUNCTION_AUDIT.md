@@ -374,8 +374,12 @@ Animal 4 模型测试分数；prod1 也因此不再需要下载。
 | 严格测试性能 | 在 Animal 4 上明显高于无信号水平 | **通过：五头 r=0.330–0.715** |
 | 数据泄漏 | 测试 7-mer 及其一步突变邻居不进训练；Animal 4 不参与训练 | **通过** |
 
-本轮所有数据门槛均已通过，因此可以进入多任务模型比较。这里的“通过”仍只说明
-重建标签可用于计算研究，不改变小鼠早期器官 DNA 分布并非人运动神经元转导的边界。
+本轮所有数据门槛均已通过。随后训练的共享 `64→32` 多输出 MLP 在完全相同的
+序列距离隔离、Animal 4 盲测上，相比各终点最好的 Ridge/RF，将五个终点 Pearson
+`r` 分别从 `0.445/0.476/0.715/0.359/0.561` 提高到
+`0.527/0.546/0.778/0.439/0.622`。因此多任务比较门也已通过，可以进入虚拟筛选。
+这里的“通过”仍只说明重建标签可用于计算研究，不改变小鼠早期器官 DNA 分布并非
+人运动神经元转导的边界。
 
 ## 11. 四周项目应如何调整
 
@@ -449,6 +453,11 @@ aav9-sma benchmark-multiorgan \
   data/processed/fit4function_multiorgan_reconstructed.csv.gz \
   --models ridge random_forest \
   --output docs/audit_data/fit4function_multiorgan_baseline_metrics.csv
+
+# 共享多任务 MLP，同一序列距离隔离 + Animal 4 生物学留出
+aav9-sma benchmark-multitask \
+  data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --output docs/audit_data/fit4function_multitask_metrics.csv
 ```
 
 论文参数 Bowtie2 路径、每 run 计数表、RPM/重复聚合、prod2 分母验证、逐动物标签和
@@ -457,7 +466,7 @@ SRA Open Data 下载、执行 `vdb-validate`、转换 FASTQ、计数并只在成
 
 ## 13. 一句话给队友或评委
 
-> Fit4Function 的公开处理表隐藏了多器官标签与 7-mer 的映射；我们从 SRA 原始 reads 重建了 60 个器官 runs，以公开 Liver 标签完成外部验收，并在序列距离隔离和 Animal 4 生物学留出下证明 5 个组织头均有可学习信号。项目现在可以从“数据是否可用”进入“哪些模型和候选在严格测试下最稳健”的阶段。
+> Fit4Function 的公开处理表隐藏了多器官标签与 7-mer 的映射；我们从 SRA 原始 reads 重建了 60 个器官 runs，以公开 Liver 标签完成外部验收，并在序列距离隔离和 Animal 4 生物学留出下证明 5 个组织头均有可学习信号。共享多任务 MLP 又在五个终点上全部超过单任务基线，项目现在可以正式进入带包装门槛、不确定性和多样性约束的虚拟筛选。
 
 ## Sources
 

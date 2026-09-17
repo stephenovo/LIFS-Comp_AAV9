@@ -1,0 +1,1 @@
+study_id,stage,sample_id,blind_id,production_batch,biological_replicate,technical_replicate,assay,cell_type_or_tissue,timepoint,dose_value,dose_unit,raw_value,raw_unit,normalized_value,normalized_unit,normalization_reference,qc_status,included_in_primary_analysis,exclusion_reason,operator_blinded,notes

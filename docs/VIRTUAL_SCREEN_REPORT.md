@@ -139,3 +139,10 @@ G/K/E、低疏水的窄序列区域。它可能是真实设计信号，也可能
 当前 30 条应被称为“优先验证清单”。最小后续验证顺序是：包装/产量、细胞转导、
 小鼠多器官分布、脊髓与运动神经元层面的组织学验证、安全性与免疫相关评估。
 只有通过这些实验后，才可以讨论是否适合作为 SMA 递送载体方向继续开发。
+
+具体的候选分层、同背景亲本与方向性对照、盲法、独立生产批次、细胞和动物终点、
+预注册统计方案及 go/hold/stop 规则，见[中文实验验证 SOP](EXPERIMENTAL_VALIDATION_SOP.zh-CN.md)
+和[英文实验验证 SOP](EXPERIMENTAL_VALIDATION_SOP.md)。机器可读候选面板见
+[`experimental_validation_panel.csv`](audit_data/experimental_validation_panel.csv)，结果录入和
+阶段决策模板分别见 [`wet_lab_results_template.csv`](audit_data/wet_lab_results_template.csv)
+与 [`wet_lab_decision_log.csv`](audit_data/wet_lab_decision_log.csv)。

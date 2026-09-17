@@ -12,6 +12,8 @@
     <a href="docs/FIT4FUNCTION_AUDIT.md">Fit4Function 审计</a>
     ·
     <a href="docs/THREE_ROUTE_CONSENSUS.md">三路线共识与差异</a>
+    ·
+    <a href="docs/EXPERIMENTAL_VALIDATION_SOP.zh-CN.md">实验验证 SOP</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
@@ -178,6 +180,7 @@ aav9-sma screen-virtual \
 - [x] 四组经验对照的漏斗方向性审计
 - [x] 100 万序列虚拟筛选和 30 条计算候选
 - [x] 严格保守候选子集与 NAb 位点背景注释
+- [x] 中英文实验验证 SOP、预注册模板、候选面板和数据录入工作簿
 
 ### 多器官数据阶段结果
 
@@ -230,6 +233,29 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 [30 条候选清单](docs/audit_data/virtual_screen_shortlist.csv) 和
 [筛选摘要](docs/audit_data/virtual_screen_summary.json)。模型挑战者、晋级结论和对照漏斗
 审计见 [三路线共识与差异](docs/THREE_ROUTE_CONSENSUS.md)。
+
+### 实验验证交接包
+
+当前计算候选已经接上预注册的实验决策路径。[中文 SOP](docs/EXPERIMENTAL_VALIDATION_SOP.zh-CN.md)
+和[英文 SOP](docs/EXPERIMENTAL_VALIDATION_SOP.md)明确规定了同背景对照、盲法、独立生产批次、
+包装质控、运动神经元与肝细胞实验、全身给药小鼠分布、SMA 后续验证、中和抗体实验、统计方法，
+以及 go/hold/stop 规则。具体培养、转染、纯化和动物操作必须由具备资质的 AAV 平台在机构审批和
+已验证 SOP 下执行。
+
+交接材料包括：[37 项候选/对照面板](docs/audit_data/experimental_validation_panel.csv)、
+[来源校验清单](docs/audit_data/experimental_validation_manifest.json)、
+[长表型结果录入模板](docs/audit_data/wet_lab_results_template.csv)、
+[阶段决策日志](docs/audit_data/wet_lab_decision_log.csv)、
+[中英文预注册模板](docs/WET_LAB_PREREGISTRATION_TEMPLATE.md)，以及
+[排版后的 Excel 工作簿](docs/audit_data/experimental_validation_handoff.xlsx)。
+候选表和空白模板可用下列命令重新生成：
+
+```bash
+PYTHONPATH=src python scripts/build_experimental_handoff.py \
+  --shortlist docs/audit_data/virtual_screen_shortlist.csv \
+  --controls docs/audit_data/funnel_control_audit.csv \
+  --output-dir docs/audit_data
+```
 
 ## 科学边界
 

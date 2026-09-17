@@ -51,6 +51,9 @@ reported using both a presentation score and a Pareto analysis. The final set sh
 2. **Baseline gate:** held-out predictions outperform naive baselines without sequence leakage.
 3. **Screening gate:** candidates pass packaging, distance, uncertainty, and diversity checks.
 4. **Communication gate:** every figure and claim is consistent with the available evidence.
+5. **Experimental gate:** a candidate must pass independent-batch production QC, retain target
+   signal, improve the pre-registered CNS:liver endpoint, and show no worse predefined safety
+   finding before it can be called an experimentally supported lead.
 
 Current checkpoint: the data gate passed through public-Liver reconstruction (`r = 0.9778`), and
 the baseline gate passed for all five organ heads under a distance-separated sequence holdout with
@@ -61,4 +64,8 @@ tested under the same split and were not promoted because neither improved the f
 A one-million-sequence screen produced 6,016 packaging-eligible variants, 169 strict Pareto
 candidates, eight strict conservative candidates, and a 30-row diverse computational shortlist
 containing seven of the conservative candidates. The computational screening gate is complete;
-experimental validation remains open.
+experimental validation remains open. The validation question, controls, stages, data schema, and
+default go/hold/stop rules are now frozen in the bilingual
+[experimental-validation SOP](EXPERIMENTAL_VALIDATION_SOP.md) and its
+[Chinese version](EXPERIMENTAL_VALIDATION_SOP.zh-CN.md). Those documents close the study-design
+loop but do not count as experimental evidence.

@@ -12,6 +12,8 @@
     <a href="docs/FIT4FUNCTION_AUDIT.md">Fit4Function audit</a>
     ·
     <a href="docs/THREE_ROUTE_CONSENSUS.md">Three-route comparison</a>
+    ·
+    <a href="docs/EXPERIMENTAL_VALIDATION_SOP.md">Experimental validation SOP</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
@@ -191,6 +193,7 @@ aav9-sma screen-virtual \
 - [x] Empirical positive/negative control audit through the funnel
 - [x] One-million-sequence virtual screen and 30-candidate computational shortlist
 - [x] Strict conservative subset and site-level NAb context annotation
+- [x] Bilingual experimental-validation SOP, preregistration, candidate panel, and data-entry workbook
 
 ### Reconstructed-data checkpoint
 
@@ -254,6 +257,33 @@ Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan
 [30-candidate shortlist](docs/audit_data/virtual_screen_shortlist.csv). The
 [three-route comparison](docs/THREE_ROUTE_CONSENSUS.md) records challenger
 results, control behavior, adopted consensus, and route-specific differences.
+
+### Experimental-validation handoff
+
+The computational shortlist is now connected to a pre-registered experimental
+decision path. The [English SOP](docs/EXPERIMENTAL_VALIDATION_SOP.md) and
+[Chinese SOP](docs/EXPERIMENTAL_VALIDATION_SOP.zh-CN.md) specify matched
+controls, blinding, independent production batches, packaging QC, motor-neuron
+and liver-cell assays, systemic mouse biodistribution, SMA follow-up, neutralizing-
+antibody testing, statistics, and explicit go/hold/stop rules. Laboratory
+procedures must be carried out by a qualified AAV core under its validated SOPs
+and institutional approvals.
+
+The handoff package includes the
+[37-item candidate/control panel](docs/audit_data/experimental_validation_panel.csv),
+[source-checksum manifest](docs/audit_data/experimental_validation_manifest.json),
+[long-format result schema](docs/audit_data/wet_lab_results_template.csv),
+[decision log](docs/audit_data/wet_lab_decision_log.csv),
+[preregistration template](docs/WET_LAB_PREREGISTRATION_TEMPLATE.md), and a
+[formatted Excel workbook](docs/audit_data/experimental_validation_handoff.xlsx).
+The panel and empty templates can be regenerated with:
+
+```bash
+PYTHONPATH=src python scripts/build_experimental_handoff.py \
+  --shortlist docs/audit_data/virtual_screen_shortlist.csv \
+  --controls docs/audit_data/funnel_control_audit.csv \
+  --output-dir docs/audit_data
+```
 
 ## Scientific boundary
 

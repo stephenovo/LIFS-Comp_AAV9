@@ -1,0 +1,47 @@
+{
+  "control_role": "In-sample directionality and column-wiring check; not independent model validation.",
+  "per_group": 25,
+  "packaging_threshold": -0.769888015,
+  "groups": {
+    "cns_high_liver_low": {
+      "rows": 25,
+      "packaging_point_gate_pass_rate": 0.52,
+      "packaging_lower_bound_gate_pass_rate": 0.0,
+      "median_pred_pack_lcb": -3.317692756652832,
+      "median_pred_cns": 0.24830226600170135,
+      "median_pred_liver": -3.319880962371826,
+      "median_log2_specificity": 3.568183183670044,
+      "median_display_score": 1.409783959388733
+    },
+    "high_packaging": {
+      "rows": 25,
+      "packaging_point_gate_pass_rate": 0.88,
+      "packaging_lower_bound_gate_pass_rate": 0.04,
+      "median_pred_pack_lcb": -1.9264850616455078,
+      "median_pred_cns": 0.034168846905231476,
+      "median_pred_liver": 0.43104439973831177,
+      "median_log2_specificity": -0.3389243185520172,
+      "median_display_score": -0.14228281378746033
+    },
+    "liver_high_cns_low": {
+      "rows": 25,
+      "packaging_point_gate_pass_rate": 1.0,
+      "packaging_lower_bound_gate_pass_rate": 0.16,
+      "median_pred_pack_lcb": -2.0439844131469727,
+      "median_pred_cns": -1.4043302536010742,
+      "median_pred_liver": 0.6844543218612671,
+      "median_log2_specificity": -2.0097053050994873,
+      "median_display_score": -0.7107375860214233
+    },
+    "low_packaging": {
+      "rows": 25,
+      "packaging_point_gate_pass_rate": 0.04,
+      "packaging_lower_bound_gate_pass_rate": 0.0,
+      "median_pred_pack_lcb": -4.7545061111450195,
+      "median_pred_cns": 0.10385896265506744,
+      "median_pred_liver": -1.58890962600708,
+      "median_log2_specificity": 1.4229823350906372,
+      "median_display_score": 0.5340480804443359
+    }
+  }
+}

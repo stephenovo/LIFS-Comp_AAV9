@@ -75,4 +75,3 @@ def audit_dataframe(frame: pd.DataFrame) -> AuditResult:
 def audit_csv(path: str | Path) -> AuditResult:
     """Load a CSV file and return its canonical-schema audit."""
     return audit_dataframe(pd.read_csv(path))
-

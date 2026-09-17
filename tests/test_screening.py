@@ -4,6 +4,7 @@ import pandas as pd
 from aav9_sma.screening.pareto import pareto_mask
 from aav9_sma.screening.score import rank_candidates
 from aav9_sma.screening.virtual import (
+    add_conservative_annotations,
     add_weight_sensitivity,
     generate_candidate_peptides,
     select_diverse_shortlist,
@@ -28,9 +29,7 @@ def test_packaging_gate_and_ranking_fields() -> None:
 
     assert ranked.iloc[-1]["variant_id"] == "low_pack"
     assert not bool(ranked.iloc[-1]["passes_packaging_gate"])
-    assert {"f_cns", "f_liv", "f_off", "display_score", "specificity_index"} <= set(
-        ranked.columns
-    )
+    assert {"f_cns", "f_liv", "f_off", "display_score", "specificity_index"} <= set(ranked.columns)
     assert ranked.loc[ranked["variant_id"] == "good", "is_pareto"].item()
     assert ranked.loc[ranked["variant_id"] == "low_liver", "is_pareto"].item()
     good = ranked.loc[ranked["variant_id"] == "good"].iloc[0]
@@ -44,16 +43,13 @@ def test_fast_three_dimensional_pareto_matches_brute_force() -> None:
     expected = np.ones(len(values), dtype=bool)
     for row in range(len(values)):
         expected[row] = not np.any(
-            np.all(values >= values[row], axis=1)
-            & np.any(values > values[row], axis=1)
+            np.all(values >= values[row], axis=1) & np.any(values > values[row], axis=1)
         )
     np.testing.assert_array_equal(pareto_mask(values), expected)
 
 
 def test_generation_distance_and_diverse_shortlist() -> None:
-    generated = generate_candidate_peptides(
-        100, excluded={"AAAAAAA", "CAAAAAA"}, random_state=9
-    )
+    generated = generate_candidate_peptides(100, excluded={"AAAAAAA", "CAAAAAA"}, random_state=9)
     assert len(generated) == len(set(generated)) == 100
     assert not {"AAAAAAA", "CAAAAAA"}.intersection(generated)
     np.testing.assert_array_equal(
@@ -99,3 +95,26 @@ def test_weight_sensitivity_is_bounded() -> None:
     assert output["weight_stability_top_fraction"].between(0, 1).all()
     assert output["weight_mean_percentile"].between(0, 1).all()
     assert output.loc[2, "weight_stability_top_fraction"] == 0
+
+
+def test_strict_conservative_annotation_uses_training_medians() -> None:
+    ranked = pd.DataFrame(
+        {
+            "passes_packaging_gate": [True, True, False],
+            "pred_spinal_cord_mouse": [1.0, -1.0, 1.0],
+            "pred_liver_mouse": [-1.0, 1.0, -1.0],
+            "organ_uncertainty_mean": [0.1, 0.2, 0.05],
+        }
+    )
+    reconstructed = pd.DataFrame(
+        {
+            "log2enr_whitelist__spinal_cord_animals_1_3__over__virus_prod2": [-0.5, 0.5],
+            "log2enr_whitelist__liver_animals_1_3__over__virus_prod2": [-0.5, 0.5],
+        }
+    )
+
+    output, thresholds = add_conservative_annotations(ranked, reconstructed)
+
+    assert output["strict_conservative"].tolist() == [True, False, False]
+    assert thresholds["spinal_cord_training_median"] == 0.0
+    assert thresholds["liver_training_median"] == 0.0

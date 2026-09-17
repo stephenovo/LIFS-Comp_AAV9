@@ -12,4 +12,3 @@ PRIMARY_LABEL_COLUMNS = (
     "heart_mouse",
     "kidney_mouse",
 )
-

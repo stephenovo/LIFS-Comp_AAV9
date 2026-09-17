@@ -56,6 +56,9 @@ Current checkpoint: the data gate passed through public-Liver reconstruction (`r
 the baseline gate passed for all five organ heads under a distance-separated sequence holdout with
 animal 4 held out from training. A shared multi-task MLP then improved Animal 4 Pearson `r` over the best
 single-task baseline by `0.061–0.082` for all five endpoints; a five-model ensemble improved it by
-`0.071–0.109`. A one-million-sequence screen then produced 6,016 packaging-eligible variants,
-169 strict Pareto candidates, and a 30-row diverse computational shortlist. The computational
-screening gate is complete; experimental validation remains open.
+`0.071–0.109`. A masked-loss PyTorch model and a LightGBM/physicochemical challenger were then
+tested under the same split and were not promoted because neither improved the five-endpoint mean.
+A one-million-sequence screen produced 6,016 packaging-eligible variants, 169 strict Pareto
+candidates, eight strict conservative candidates, and a 30-row diverse computational shortlist
+containing seven of the conservative candidates. The computational screening gate is complete;
+experimental validation remains open.

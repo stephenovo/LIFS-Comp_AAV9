@@ -68,8 +68,7 @@ def training_distance_lower_bound(
             distances[row] = 0
             continue
         if any(
-            peptide[:position] + "*" + peptide[position + 1 :]
-            in one_wildcard_signatures
+            peptide[:position] + "*" + peptide[position + 1 :] in one_wildcard_signatures
             for position in range(PEPTIDE_LENGTH)
         ):
             distances[row] = 1
@@ -86,22 +85,16 @@ def annotate_sequence_liabilities(peptides: Collection[str]) -> pd.DataFrame:
         {
             "max_homopolymer_run": [longest_run(peptide) for peptide in peptides],
             "hydrophobic_fraction": [
-                sum(residue in HYDROPHOBIC_RESIDUES for residue in peptide)
-                / PEPTIDE_LENGTH
+                sum(residue in HYDROPHOBIC_RESIDUES for residue in peptide) / PEPTIDE_LENGTH
                 for peptide in peptides
             ],
             "net_charge_proxy": [
-                peptide.count("K")
-                + peptide.count("R")
-                - peptide.count("D")
-                - peptide.count("E")
+                peptide.count("K") + peptide.count("R") - peptide.count("D") - peptide.count("E")
                 for peptide in peptides
             ],
             "cysteine_count": [peptide.count("C") for peptide in peptides],
             "proline_count": [peptide.count("P") for peptide in peptides],
-            "has_n_linked_motif": [
-                bool(re.search(r"N[^P][ST]", peptide)) for peptide in peptides
-            ],
+            "has_n_linked_motif": [bool(re.search(r"N[^P][ST]", peptide)) for peptide in peptides],
         }
     )
 
@@ -140,9 +133,7 @@ def fit_calibrated_packaging_model(
         "r2": float(r2_score(targets[calibration_rows], calibration_predictions)),
         "mae": float(mean_absolute_error(targets[calibration_rows], calibration_predictions)),
         "lower_bound_target_coverage": coverage,
-        "lower_bound_empirical_coverage": float(
-            np.mean(targets[calibration_rows] >= lower_bounds)
-        ),
+        "lower_bound_empirical_coverage": float(np.mean(targets[calibration_rows] >= lower_bounds)),
         "lower_bound_offset": quantile_offset,
         "packaging_threshold": threshold,
         "threshold_definition": "median observed Production2",
@@ -244,6 +235,42 @@ def add_weight_sensitivity(
     return output
 
 
+def add_conservative_annotations(
+    ranked: pd.DataFrame,
+    reconstructed: pd.DataFrame,
+) -> tuple[pd.DataFrame, dict[str, float]]:
+    """Mark a strict, predeclared conservative subgroup without reranking.
+
+    This is an interpretation aid rather than a fourth selection objective.
+    Thresholds come from animals 1-3 training labels; uncertainty is compared
+    only within candidates that passed the packaging gate.
+    """
+    spinal_column = "log2enr_whitelist__spinal_cord_animals_1_3__over__virus_prod2"
+    liver_column = "log2enr_whitelist__liver_animals_1_3__over__virus_prod2"
+    missing = [column for column in (spinal_column, liver_column) if column not in reconstructed]
+    if missing:
+        raise ValueError(f"Missing conservative-subgroup columns: {missing}")
+    spinal_threshold = float(pd.to_numeric(reconstructed[spinal_column], errors="coerce").median())
+    liver_threshold = float(pd.to_numeric(reconstructed[liver_column], errors="coerce").median())
+    eligible_uncertainty = ranked.loc[ranked["passes_packaging_gate"], "organ_uncertainty_mean"]
+    uncertainty_threshold = float(eligible_uncertainty.median())
+    output = ranked.copy()
+    output["passes_cns_median"] = output["pred_spinal_cord_mouse"] >= spinal_threshold
+    output["passes_low_liver_median"] = output["pred_liver_mouse"] <= liver_threshold
+    output["passes_low_uncertainty"] = output["organ_uncertainty_mean"] <= uncertainty_threshold
+    output["strict_conservative"] = (
+        output["passes_packaging_gate"]
+        & output["passes_cns_median"]
+        & output["passes_low_liver_median"]
+        & output["passes_low_uncertainty"]
+    )
+    return output, {
+        "spinal_cord_training_median": spinal_threshold,
+        "liver_training_median": liver_threshold,
+        "eligible_uncertainty_median": uncertainty_threshold,
+    }
+
+
 def hamming_distance(left: str, right: str) -> int:
     return sum(a != b for a, b in zip(left, right, strict=True))
 
@@ -259,8 +286,7 @@ def select_diverse_shortlist(
     if missing:
         raise ValueError(f"Missing shortlist columns: {sorted(missing)}")
     eligible = ranked.loc[
-        ranked["passes_packaging_gate"]
-        & ranked["training_distance_lower_bound"].ge(2)
+        ranked["passes_packaging_gate"] & ranked["training_distance_lower_bound"].ge(2)
     ].copy()
     if eligible.empty:
         return eligible.assign(
@@ -381,9 +407,7 @@ def run_virtual_screen(
     candidates["training_distance_lower_bound"] = training_distance_lower_bound(
         peptides, observed_sequences
     )
-    human_liver, human_liver_threshold = predict_human_liver_annotations(
-        screen, candidate_features
-    )
+    human_liver, human_liver_threshold = predict_human_liver_annotations(screen, candidate_features)
     candidates = pd.concat(
         [
             candidates,
@@ -394,7 +418,15 @@ def run_virtual_screen(
     )
     ranked = rank_candidates(candidates, packaging_threshold=packaging_threshold)
     ranked = add_weight_sensitivity(ranked)
+    ranked, conservative_thresholds = add_conservative_annotations(ranked, reconstructed)
     shortlist = select_diverse_shortlist(ranked)
+    shortlist["vr8_insertion_site"] = True
+    shortlist["immune_evidence_level"] = "site_context_only"
+    shortlist["immune_escape_supported"] = False
+    shortlist["immune_annotation"] = (
+        "Insertion is at the VR-VIII/588-589 site; no sequence-specific neutralization "
+        "measurement, so antibody escape is not inferred."
+    )
     residue_counts = Counter("".join(shortlist["AA"]))
     residue_total = sum(residue_counts.values())
     summary: dict[str, object] = {
@@ -418,6 +450,9 @@ def run_virtual_screen(
         "shortlist_groups": shortlist["selection_group"].value_counts().to_dict(),
         "shortlist_pareto_rows": int(shortlist["selected_from_pareto"].sum()),
         "shortlist_human_liver_warnings": int(shortlist["human_liver_warning"].sum()),
+        "strict_conservative_thresholds": conservative_thresholds,
+        "strict_conservative_pool_rows": int(ranked["strict_conservative"].sum()),
+        "shortlist_strict_conservative_rows": int(shortlist["strict_conservative"].sum()),
         "shortlist_quality_cutoff": float(shortlist["selection_quality_cutoff"].iloc[0]),
         "shortlist_minimum_pairwise_hamming": int(
             min(
@@ -429,16 +464,123 @@ def run_virtual_screen(
             else 0
         ),
         "shortlist_residue_frequencies": {
-            residue: residue_counts[residue] / residue_total
-            for residue in AMINO_ACIDS
+            residue: residue_counts[residue] / residue_total for residue in AMINO_ACIDS
         },
         "shortlist_missing_residues": [
             residue for residue in AMINO_ACIDS if residue_counts[residue] == 0
         ],
-        "immune_annotation": "not_scored_no_validated_7mer_neutralization_table",
+        "immune_annotation": (
+            "site_context_only_not_scored_no_validated_7mer_neutralization_table"
+        ),
         "claim_boundary": (
             "Computational mouse-organ biodistribution hypotheses; not human motor-neuron "
             "specificity, reduced hepatotoxicity, or therapeutic efficacy."
         ),
     }
     return ranked, shortlist, summary
+
+
+def run_control_audit(
+    screen: pd.DataFrame,
+    reconstructed: pd.DataFrame,
+    per_group: int = 25,
+    ensemble_size: int = 5,
+    random_state: int = 42,
+    max_iter: int = 80,
+) -> tuple[pd.DataFrame, dict[str, object]]:
+    """Send empirical positive/negative controls through the fitted funnel.
+
+    These controls are selected from the modeling data and are therefore an
+    in-sample directionality check, never an independent performance estimate.
+    """
+    if per_group < 1:
+        raise ValueError("per_group must be positive")
+    target_columns = {
+        endpoint: f"log2enr_whitelist__{endpoint}_animals_1_3__over__virus_prod2"
+        for endpoint in MULTIORGAN_ENDPOINTS
+    }
+    empirical = reconstructed[["AA", *target_columns.values()]].merge(
+        screen[["AA", "Production2"]], on="AA", how="inner", validate="one_to_one"
+    )
+    empirical["empirical_cns"] = empirical[
+        [target_columns["brain"], target_columns["spinal_cord"]]
+    ].mean(axis=1)
+    empirical["empirical_liver"] = pd.to_numeric(
+        empirical[target_columns["liver"]], errors="coerce"
+    )
+    empirical["Production2"] = pd.to_numeric(empirical["Production2"], errors="coerce")
+    empirical = empirical.replace([np.inf, -np.inf], np.nan).dropna(
+        subset=["Production2", "empirical_cns", "empirical_liver"]
+    )
+    packaging_median = float(empirical["Production2"].median())
+    packaging_eligible = empirical.loc[empirical["Production2"] >= packaging_median].copy()
+    groups = {
+        "low_packaging": empirical.nsmallest(per_group, "Production2"),
+        "high_packaging": empirical.nlargest(per_group, "Production2"),
+        "cns_high_liver_low": packaging_eligible.assign(
+            control_axis=lambda frame: frame["empirical_cns"] - frame["empirical_liver"]
+        ).nlargest(per_group, "control_axis"),
+        "liver_high_cns_low": packaging_eligible.assign(
+            control_axis=lambda frame: frame["empirical_liver"] - frame["empirical_cns"]
+        ).nlargest(per_group, "control_axis"),
+    }
+    selected = pd.concat(
+        [group.assign(control_group=name) for name, group in groups.items()],
+        ignore_index=True,
+    )
+    selected["variant_id"] = [f"CTRL_{index:03d}" for index in range(1, len(selected) + 1)]
+    features = one_hot_7mer(selected["AA"].tolist())
+    packaging_model, packaging_threshold, lower_bound_offset, _ = fit_calibrated_packaging_model(
+        screen, random_state=random_state
+    )
+    organ_mean, organ_std, _ = predict_organ_ensemble(
+        reconstructed,
+        features,
+        ensemble_size=ensemble_size,
+        random_state=random_state,
+        max_iter=max_iter,
+    )
+    predictions = pd.DataFrame(
+        {
+            "variant_id": selected["variant_id"].to_numpy(),
+            "AA": selected["AA"].to_numpy(),
+            "pred_pack": packaging_model.predict(features),
+            "pred_pack_lcb": packaging_model.predict(features) - lower_bound_offset,
+        }
+    )
+    for endpoint_index, endpoint in enumerate(MULTIORGAN_ENDPOINTS):
+        predictions[f"pred_{endpoint}_mouse"] = organ_mean[:, endpoint_index]
+        predictions[f"uncertainty_{endpoint}_mouse"] = organ_std[:, endpoint_index]
+    predictions["organ_uncertainty_mean"] = organ_std.mean(axis=1)
+    ranked = rank_candidates(predictions, packaging_threshold=packaging_threshold)
+    audit = selected.merge(
+        ranked.drop(columns="AA"), on="variant_id", how="left", validate="one_to_one"
+    )
+    audit["passes_packaging_point_gate"] = audit["pred_pack"] >= packaging_threshold
+    audit["audit_role"] = "in_sample_directionality_control"
+
+    group_summary = {}
+    for group_name, group in audit.groupby("control_group", sort=True):
+        group_summary[group_name] = {
+            "rows": len(group),
+            "packaging_point_gate_pass_rate": float(
+                group["passes_packaging_point_gate"].mean()
+            ),
+            "packaging_lower_bound_gate_pass_rate": float(
+                group["passes_packaging_gate"].mean()
+            ),
+            "median_pred_pack_lcb": float(group["pred_pack_lcb"].median()),
+            "median_pred_cns": float(group["f_cns"].median()),
+            "median_pred_liver": float(group["f_liv"].median()),
+            "median_log2_specificity": float(group["log2_specificity"].median()),
+            "median_display_score": float(group["display_score"].median()),
+        }
+    summary: dict[str, object] = {
+        "control_role": (
+            "In-sample directionality and column-wiring check; not independent model validation."
+        ),
+        "per_group": per_group,
+        "packaging_threshold": packaging_threshold,
+        "groups": group_summary,
+    }
+    return audit.sort_values(["control_group", "AA"]), summary

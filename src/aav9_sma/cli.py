@@ -23,6 +23,7 @@ from aav9_sma.data.sra import fetch_sra_manifest, summarize_sra_manifest
 from aav9_sma.models.evaluate import (
     MULTIORGAN_ENDPOINTS,
     SCREEN_TASKS,
+    benchmark_masked_multitask_animal_holdout,
     benchmark_multiorgan_animal_holdout,
     benchmark_multitask_animal_holdout,
     benchmark_multitask_ensemble_animal_holdout,
@@ -30,7 +31,7 @@ from aav9_sma.models.evaluate import (
     benchmark_screen_models,
 )
 from aav9_sma.screening.score import rank_candidates
-from aav9_sma.screening.virtual import run_virtual_screen
+from aav9_sma.screening.virtual import run_control_audit, run_virtual_screen
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -178,11 +179,20 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     multiorgan_benchmark_parser.add_argument("input", type=Path)
     multiorgan_benchmark_parser.add_argument(
-        "--models", nargs="+", choices=("ridge", "random_forest"), default=["ridge"]
+        "--models",
+        nargs="+",
+        choices=("ridge", "random_forest", "lightgbm"),
+        default=["ridge"],
     )
     multiorgan_benchmark_parser.add_argument(
         "--endpoints", nargs="+", default=list(MULTIORGAN_ENDPOINTS)
     )
+    multiorgan_benchmark_parser.add_argument(
+        "--feature-set",
+        choices=("one_hot", "one_hot_physchem"),
+        default="one_hot",
+    )
+    multiorgan_benchmark_parser.add_argument("--bootstrap-resamples", type=int, default=0)
     multiorgan_benchmark_parser.add_argument("--output", type=Path, required=True)
 
     multitask_benchmark_parser = subparsers.add_parser(
@@ -206,7 +216,21 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     ensemble_benchmark_parser.add_argument("--ensemble-size", type=int, default=5)
     ensemble_benchmark_parser.add_argument("--max-iter", type=int, default=80)
+    ensemble_benchmark_parser.add_argument("--bootstrap-resamples", type=int, default=0)
     ensemble_benchmark_parser.add_argument("--output", type=Path, required=True)
+
+    masked_benchmark_parser = subparsers.add_parser(
+        "benchmark-masked-multitask",
+        help="Evaluate the optional PyTorch multi-task MLP with missing-label masks",
+    )
+    masked_benchmark_parser.add_argument("input", type=Path)
+    masked_benchmark_parser.add_argument(
+        "--endpoints", nargs="+", default=list(MULTIORGAN_ENDPOINTS)
+    )
+    masked_benchmark_parser.add_argument("--max-epochs", type=int, default=80)
+    masked_benchmark_parser.add_argument("--bootstrap-resamples", type=int, default=500)
+    masked_benchmark_parser.add_argument("--device", choices=("cpu", "mps"), default="cpu")
+    masked_benchmark_parser.add_argument("--output", type=Path, required=True)
 
     rank_parser = subparsers.add_parser("rank-candidates", help="Rank model predictions")
     rank_parser.add_argument("input", type=Path)
@@ -226,6 +250,18 @@ def _build_parser() -> argparse.ArgumentParser:
     virtual_parser.add_argument("--output-pareto", type=Path)
     virtual_parser.add_argument("--output-shortlist", type=Path, required=True)
     virtual_parser.add_argument("--output-summary", type=Path, required=True)
+
+    control_parser = subparsers.add_parser(
+        "audit-controls",
+        help="Run empirical positive and negative controls through the fitted funnel",
+    )
+    control_parser.add_argument("screen_csv", type=Path)
+    control_parser.add_argument("reconstructed_csv", type=Path)
+    control_parser.add_argument("--per-group", type=int, default=25)
+    control_parser.add_argument("--ensemble-size", type=int, default=5)
+    control_parser.add_argument("--max-iter", type=int, default=80)
+    control_parser.add_argument("--output-controls", type=Path, required=True)
+    control_parser.add_argument("--output-summary", type=Path, required=True)
     return parser
 
 
@@ -284,9 +320,7 @@ def _filter_manifest(
         if "experiment_alias" not in filtered:
             raise ValueError("Manifest must contain experiment_alias for alias filtering")
         filtered = filtered.loc[
-            ~filtered["experiment_alias"].str.contains(
-                excluded_alias_pattern, regex=True, na=False
-            )
+            ~filtered["experiment_alias"].str.contains(excluded_alias_pattern, regex=True, na=False)
         ]
     return filtered.copy()
 
@@ -444,9 +478,7 @@ def main() -> None:
         ]
         selected = pd.concat([organ, virus], ignore_index=True)
         counts, qc = load_count_matrix(selected, args.counts_dir, args.summaries_dir)
-        reconstructed, metrics = reconstruct_multiorgan(
-            counts, qc, virus_round=args.virus_round
-        )
+        reconstructed, metrics = reconstruct_multiorgan(counts, qc, virus_round=args.virus_round)
         for path in (args.output_reconstruction, args.output_metrics, args.output_qc):
             path.parent.mkdir(parents=True, exist_ok=True)
         reconstructed.to_csv(args.output_reconstruction, index=False)
@@ -476,6 +508,8 @@ def main() -> None:
             args.input,
             model_names=tuple(args.models),
             endpoints=tuple(args.endpoints),
+            feature_set=args.feature_set,
+            bootstrap_resamples=args.bootstrap_resamples,
         )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(rows).to_csv(args.output, index=False)
@@ -495,6 +529,18 @@ def main() -> None:
             endpoints=tuple(args.endpoints),
             ensemble_size=args.ensemble_size,
             max_iter=args.max_iter,
+            bootstrap_resamples=args.bootstrap_resamples,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(rows).to_csv(args.output, index=False)
+        return
+    if args.command == "benchmark-masked-multitask":
+        rows = benchmark_masked_multitask_animal_holdout(
+            args.input,
+            endpoints=tuple(args.endpoints),
+            max_epochs=args.max_epochs,
+            bootstrap_resamples=args.bootstrap_resamples,
+            device=args.device,
         )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(rows).to_csv(args.output, index=False)
@@ -524,6 +570,21 @@ def main() -> None:
         if args.output_pareto is not None:
             ranked.loc[ranked["is_pareto"]].to_csv(args.output_pareto, index=False)
         shortlist.to_csv(args.output_shortlist, index=False)
+        _write_json(summary, args.output_summary)
+        return
+    if args.command == "audit-controls":
+        screen = pd.read_csv(args.screen_csv)
+        reconstructed = pd.read_csv(args.reconstructed_csv)
+        controls, summary = run_control_audit(
+            screen,
+            reconstructed,
+            per_group=args.per_group,
+            ensemble_size=args.ensemble_size,
+            max_iter=args.max_iter,
+        )
+        for path in (args.output_controls, args.output_summary):
+            path.parent.mkdir(parents=True, exist_ok=True)
+        controls.to_csv(args.output_controls, index=False)
         _write_json(summary, args.output_summary)
         return
     raise RuntimeError(f"Unhandled command: {args.command}")

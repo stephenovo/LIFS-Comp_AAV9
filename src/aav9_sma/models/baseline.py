@@ -22,6 +22,27 @@ def build_regressor(name: str, random_state: int = 42) -> RegressorMixin:
             n_jobs=-1,
             random_state=random_state,
         )
+    if name == "lightgbm":
+        try:
+            from lightgbm import LGBMRegressor
+        except ImportError as error:
+            raise ImportError(
+                "LightGBM is optional; install the project with the 'models' extra"
+            ) from error
+        return LGBMRegressor(
+            objective="regression",
+            n_estimators=500,
+            learning_rate=0.04,
+            num_leaves=31,
+            max_depth=-1,
+            min_child_samples=40,
+            subsample=0.9,
+            colsample_bytree=0.9,
+            reg_lambda=1.0,
+            random_state=random_state,
+            n_jobs=-1,
+            verbosity=-1,
+        )
     raise ValueError(f"Unknown baseline model: {name}")
 
 

@@ -10,6 +10,8 @@
     <a href="docs/PROJECT_SPEC.md">项目定义</a>
     ·
     <a href="docs/FIT4FUNCTION_AUDIT.md">Fit4Function 审计</a>
+    ·
+    <a href="docs/THREE_ROUTE_CONSENSUS.md">三路线共识与差异</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
@@ -171,7 +173,11 @@ aav9-sma screen-virtual \
 - [x] 60 个器官 runs + 3 个已验证 prod2 分母 runs 的序列标签重建
 - [x] 序列距离隔离 + Animal 4 生物学留出测试
 - [x] 共享多任务模型与五模型集成比较
+- [x] PyTorch masked-loss 多任务模型与 LightGBM＋理化特征挑战者
+- [x] 五类指标、500 次 bootstrap 95% 区间与模型晋级规则
+- [x] 四组经验对照的漏斗方向性审计
 - [x] 100 万序列虚拟筛选和 30 条计算候选
+- [x] 严格保守候选子集与 NAb 位点背景注释
 
 ### 多器官数据阶段结果
 
@@ -193,28 +199,37 @@ aav9-sma screen-virtual \
 [逐 run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv) 和
 [严格基线](docs/audit_data/fit4function_multiorgan_baseline_metrics.csv)。
 
-### 多任务与虚拟筛选结果
+### 多任务与模型晋级结果
 
-| 终点 | 最佳单任务 `r` | 共享 MLP `r` | 五模型集成 `r` |
-| --- | ---: | ---: | ---: |
-| 脑 | 0.445 | 0.527 | **0.554** |
-| 脊髓 | 0.476 | 0.546 | **0.571** |
-| 肝 | 0.715 | 0.778 | **0.785** |
-| 心 | 0.359 | 0.439 | **0.458** |
-| 肾 | 0.561 | 0.622 | **0.635** |
+| 终点 | 最佳单任务 `r` | 五模型集成 `r` | masked PyTorch `r` | LightGBM＋理化 `r` |
+| --- | ---: | ---: | ---: | ---: |
+| 脑 | 0.445 | **0.554** | 0.547 | 0.522 |
+| 脊髓 | 0.476 | **0.571** | 0.562 | 0.538 |
+| 肝 | 0.715 | **0.785** | 0.781 | 0.774 |
+| 心 | 0.359 | **0.458** | 0.453 | 0.408 |
+| 肾 | 0.561 | **0.635** | 0.628 | 0.613 |
+
+masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 终点；LightGBM 也未
+超过现有集成。因此最终漏斗继续使用五模型集成。完整 95% bootstrap 区间和晋级理由见
+[三路线共识报告](docs/THREE_ROUTE_CONSENSUS.md)。
+
+### 虚拟筛选结果
 
 正式筛选从 12.8 亿种理论 7-mer 空间中固定随机种子生成 1,000,000 条未见序列。
 其中 6,016 条通过包装置信下界硬门槛，169 条位于严格帕累托前沿。最终 30 条分为
 偏中枢、偏低肝和折中型各 10 条；全部与训练序列至少相差 2 位、候选之间至少相差
 3 位，并处于过包装线序列综合分前 5%。其中 6 条属于严格帕累托前沿，其余 24 条
-明确标记为兼顾得分与多样性的近前沿计算假设。
+明确标记为兼顾得分与多样性的近前沿计算假设。新增的严格保守定义要求同时通过
+包装下界、脊髓训练中位数、低肝训练中位数和低模型分歧；全池有 8 条，最终清单
+包含其中 7 条。
 
 ![虚拟筛选总结图](docs/assets/virtual_screen_summary.png)
 
 机器可读结果见：[集成留出测试](docs/audit_data/fit4function_multitask_ensemble_metrics.csv)、
 [169 条帕累托表](docs/audit_data/virtual_screen_pareto.csv)、
 [30 条候选清单](docs/audit_data/virtual_screen_shortlist.csv) 和
-[筛选摘要](docs/audit_data/virtual_screen_summary.json)。
+[筛选摘要](docs/audit_data/virtual_screen_summary.json)。模型挑战者、晋级结论和对照漏斗
+审计见 [三路线共识与差异](docs/THREE_ROUTE_CONSENSUS.md)。
 
 ## 科学边界
 

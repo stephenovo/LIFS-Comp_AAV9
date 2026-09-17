@@ -10,6 +10,8 @@
     <a href="docs/PROJECT_SPEC.md">Project specification</a>
     ·
     <a href="docs/FIT4FUNCTION_AUDIT.md">Fit4Function audit</a>
+    ·
+    <a href="docs/THREE_ROUTE_CONSENSUS.md">Three-route comparison</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
@@ -184,7 +186,11 @@ aav9-sma screen-virtual \
 - [x] 60 organ runs + 3 validated prod2 reference runs reconstructed into sequence-linked labels
 - [x] Distance-separated sequence holdout with Animal 4 as a biological test
 - [x] Shared multi-task MLP comparison on the held-out Animal 4 test
+- [x] Masked-loss PyTorch and LightGBM/physicochemical challengers
+- [x] Bootstrap confidence intervals and an explicit model-promotion gate
+- [x] Empirical positive/negative control audit through the funnel
 - [x] One-million-sequence virtual screen and 30-candidate computational shortlist
+- [x] Strict conservative subset and site-level NAb context annotation
 
 ### Reconstructed-data checkpoint
 
@@ -210,15 +216,18 @@ spinal cord, liver, heart, and kidney; targets are standardized from training
 data only. It stopped after 31 iterations and improved Pearson correlation on
 the held-out Animal 4 test for every endpoint:
 
-| Endpoint | Best single-task `r` | Shared MLP `r` | Five-model ensemble `r` |
-| --- | ---: | ---: | ---: |
-| Brain | 0.445 | 0.527 | **0.554** |
-| Spinal cord | 0.476 | 0.546 | **0.571** |
-| Liver | 0.715 | 0.778 | **0.785** |
-| Heart | 0.359 | 0.439 | **0.458** |
-| Kidney | 0.561 | 0.622 | **0.635** |
+| Endpoint | Best single-task `r` | Five-model ensemble `r` | Masked PyTorch `r` | LightGBM + physchem `r` |
+| --- | ---: | ---: | ---: | ---: |
+| Brain | 0.445 | **0.554** | 0.547 | 0.522 |
+| Spinal cord | 0.476 | **0.571** | 0.562 | 0.538 |
+| Liver | 0.715 | **0.785** | 0.781 | 0.774 |
+| Heart | 0.359 | **0.458** | 0.453 | 0.408 |
+| Kidney | 0.561 | **0.635** | 0.628 | 0.613 |
 
-The five-model ensemble is the model used for virtual-screen predictions.
+The masked model used more partially observed rows, but neither challenger
+improved the held-out mean. The five-model ensemble therefore remains the
+virtual-screen predictor. See the [three-route consensus report](docs/THREE_ROUTE_CONSENSUS.md)
+for bootstrap intervals and the promotion decision.
 
 ### Virtual-screen checkpoint
 
@@ -230,7 +239,9 @@ packaging gate and 169 were strictly Pareto-optimal. The final 30 rows contain
 `≥2`, with pairwise Hamming distance `≥3`, and all within the top 5% of eligible
 candidates under the default display score. Six of the 30 are on the strict
 Pareto front; the other 24 are explicitly marked high-scoring, diverse
-near-front hypotheses.
+near-front hypotheses. Eight pool members also meet the strict conservative
+definition (packaging, spinal-cord median, low-liver median, and low model
+disagreement), and seven of those are present in the final 30.
 
 ![Virtual-screen summary](docs/assets/virtual_screen_summary.png)
 
@@ -240,7 +251,9 @@ Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan
 [single multi-task results](docs/audit_data/fit4function_multitask_metrics.csv),
 [ensemble results](docs/audit_data/fit4function_multitask_ensemble_metrics.csv),
 [Pareto table](docs/audit_data/virtual_screen_pareto.csv), and
-[30-candidate shortlist](docs/audit_data/virtual_screen_shortlist.csv).
+[30-candidate shortlist](docs/audit_data/virtual_screen_shortlist.csv). The
+[three-route comparison](docs/THREE_ROUTE_CONSENSUS.md) records challenger
+results, control behavior, adopted consensus, and route-specific differences.
 
 ## Scientific boundary
 

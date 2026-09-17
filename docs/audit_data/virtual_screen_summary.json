@@ -2,6 +2,7 @@
   "random_state": 42,
   "pool_size": 1000000,
   "sequence_space_size": 1280000000,
+  "sequence_space_fraction": 0.00078125,
   "observed_sequences_excluded": 100000,
   "packaging": {
     "model": "ridge",
@@ -40,11 +41,15 @@
     "cns_favoring": 10,
     "low_liver": 10
   },
-  "immune_annotation": "not_scored_no_validated_7mer_neutralization_table",
-  "claim_boundary": "Computational mouse-organ biodistribution hypotheses; not human motor-neuron specificity, reduced hepatotoxicity, or therapeutic efficacy.",
-  "sequence_space_fraction": 0.00078125,
   "shortlist_pareto_rows": 6,
   "shortlist_human_liver_warnings": 1,
+  "strict_conservative_thresholds": {
+    "spinal_cord_training_median": -0.0066681232936948,
+    "liver_training_median": -0.8925827981789674,
+    "eligible_uncertainty_median": 0.8376862406730652
+  },
+  "strict_conservative_pool_rows": 8,
+  "shortlist_strict_conservative_rows": 7,
   "shortlist_quality_cutoff": -0.667253792285919,
   "shortlist_minimum_pairwise_hamming": 3,
   "shortlist_residue_frequencies": {
@@ -76,5 +81,7 @@
     "M",
     "W",
     "Y"
-  ]
+  ],
+  "immune_annotation": "site_context_only_not_scored_no_validated_7mer_neutralization_table",
+  "claim_boundary": "Computational mouse-organ biodistribution hypotheses; not human motor-neuron specificity, reduced hepatotoxicity, or therapeutic efficacy."
 }

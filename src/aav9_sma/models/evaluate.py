@@ -12,8 +12,13 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from aav9_sma.features.encode import one_hot_7mer
+from aav9_sma.features.encode import combined_7mer_features, one_hot_7mer
 from aav9_sma.models.baseline import build_regressor, build_shared_mlp
+from aav9_sma.models.metrics import (
+    bootstrap_confidence_intervals,
+    pearson_r,
+    regression_metrics,
+)
 
 MULTIORGAN_ENDPOINTS = ("brain", "spinal_cord", "liver", "heart", "kidney")
 
@@ -28,9 +33,35 @@ SCREEN_TASKS = (
 
 
 def _pearson(targets: np.ndarray, predictions: np.ndarray) -> float:
-    if np.std(targets) == 0 or np.std(predictions) == 0:
-        return float("nan")
-    return float(np.corrcoef(targets, predictions)[0, 1])
+    return pearson_r(targets, predictions)
+
+
+def _encode(peptides: list[str], feature_set: str) -> np.ndarray:
+    if feature_set == "one_hot":
+        return one_hot_7mer(peptides)
+    if feature_set == "one_hot_physchem":
+        return combined_7mer_features(peptides)
+    raise ValueError(f"Unknown feature set: {feature_set}")
+
+
+def _bootstrap_columns(
+    targets: np.ndarray,
+    predictions: np.ndarray,
+    *,
+    n_resamples: int,
+    random_state: int,
+) -> dict[str, float | int]:
+    metrics = (
+        bootstrap_confidence_intervals(
+            targets,
+            predictions,
+            n_resamples=n_resamples,
+            random_state=random_state,
+        )
+        if n_resamples
+        else regression_metrics(targets, predictions)
+    )
+    return {f"model_vs_animal4_{name}": value for name, value in metrics.items()}
 
 
 def benchmark_screen_models(
@@ -168,6 +199,8 @@ def benchmark_multiorgan_animal_holdout(
     virus_round: int = 2,
     random_state: int = 42,
     test_fraction: float = 0.2,
+    feature_set: str = "one_hot",
+    bootstrap_resamples: int = 0,
 ) -> list[dict[str, object]]:
     """Train on animals 1-3 and unseen sequences; evaluate against animal 4."""
     frame = pd.read_csv(reconstructed_csv)
@@ -178,16 +211,13 @@ def benchmark_multiorgan_animal_holdout(
         random_state=random_state,
         minimum_hamming_distance=2,
     )
-    features = one_hot_7mer(peptides)
+    features = _encode(peptides, feature_set)
     rows: list[dict[str, object]] = []
     for endpoint in endpoints:
         train_column = (
-            f"log2enr_{denominator_mode}__{endpoint}_animals_1_3"
-            f"__over__virus_prod{virus_round}"
+            f"log2enr_{denominator_mode}__{endpoint}_animals_1_3__over__virus_prod{virus_round}"
         )
-        animal4_column = (
-            f"log2enr_{denominator_mode}__{endpoint}_a4__over__virus_prod{virus_round}"
-        )
+        animal4_column = f"log2enr_{denominator_mode}__{endpoint}_a4__over__virus_prod{virus_round}"
         if train_column not in frame or animal4_column not in frame:
             raise ValueError(f"Missing reconstructed columns for {endpoint}")
         train_targets = pd.to_numeric(frame[train_column], errors="coerce").to_numpy(float)
@@ -199,27 +229,32 @@ def benchmark_multiorgan_animal_holdout(
             model.fit(features[train_rows], train_targets[train_rows])
             predictions = model.predict(features[test_rows])
             held_out_targets = animal4_targets[test_rows]
-            rows.append(
-                {
-                    "task": endpoint,
-                    "model": model_name,
-                    "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
-                    "random_state": random_state,
-                    "train_rows": int(train_rows.sum()),
-                    "test_rows": int(test_rows.sum()),
-                    "model_vs_animal4_pearson_r": _pearson(held_out_targets, predictions),
-                    "model_vs_animal4_r2": float(r2_score(held_out_targets, predictions)),
-                    "model_vs_animal4_mae": float(
-                        mean_absolute_error(held_out_targets, predictions)
-                    ),
-                    "animal_mean_vs_animal4_pearson_r": _pearson(
-                        held_out_targets, train_targets[test_rows]
-                    ),
-                    "model_vs_animal_mean_pearson_r": _pearson(
-                        train_targets[test_rows], predictions
-                    ),
-                }
-            )
+            row: dict[str, object] = {
+                "task": endpoint,
+                "model": model_name,
+                "feature_set": feature_set,
+                "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+                "random_state": random_state,
+                "train_rows": int(train_rows.sum()),
+                "test_rows": int(test_rows.sum()),
+                "model_vs_animal4_pearson_r": _pearson(held_out_targets, predictions),
+                "model_vs_animal4_r2": float(r2_score(held_out_targets, predictions)),
+                "model_vs_animal4_mae": float(mean_absolute_error(held_out_targets, predictions)),
+                "animal_mean_vs_animal4_pearson_r": _pearson(
+                    held_out_targets, train_targets[test_rows]
+                ),
+                "model_vs_animal_mean_pearson_r": _pearson(train_targets[test_rows], predictions),
+            }
+            if bootstrap_resamples:
+                row.update(
+                    _bootstrap_columns(
+                        held_out_targets,
+                        predictions,
+                        n_resamples=bootstrap_resamples,
+                        random_state=random_state + len(rows),
+                    )
+                )
+            rows.append(row)
     return rows
 
 
@@ -249,8 +284,7 @@ def benchmark_multitask_animal_holdout(
     )
     features = one_hot_7mer(peptides)
     train_columns = [
-        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3"
-        f"__over__virus_prod{virus_round}"
+        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3__over__virus_prod{virus_round}"
         for endpoint in endpoints
     ]
     animal4_columns = [
@@ -262,9 +296,7 @@ def benchmark_multitask_animal_holdout(
         raise ValueError(f"Missing reconstructed columns: {missing}")
 
     train_targets = frame[train_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
-    animal4_targets = (
-        frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
-    )
+    animal4_targets = frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
     complete_train_rows = train_split & np.isfinite(train_targets).all(axis=1)
     if complete_train_rows.sum() < 2:
         raise ValueError("Fewer than two complete multi-organ training rows")
@@ -293,12 +325,8 @@ def benchmark_multitask_animal_holdout(
                 "train_rows": int(complete_train_rows.sum()),
                 "test_rows": int(test_rows.sum()),
                 "iterations": int(model.n_iter_),
-                "model_vs_animal4_pearson_r": _pearson(
-                    held_out_targets, endpoint_predictions
-                ),
-                "model_vs_animal4_r2": float(
-                    r2_score(held_out_targets, endpoint_predictions)
-                ),
+                "model_vs_animal4_pearson_r": _pearson(held_out_targets, endpoint_predictions),
+                "model_vs_animal4_r2": float(r2_score(held_out_targets, endpoint_predictions)),
                 "model_vs_animal4_mae": float(
                     mean_absolute_error(held_out_targets, endpoint_predictions)
                 ),
@@ -322,6 +350,7 @@ def benchmark_multitask_ensemble_animal_holdout(
     random_state: int = 42,
     test_fraction: float = 0.2,
     max_iter: int = 80,
+    bootstrap_resamples: int = 0,
 ) -> list[dict[str, object]]:
     """Evaluate the exact shared-MLP ensemble used by virtual screening."""
     if ensemble_size < 2:
@@ -336,8 +365,7 @@ def benchmark_multitask_ensemble_animal_holdout(
     )
     features = one_hot_7mer(peptides)
     train_columns = [
-        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3"
-        f"__over__virus_prod{virus_round}"
+        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3__over__virus_prod{virus_round}"
         for endpoint in endpoints
     ]
     animal4_columns = [
@@ -348,9 +376,7 @@ def benchmark_multitask_ensemble_animal_holdout(
     if missing:
         raise ValueError(f"Missing reconstructed columns: {missing}")
     train_targets = frame[train_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
-    animal4_targets = (
-        frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
-    )
+    animal4_targets = frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
     complete_train_rows = train_split & np.isfinite(train_targets).all(axis=1)
     scaler = StandardScaler().fit(train_targets[complete_train_rows])
     scaled_targets = scaler.transform(train_targets[complete_train_rows])
@@ -379,28 +405,139 @@ def benchmark_multitask_ensemble_animal_holdout(
         predictions = prediction_mean[test_rows, endpoint_index]
         disagreement = prediction_std[test_rows, endpoint_index]
         absolute_error = np.abs(targets - predictions)
-        rows.append(
-            {
-                "task": endpoint,
-                "model": f"shared_mlp_64_32_ensemble_{ensemble_size}",
-                "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
-                "random_state": random_state,
-                "train_rows": int(complete_train_rows.sum()),
-                "test_rows": int(test_rows.sum()),
-                "ensemble_size": ensemble_size,
-                "member_iterations": "|".join(map(str, iterations)),
-                "model_vs_animal4_pearson_r": _pearson(targets, predictions),
-                "model_vs_animal4_r2": float(r2_score(targets, predictions)),
-                "model_vs_animal4_mae": float(mean_absolute_error(targets, predictions)),
-                "animal_mean_vs_animal4_pearson_r": _pearson(
-                    targets, train_targets[test_rows, endpoint_index]
-                ),
-                "model_vs_animal_mean_pearson_r": _pearson(
-                    train_targets[test_rows, endpoint_index], predictions
-                ),
-                "disagreement_vs_absolute_error_pearson_r": _pearson(
-                    absolute_error, disagreement
-                ),
-            }
+        row: dict[str, object] = {
+            "task": endpoint,
+            "model": f"shared_mlp_64_32_ensemble_{ensemble_size}",
+            "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+            "random_state": random_state,
+            "train_rows": int(complete_train_rows.sum()),
+            "test_rows": int(test_rows.sum()),
+            "ensemble_size": ensemble_size,
+            "member_iterations": "|".join(map(str, iterations)),
+            "model_vs_animal4_pearson_r": _pearson(targets, predictions),
+            "model_vs_animal4_r2": float(r2_score(targets, predictions)),
+            "model_vs_animal4_mae": float(mean_absolute_error(targets, predictions)),
+            "animal_mean_vs_animal4_pearson_r": _pearson(
+                targets, train_targets[test_rows, endpoint_index]
+            ),
+            "model_vs_animal_mean_pearson_r": _pearson(
+                train_targets[test_rows, endpoint_index], predictions
+            ),
+            "disagreement_vs_absolute_error_pearson_r": _pearson(absolute_error, disagreement),
+        }
+        if bootstrap_resamples:
+            row.update(
+                _bootstrap_columns(
+                    targets,
+                    predictions,
+                    n_resamples=bootstrap_resamples,
+                    random_state=random_state + endpoint_index,
+                )
+            )
+        rows.append(row)
+    return rows
+
+
+def benchmark_masked_multitask_animal_holdout(
+    reconstructed_csv: str | Path,
+    endpoints: tuple[str, ...] = MULTIORGAN_ENDPOINTS,
+    denominator_mode: str = "whitelist",
+    virus_round: int = 2,
+    random_state: int = 42,
+    test_fraction: float = 0.2,
+    validation_fraction: float = 0.15,
+    max_epochs: int = 80,
+    bootstrap_resamples: int = 500,
+    device: str = "cpu",
+) -> list[dict[str, object]]:
+    """Evaluate a shared PyTorch MLP that masks missing labels per endpoint.
+
+    Epoch count is chosen using a distance-separated validation subset drawn
+    only from the outer training partition. The final model is refit on the
+    union of inner-train and validation rows before Animal 4 evaluation.
+    """
+    from aav9_sma.models.multitask_torch import fit_masked_multitask_mlp
+
+    frame = pd.read_csv(reconstructed_csv)
+    peptides = frame["AA"].tolist()
+    outer_train, outer_test = sequence_distance_split(
+        peptides,
+        test_fraction=test_fraction,
+        random_state=random_state,
+        minimum_hamming_distance=2,
+    )
+    outer_indices = np.flatnonzero(outer_train)
+    inner_train_local, validation_local = sequence_distance_split(
+        [peptides[index] for index in outer_indices],
+        test_fraction=validation_fraction,
+        random_state=random_state + 1009,
+        minimum_hamming_distance=2,
+    )
+    inner_train = np.zeros(len(frame), dtype=bool)
+    validation = np.zeros(len(frame), dtype=bool)
+    inner_train[outer_indices] = inner_train_local
+    validation[outer_indices] = validation_local
+
+    train_columns = [
+        f"log2enr_{denominator_mode}__{endpoint}_animals_1_3__over__virus_prod{virus_round}"
+        for endpoint in endpoints
+    ]
+    animal4_columns = [
+        f"log2enr_{denominator_mode}__{endpoint}_a4__over__virus_prod{virus_round}"
+        for endpoint in endpoints
+    ]
+    missing = [column for column in train_columns + animal4_columns if column not in frame]
+    if missing:
+        raise ValueError(f"Missing reconstructed columns: {missing}")
+    train_targets = frame[train_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+    animal4_targets = frame[animal4_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+    features = one_hot_7mer(peptides)
+    result = fit_masked_multitask_mlp(
+        features,
+        train_targets,
+        inner_train,
+        validation,
+        max_epochs=max_epochs,
+        random_state=random_state,
+        device=device,
+    )
+
+    rows: list[dict[str, object]] = []
+    for endpoint_index, endpoint in enumerate(endpoints):
+        test_rows = (
+            outer_test
+            & np.isfinite(train_targets[:, endpoint_index])
+            & np.isfinite(animal4_targets[:, endpoint_index])
         )
+        targets = animal4_targets[test_rows, endpoint_index]
+        predictions = result.predictions[test_rows, endpoint_index]
+        row: dict[str, object] = {
+            "task": endpoint,
+            "model": "torch_masked_shared_mlp_64_32",
+            "feature_set": "one_hot",
+            "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+            "random_state": random_state,
+            "train_rows": result.training_rows,
+            "task_train_observations": result.task_observations[endpoint_index],
+            "internal_validation_rows": result.validation_rows,
+            "test_rows": int(test_rows.sum()),
+            "best_epoch": result.best_epoch,
+            "internal_validation_loss": result.validation_loss,
+            "device": result.device,
+            "animal_mean_vs_animal4_pearson_r": _pearson(
+                targets, train_targets[test_rows, endpoint_index]
+            ),
+            "model_vs_animal_mean_pearson_r": _pearson(
+                train_targets[test_rows, endpoint_index], predictions
+            ),
+        }
+        row.update(
+            _bootstrap_columns(
+                targets,
+                predictions,
+                n_resamples=bootstrap_resamples,
+                random_state=random_state + endpoint_index,
+            )
+        )
+        rows.append(row)
     return rows

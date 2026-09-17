@@ -1,0 +1,4 @@
+model,feature_set,mean_pearson_r,delta_mean_vs_reference,brain_delta,spinal_cord_delta,liver_delta,heart_delta,kidney_delta,passes_spinal_guardrail,passes_liver_guardrail,improves_mean,promoted,decision
+shared_mlp_64_32_ensemble_5,one_hot,0.600564,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,True,True,True,True,Reference model retained
+torch_masked_shared_mlp_64_32,one_hot,0.594240,-0.006324,-0.006720,-0.008252,-0.004457,-0.005822,-0.006370,True,True,False,False,Uses more partially observed rows but did not improve any held-out endpoint
+lightgbm,one_hot_physchem,0.571157,-0.029408,-0.031414,-0.032786,-0.011275,-0.050253,-0.021310,False,True,False,False,Did not improve the mean and exceeded the allowed spinal-cord decline

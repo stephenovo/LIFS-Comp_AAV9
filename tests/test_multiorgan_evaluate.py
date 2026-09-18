@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 
 from aav9_sma.models.evaluate import (
+    DEVELOPMENT_TEST_ROLE,
     benchmark_multitask_animal_holdout,
     sequence_distance_split,
+    validate_test_role,
 )
 
 
@@ -46,3 +48,14 @@ def test_multitask_benchmark_returns_one_row_per_endpoint(tmp_path) -> None:
     assert [row["task"] for row in rows] == list(endpoints)
     assert all(row["model"] == "shared_mlp_64_32" for row in rows)
     assert all(row["train_rows"] > 0 for row in rows)
+    assert all(row["test_role"] == DEVELOPMENT_TEST_ROLE for row in rows)
+
+
+def test_animal4_cannot_be_labeled_final_blind() -> None:
+    validate_test_role(DEVELOPMENT_TEST_ROLE, includes_animal4=True)
+    try:
+        validate_test_role("final_blind_external", includes_animal4=True)
+    except ValueError as error:
+        assert "Animal 4" in str(error)
+    else:
+        raise AssertionError("Animal 4 must not be labeled as a final blind test")

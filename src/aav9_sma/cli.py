@@ -20,6 +20,7 @@ from aav9_sma.data.reconstruct import (
     reconstruct_multiorgan,
 )
 from aav9_sma.data.sra import fetch_sra_manifest, summarize_sra_manifest
+from aav9_sma.demo import run_demo
 from aav9_sma.models.evaluate import (
     MULTIORGAN_ENDPOINTS,
     SCREEN_TASKS,
@@ -37,6 +38,13 @@ from aav9_sma.screening.virtual import run_control_audit, run_virtual_screen
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="aav9-sma")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    demo_parser = subparsers.add_parser(
+        "demo",
+        help="Run a self-contained synthetic smoke test without external research data",
+    )
+    demo_parser.add_argument("--output-dir", type=Path, default=Path("artifacts/demo"))
+    demo_parser.add_argument("--random-state", type=int, default=42)
 
     audit_parser = subparsers.add_parser("audit-data", help="Audit a canonical CSV file")
     audit_parser.add_argument("input", type=Path)
@@ -327,6 +335,10 @@ def _filter_manifest(
 
 def main() -> None:
     args = _build_parser().parse_args()
+    if args.command == "demo":
+        summary = run_demo(args.output_dir, random_state=args.random_state)
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+        return
     if args.command == "audit-data":
         _write_json(audit_csv(args.input).to_dict(), args.output)
         return

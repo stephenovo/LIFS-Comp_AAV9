@@ -130,6 +130,19 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install ".[dev]"
 
+## Run the self-contained smoke test first
+
+The following command needs no Fit4Function checkout, SRA download, SRA Toolkit,
+or GPU. It completes the audit, prediction-table, packaging-gate, and ranking
+path on deterministic synthetic data:
+
+```bash
+aav9-sma demo --output-dir artifacts/demo
+```
+
+The outputs are installation checks only and must not be used for biological
+claims. See [the reproducibility guide](docs/REPRODUCIBILITY.md).
+
 ruff check .
 pytest
 ```
@@ -161,7 +174,9 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 
 `0.50` is an interface example, not a biological threshold.
 
-Run the reproducible one-million-sequence virtual screen:
+The full one-million-sequence virtual screen is a separate data-dependent run.
+It requires the external Fit4Function checkout and the reconstructed multi-organ
+CSV described in [FIT4FUNCTION_RUNBOOK.md](docs/FIT4FUNCTION_RUNBOOK.md):
 
 ```bash
 aav9-sma screen-virtual \

@@ -118,6 +118,18 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install ".[dev]"
 
+## 先运行自包含 smoke test
+
+下面的命令不需要 Fit4Function checkout、SRA 下载、SRA Toolkit 或 GPU，
+会用确定性的合成数据跑通审计、预测表、包装门槛和候选排序流程：
+
+```bash
+aav9-sma demo --output-dir artifacts/demo
+```
+
+这些输出只用于检查安装和接口，不能用于生物学结论。详见
+[可复现性说明](docs/REPRODUCIBILITY.md)。
+
 ruff check .
 pytest
 ```
@@ -147,7 +159,9 @@ aav9-sma rank-candidates artifacts/predictions.csv \
 
 这里的 `0.50` 只是命令示例，不是预先确定的生物学阈值。
 
-运行可复现的 100 万序列虚拟筛选：
+完整的 100 万序列虚拟筛选依赖外部数据。需要先按
+[FIT4FUNCTION_RUNBOOK.md](docs/FIT4FUNCTION_RUNBOOK.md) 获取 Fit4Function
+checkout 并重建多器官 CSV：
 
 ```bash
 aav9-sma screen-virtual \

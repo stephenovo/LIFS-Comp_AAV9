@@ -21,6 +21,7 @@ from aav9_sma.data.reconstruct import (
 )
 from aav9_sma.data.sra import fetch_sra_manifest, summarize_sra_manifest
 from aav9_sma.demo import run_demo
+from aav9_sma.repro import verify_manifest
 from aav9_sma.models.evaluate import (
     MULTIORGAN_ENDPOINTS,
     SCREEN_TASKS,
@@ -45,6 +46,12 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     demo_parser.add_argument("--output-dir", type=Path, default=Path("artifacts/demo"))
     demo_parser.add_argument("--random-state", type=int, default=42)
+
+    manifest_parser = subparsers.add_parser(
+        "verify-manifest", help="Verify SHA256 checksums in a reproducibility manifest"
+    )
+    manifest_parser.add_argument("manifest", type=Path)
+    manifest_parser.add_argument("--root", type=Path, default=Path("."))
 
     audit_parser = subparsers.add_parser("audit-data", help="Audit a canonical CSV file")
     audit_parser.add_argument("input", type=Path)
@@ -338,6 +345,12 @@ def main() -> None:
     if args.command == "demo":
         summary = run_demo(args.output_dir, random_state=args.random_state)
         print(json.dumps(summary, indent=2, ensure_ascii=False))
+        return
+    if args.command == "verify-manifest":
+        result = verify_manifest(args.manifest, args.root)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        if not result["ok"]:
+            raise SystemExit(1)
         return
     if args.command == "audit-data":
         _write_json(audit_csv(args.input).to_dict(), args.output)

@@ -31,6 +31,23 @@ SCREEN_TASKS = (
     "THLE_tr",
 )
 
+# Animal 4 was inspected during model comparison and screening-policy selection.
+# Keep this role explicit so downstream reports cannot silently relabel it as a
+# final blind test.
+DEVELOPMENT_TEST_ROLE = "development_holdout_animal4"
+FINAL_BLIND_TEST_ROLE = "final_blind_external"
+
+
+def validate_test_role(test_role: str, *, includes_animal4: bool = False) -> None:
+    """Reject an invalid claim that includes Animal 4 as a final blind test."""
+    valid_roles = {DEVELOPMENT_TEST_ROLE, FINAL_BLIND_TEST_ROLE}
+    if test_role not in valid_roles:
+        raise ValueError(f"Unknown test role: {test_role}")
+    if test_role == FINAL_BLIND_TEST_ROLE and includes_animal4:
+        raise ValueError(
+            "Animal 4 was inspected during development and cannot be labeled final_blind_external"
+        )
+
 
 def _pearson(targets: np.ndarray, predictions: np.ndarray) -> float:
     return pearson_r(targets, predictions)
@@ -234,6 +251,7 @@ def benchmark_multiorgan_animal_holdout(
                 "model": model_name,
                 "feature_set": feature_set,
                 "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+                "test_role": DEVELOPMENT_TEST_ROLE,
                 "random_state": random_state,
                 "train_rows": int(train_rows.sum()),
                 "test_rows": int(test_rows.sum()),
@@ -321,6 +339,7 @@ def benchmark_multitask_animal_holdout(
                 "task": endpoint,
                 "model": "shared_mlp_64_32",
                 "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+                "test_role": DEVELOPMENT_TEST_ROLE,
                 "random_state": random_state,
                 "train_rows": int(complete_train_rows.sum()),
                 "test_rows": int(test_rows.sum()),
@@ -409,6 +428,7 @@ def benchmark_multitask_ensemble_animal_holdout(
             "task": endpoint,
             "model": f"shared_mlp_64_32_ensemble_{ensemble_size}",
             "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+            "test_role": DEVELOPMENT_TEST_ROLE,
             "random_state": random_state,
             "train_rows": int(complete_train_rows.sum()),
             "test_rows": int(test_rows.sum()),
@@ -516,6 +536,7 @@ def benchmark_masked_multitask_animal_holdout(
             "model": "torch_masked_shared_mlp_64_32",
             "feature_set": "one_hot",
             "split": "distance-2-sequence-holdout__train-a1-a3__test-a4",
+            "test_role": DEVELOPMENT_TEST_ROLE,
             "random_state": random_state,
             "train_rows": result.training_rows,
             "task_train_observations": result.task_observations[endpoint_index],

@@ -17,7 +17,12 @@ python -m pip install -e ".[dev]"
 git clone --depth 1 \
   https://github.com/vector-engineering/fit4function.git \
   data/raw/fit4function_official
+git -C data/raw/fit4function_official checkout 6bfc2ebfe4abcd45cc6fe737e4700242a5090fee
 ```
+
+The commit is pinned in [`source_manifest.json`](source_manifest.json). Do not
+silently replace it with the upstream moving `main` branch when reproducing a
+published result.
 
 `data/raw/` 已被 Git 忽略，原始数据不会误推到 GitHub。
 

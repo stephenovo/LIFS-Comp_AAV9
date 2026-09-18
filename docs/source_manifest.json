@@ -1,0 +1,8 @@
+{
+  "fit4function": {
+    "repository": "https://github.com/vector-engineering/fit4function.git",
+    "commit": "6bfc2ebfe4abcd45cc6fe737e4700242a5090fee",
+    "retrieved": "2026-09-18"
+  },
+  "note": "Update this manifest only after re-auditing the upstream release and its derived labels."
+}

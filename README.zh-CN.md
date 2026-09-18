@@ -202,7 +202,10 @@ aav9-sma screen-virtual \
 63 个 runs 共处理 385,983,540 条比对记录，其中 96,169,266 条落入公开 100K
 序列清单。严格基线只用 Animal 1–3 训练，从训练集中移除测试序列的一步突变邻居，
 最终只在不参与训练的 Animal 4 上评价。Animal 4 已用于本轮模型比较，后续不再把它
-称为从未查看的最终盲测。
+称为从未查看的最终盲测。Animal 4 是 development held-out test，具体规则见
+[`docs/ANIMAL4_POLICY.md`](docs/ANIMAL4_POLICY.md)。完整数据运行前可用
+`aav9-sma verify-manifest` 检查 SHA256，并使用
+[`scripts/reproduce_full.sh`](scripts/reproduce_full.sh) 执行不下载数据的审计、基准和筛选流程。
 
 | 终点 | 四动物聚合有限标签 | Animal 1–3 vs Animal 4 `r` | Ridge vs Animal 4 `r` | 随机森林 vs Animal 4 `r` |
 | --- | ---: | ---: | ---: | ---: |

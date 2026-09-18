@@ -304,6 +304,12 @@ PYTHONPATH=src python scripts/build_experimental_handoff.py \
 
 This repository contains **computational hypotheses**, not a validated therapy.
 
+Animal 4 is a development held-out evaluation because its results were
+inspected during model comparison. It is not a final blind test; see
+[`docs/ANIMAL4_POLICY.md`](docs/ANIMAL4_POLICY.md). Full-data inputs can be
+checked with `aav9-sma verify-manifest` and the non-destructive
+[`scripts/reproduce_full.sh`](scripts/reproduce_full.sh).
+
 - Mouse brain/spinal-cord enrichment is a CNS proxy, not demonstrated human
   motor-neuron specificity.
 - Reduced predicted liver enrichment is not demonstrated reduction of liver

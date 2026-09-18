@@ -38,3 +38,30 @@ The Fit4Function checkout is pinned in [source_manifest.json](source_manifest.js
 and must be checked out at that commit before running the full-data commands.
 
 The demo is an installation and interface check, not a substitute for the data gate, sequence-aware validation, or experimental validation.
+
+## Checksum and full-data run
+
+Full-data inputs are intentionally external and are not downloaded by the
+repository. Copy [`data_manifest.example.json`](data_manifest.example.json),
+replace each placeholder with a real SHA256 digest, and verify it before a run:
+
+```bash
+aav9-sma verify-manifest docs/data_manifest.json --root .
+```
+
+The non-destructive full-data wrapper checks the pinned Fit4Function commit,
+verifies the manifest, runs the release audit and both Animal 4 development
+benchmarks, then runs the virtual screen:
+
+```bash
+bash scripts/reproduce_full.sh \
+  --fit4function-dir data/raw/fit4function_official \
+  --manifest docs/data_manifest.json \
+  --data-root . \
+  --reconstructed data/processed/fit4function_multiorgan_reconstructed.csv.gz \
+  --screen-csv data/raw/fit4function_official/data/fit4function_library_screens.csv
+```
+
+This wrapper never downloads raw data and never calls a result from Animal 4 a
+final blind validation. The Animal 4 role policy is documented in
+[`ANIMAL4_POLICY.md`](ANIMAL4_POLICY.md).

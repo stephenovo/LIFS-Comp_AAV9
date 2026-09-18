@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "description": "Checksums for the external inputs and derived tables used by a full run.",
+  "files": [
+    {
+      "path": "data/raw/fit4function_official/data/fit4function_library_screens.csv",
+      "sha256": "REPLACE_WITH_64_HEX_DIGEST"
+    },
+    {
+      "path": "data/processed/fit4function_multiorgan_reconstructed.csv.gz",
+      "sha256": "REPLACE_WITH_64_HEX_DIGEST"
+    }
+  ]
+}

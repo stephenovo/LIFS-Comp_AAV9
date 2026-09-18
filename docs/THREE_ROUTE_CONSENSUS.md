@@ -30,11 +30,11 @@
 | 对照肽要走完整漏斗 | 新增低/高包装、高 CNS 低肝、高肝低 CNS 四组各 25 条的方向性审计 | `funnel_control_audit.csv`, `funnel_control_summary.json` |
 | 最保守候选应单列 | 新增包装通过＋脊髓≥训练 P50＋肝≤训练 P50＋低不确定性的严格组 | `virtual_screen_shortlist.csv` |
 | NAb 只做晚期注释 | 所有候选只标记“VR-VIII/588–589 插入位点背景”；不训练免疫头、不进入 `S`、不推断逃逸 | `virtual_screen_shortlist.csv` |
-| 结果必须可复现 | CLI、固定随机种子、25 个自动化测试、ruff 和 GitHub CI | `cli.py`, `tests/`, `.github/workflows/ci.yml` |
+| 结果必须可复现 | CLI、固定随机种子、SHA256 manifest 验证、25 个自动化测试、ruff 和 GitHub CI | `cli.py`, `repro.py`, `tests/`, `.github/workflows/ci.yml` |
 
 ## 2. 新模型的晋级结果
 
-三种模型使用相同的 distance-2 / Animals 1–3 → Animal 4 框架。Animal 4 已经被用于多轮模型比较，因此它现在应称为**已查看的 held-out test**，不能再称为未打开的最终盲测；未来若获得匹配的 NHP 数据，才可作为真正的最终盲测。
+三种模型使用相同的 distance-2 / Animals 1–3 → Animal 4 框架。Animal 4 已经被用于多轮模型比较，因此它现在应称为**development held-out test**，不能再称为未打开的最终盲测；未来若获得匹配的 NHP 数据，才可作为真正的最终盲测。具体政策见 [`ANIMAL4_POLICY.md`](ANIMAL4_POLICY.md)。
 
 | 模型 | Brain `r` | Spinal `r` | Liver `r` | Heart `r` | Kidney `r` | 平均 `r` | 决定 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |

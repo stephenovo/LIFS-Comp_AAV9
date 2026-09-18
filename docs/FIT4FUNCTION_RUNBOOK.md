@@ -192,7 +192,7 @@ aav9-sma reconstruct-liver \
 7. RPM、技术重复平均、log2 enrichment；
 8. 与公开 `Liver` 标签做一致性验收；
 9. 通过后再扩展到 Brain、Spinal cord、Heart、Kidney；
-10. Animal 1–3 训练，Animal 4 盲测。
+10. Animal 1–3 训练，Animal 4 作为 development held-out test；它已在模型比较中被查看，不能称为最终盲测。
 
 最终建模表使用 60 个器官 runs 与 prod2 的 3 个病毒库 runs。prod3 只参与 Liver
 分母敏感性分析；prod1 在 prod2 已通过公开 Liver 验收后无需下载。

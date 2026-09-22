@@ -208,6 +208,10 @@ aav9-sma screen-virtual \
 [`docs/ANIMAL4_POLICY.md`](docs/ANIMAL4_POLICY.md)。完整数据运行前可用
 `aav9-sma verify-manifest` 检查 SHA256，并使用
 [`scripts/reproduce_full.sh`](scripts/reproduce_full.sh) 执行不下载数据的审计、基准和筛选流程。
+公开数据没有 Animal 5。新增的[逐动物留一稳健性审计](docs/CROSS_ANIMAL_ROBUSTNESS_AUDIT.zh-CN.md)
+把 Animal 1–4 轮流留出：脑 Pearson 四折平均为 0.445（范围 0.358–0.554），脊髓为
+0.489（范围 0.396–0.571）。Animal 4 位于较乐观的一端；该分析是回顾性开发证据，
+不是新的最终盲测。
 
 | 终点 | 四动物聚合有限标签 | Animal 1–3 vs Animal 4 `r` | Ridge vs Animal 4 `r` | 随机森林 vs Animal 4 `r` |
 | --- | ---: | ---: | ---: | ---: |

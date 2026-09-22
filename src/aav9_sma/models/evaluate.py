@@ -35,12 +35,13 @@ SCREEN_TASKS = (
 # Keep this role explicit so downstream reports cannot silently relabel it as a
 # final blind test.
 DEVELOPMENT_TEST_ROLE = "development_holdout_animal4"
+CROSS_ANIMAL_TEST_ROLE = "development_cross_animal_robustness"
 FINAL_BLIND_TEST_ROLE = "final_blind_external"
 
 
 def validate_test_role(test_role: str, *, includes_animal4: bool = False) -> None:
     """Reject an invalid claim that includes Animal 4 as a final blind test."""
-    valid_roles = {DEVELOPMENT_TEST_ROLE, FINAL_BLIND_TEST_ROLE}
+    valid_roles = {DEVELOPMENT_TEST_ROLE, CROSS_ANIMAL_TEST_ROLE, FINAL_BLIND_TEST_ROLE}
     if test_role not in valid_roles:
         raise ValueError(f"Unknown test role: {test_role}")
     if test_role == FINAL_BLIND_TEST_ROLE and includes_animal4:
@@ -67,6 +68,7 @@ def _bootstrap_columns(
     *,
     n_resamples: int,
     random_state: int,
+    prefix: str = "model_vs_animal4",
 ) -> dict[str, float | int]:
     metrics = (
         bootstrap_confidence_intervals(
@@ -78,7 +80,29 @@ def _bootstrap_columns(
         if n_resamples
         else regression_metrics(targets, predictions)
     )
-    return {f"model_vs_animal4_{name}": value for name, value in metrics.items()}
+    return {f"{prefix}_{name}": value for name, value in metrics.items()}
+
+
+def _other_animal_mean_enrichment(
+    frame: pd.DataFrame,
+    endpoint: str,
+    training_animals: tuple[int, ...],
+    *,
+    denominator_mode: str,
+    virus_round: int,
+) -> np.ndarray:
+    """Rebuild an organ enrichment from the mean RPM of selected animals."""
+    organ_columns = [
+        f"rpm_{denominator_mode}__{endpoint}_a{animal}" for animal in training_animals
+    ]
+    virus_column = f"rpm_{denominator_mode}__virus_prod{virus_round}"
+    missing = [column for column in organ_columns + [virus_column] if column not in frame]
+    if missing:
+        raise ValueError(f"Missing reconstructed columns: {missing}")
+    organ_rpm = frame[organ_columns].apply(pd.to_numeric, errors="coerce").mean(axis=1)
+    virus_rpm = pd.to_numeric(frame[virus_column], errors="coerce")
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.log2(organ_rpm.to_numpy(float) / virus_rpm.to_numpy(float))
 
 
 def benchmark_screen_models(
@@ -455,6 +479,146 @@ def benchmark_multitask_ensemble_animal_holdout(
                 )
             )
         rows.append(row)
+    return rows
+
+
+def benchmark_multitask_ensemble_leave_one_animal_out(
+    reconstructed_csv: str | Path,
+    endpoints: tuple[str, ...] = MULTIORGAN_ENDPOINTS,
+    animals: tuple[int, ...] = (1, 2, 3, 4),
+    ensemble_size: int = 5,
+    denominator_mode: str = "whitelist",
+    virus_round: int = 2,
+    random_state: int = 42,
+    test_fraction: float = 0.2,
+    max_iter: int = 80,
+    bootstrap_resamples: int = 0,
+) -> list[dict[str, object]]:
+    """Run a retrospective leave-one-animal-out robustness audit.
+
+    Every fold also keeps the distance-2 sequence holdout used by the formal
+    Animal 4 development benchmark. This is stronger than rerunning Animal 4,
+    but it remains retrospective development evidence rather than a new blind
+    animal because all four animals' labels were already available to the team.
+    """
+    if ensemble_size < 2:
+        raise ValueError("ensemble_size must be at least two")
+    if len(animals) < 3 or len(set(animals)) != len(animals):
+        raise ValueError("animals must contain at least three distinct identifiers")
+
+    frame = pd.read_csv(reconstructed_csv)
+    peptides = frame["AA"].tolist()
+    train_split, test_split = sequence_distance_split(
+        peptides,
+        test_fraction=test_fraction,
+        random_state=random_state,
+        minimum_hamming_distance=2,
+    )
+    features = one_hot_7mer(peptides)
+    rows: list[dict[str, object]] = []
+
+    for held_out_animal in animals:
+        training_animals = tuple(animal for animal in animals if animal != held_out_animal)
+        train_targets = np.column_stack(
+            [
+                _other_animal_mean_enrichment(
+                    frame,
+                    endpoint,
+                    training_animals,
+                    denominator_mode=denominator_mode,
+                    virus_round=virus_round,
+                )
+                for endpoint in endpoints
+            ]
+        )
+        held_out_columns = [
+            (
+                f"log2enr_{denominator_mode}__{endpoint}_a{held_out_animal}"
+                f"__over__virus_prod{virus_round}"
+            )
+            for endpoint in endpoints
+        ]
+        missing = [column for column in held_out_columns if column not in frame]
+        if missing:
+            raise ValueError(f"Missing reconstructed columns: {missing}")
+        held_out_targets = (
+            frame[held_out_columns].apply(pd.to_numeric, errors="coerce").to_numpy(float)
+        )
+        complete_train_rows = train_split & np.isfinite(train_targets).all(axis=1)
+        if complete_train_rows.sum() < 2:
+            raise ValueError(
+                f"Fewer than two complete training rows for held-out animal {held_out_animal}"
+            )
+
+        scaler = StandardScaler().fit(train_targets[complete_train_rows])
+        scaled_targets = scaler.transform(train_targets[complete_train_rows])
+        member_predictions = []
+        iterations = []
+        for member in range(ensemble_size):
+            model = build_shared_mlp(
+                random_state=random_state + member,
+                max_iter=max_iter,
+            )
+            model.fit(features[complete_train_rows], scaled_targets)
+            member_predictions.append(scaler.inverse_transform(model.predict(features)))
+            iterations.append(int(model.n_iter_))
+        stacked = np.stack(member_predictions)
+        prediction_mean = stacked.mean(axis=0)
+        prediction_std = stacked.std(axis=0)
+
+        for endpoint_index, endpoint in enumerate(endpoints):
+            test_rows = (
+                test_split
+                & np.isfinite(train_targets[:, endpoint_index])
+                & np.isfinite(held_out_targets[:, endpoint_index])
+            )
+            targets = held_out_targets[test_rows, endpoint_index]
+            predictions = prediction_mean[test_rows, endpoint_index]
+            disagreement = prediction_std[test_rows, endpoint_index]
+            absolute_error = np.abs(targets - predictions)
+            point_metrics = regression_metrics(targets, predictions)
+            row: dict[str, object] = {
+                "task": endpoint,
+                "model": f"shared_mlp_64_32_ensemble_{ensemble_size}",
+                "split": (
+                    "distance-2-sequence-holdout__leave-one-animal-out__"
+                    f"test-a{held_out_animal}"
+                ),
+                "test_role": CROSS_ANIMAL_TEST_ROLE,
+                "held_out_animal": held_out_animal,
+                "training_animals": "|".join(map(str, training_animals)),
+                "random_state": random_state,
+                "train_rows": int(complete_train_rows.sum()),
+                "test_rows": int(test_rows.sum()),
+                "ensemble_size": ensemble_size,
+                "member_iterations": "|".join(map(str, iterations)),
+                **{
+                    f"model_vs_heldout_{metric}": value
+                    for metric, value in point_metrics.items()
+                },
+                "training_mean_vs_heldout_pearson_r": _pearson(
+                    targets, train_targets[test_rows, endpoint_index]
+                ),
+                "model_vs_training_mean_pearson_r": _pearson(
+                    train_targets[test_rows, endpoint_index], predictions
+                ),
+                "disagreement_vs_absolute_error_pearson_r": _pearson(
+                    absolute_error, disagreement
+                ),
+            }
+            if bootstrap_resamples:
+                row.update(
+                    _bootstrap_columns(
+                        targets,
+                        predictions,
+                        n_resamples=bootstrap_resamples,
+                        random_state=(
+                            random_state + held_out_animal * 100 + endpoint_index
+                        ),
+                        prefix="model_vs_heldout",
+                    )
+                )
+            rows.append(row)
     return rows
 
 

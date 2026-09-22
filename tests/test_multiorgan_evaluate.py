@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 
 from aav9_sma.models.evaluate import (
+    CROSS_ANIMAL_TEST_ROLE,
     DEVELOPMENT_TEST_ROLE,
     benchmark_multitask_animal_holdout,
+    benchmark_multitask_ensemble_leave_one_animal_out,
     sequence_distance_split,
     validate_test_role,
 )
@@ -59,3 +61,34 @@ def test_animal4_cannot_be_labeled_final_blind() -> None:
         assert "Animal 4" in str(error)
     else:
         raise AssertionError("Animal 4 must not be labeled as a final blind test")
+
+
+def test_leave_one_animal_out_audits_every_animal(tmp_path) -> None:
+    rng = np.random.default_rng(11)
+    alphabet = np.array(list("ACDEFGHIKLMNPQRSTVWY"))
+    peptides = ["".join(row) for row in rng.choice(alphabet, size=(240, 7))]
+    frame = pd.DataFrame({"AA": peptides, "rpm_whitelist__virus_prod2": 1.0})
+    endpoints = ("brain", "spinal_cord")
+    for endpoint_index, endpoint in enumerate(endpoints):
+        base = np.array([peptide.count("A") + endpoint_index for peptide in peptides])
+        for animal in (1, 2, 3, 4):
+            enrichment = base + rng.normal(0, 0.1, len(frame)) + animal * 0.01
+            frame[f"rpm_whitelist__{endpoint}_a{animal}"] = 2**enrichment
+            frame[
+                f"log2enr_whitelist__{endpoint}_a{animal}__over__virus_prod2"
+            ] = enrichment
+    source = tmp_path / "reconstructed.csv"
+    frame.to_csv(source, index=False)
+
+    rows = benchmark_multitask_ensemble_leave_one_animal_out(
+        source,
+        endpoints=endpoints,
+        ensemble_size=2,
+        test_fraction=0.25,
+        max_iter=8,
+    )
+
+    assert len(rows) == 8
+    assert {row["held_out_animal"] for row in rows} == {1, 2, 3, 4}
+    assert all(row["test_role"] == CROSS_ANIMAL_TEST_ROLE for row in rows)
+    assert all(row["train_rows"] > 0 and row["test_rows"] > 0 for row in rows)

@@ -219,6 +219,11 @@ liver, heart, and kidney enrichments. It was reconstructed from 385,983,540
 aligned records across 63 runs; 96,169,266 reads mapped to the public 100K
 sequence set. The final benchmark trains on animals 1–3, removes one-mutation
 neighbors of test sequences from training, and evaluates only against animal 4.
+The public release contains no Animal 5. A retrospective
+[leave-one-animal-out audit](docs/CROSS_ANIMAL_ROBUSTNESS_AUDIT.zh-CN.md) now rotates Animals 1–4:
+brain Pearson averages 0.445 (range 0.358–0.554) and spinal-cord Pearson averages
+0.489 (range 0.396–0.571). Animal 4 is at the optimistic end, so this is labeled
+development robustness evidence rather than a new blind animal.
 
 | Endpoint | Finite 4-animal labels | Animals 1–3 vs animal 4 `r` | Ridge vs animal 4 `r` | Random Forest vs animal 4 `r` |
 | --- | ---: | ---: | ---: | ---: |

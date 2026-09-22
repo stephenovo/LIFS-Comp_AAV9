@@ -29,6 +29,7 @@ from aav9_sma.models.evaluate import (
     benchmark_multiorgan_animal_holdout,
     benchmark_multitask_animal_holdout,
     benchmark_multitask_ensemble_animal_holdout,
+    benchmark_multitask_ensemble_leave_one_animal_out,
     benchmark_production_generalization,
     benchmark_screen_models,
 )
@@ -260,6 +261,20 @@ def _build_parser() -> argparse.ArgumentParser:
     ensemble_benchmark_parser.add_argument("--max-iter", type=int, default=80)
     ensemble_benchmark_parser.add_argument("--bootstrap-resamples", type=int, default=0)
     ensemble_benchmark_parser.add_argument("--output", type=Path, required=True)
+
+    cross_animal_parser = subparsers.add_parser(
+        "benchmark-cross-animal",
+        help="Retrospectively leave out each animal with the frozen shared-MLP ensemble",
+    )
+    cross_animal_parser.add_argument("input", type=Path)
+    cross_animal_parser.add_argument(
+        "--endpoints", nargs="+", default=list(MULTIORGAN_ENDPOINTS)
+    )
+    cross_animal_parser.add_argument("--animals", nargs="+", type=int, default=[1, 2, 3, 4])
+    cross_animal_parser.add_argument("--ensemble-size", type=int, default=5)
+    cross_animal_parser.add_argument("--max-iter", type=int, default=80)
+    cross_animal_parser.add_argument("--bootstrap-resamples", type=int, default=500)
+    cross_animal_parser.add_argument("--output", type=Path, required=True)
 
     masked_benchmark_parser = subparsers.add_parser(
         "benchmark-masked-multitask",
@@ -616,6 +631,18 @@ def main() -> None:
         rows = benchmark_multitask_ensemble_animal_holdout(
             args.input,
             endpoints=tuple(args.endpoints),
+            ensemble_size=args.ensemble_size,
+            max_iter=args.max_iter,
+            bootstrap_resamples=args.bootstrap_resamples,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(rows).to_csv(args.output, index=False)
+        return
+    if args.command == "benchmark-cross-animal":
+        rows = benchmark_multitask_ensemble_leave_one_animal_out(
+            args.input,
+            endpoints=tuple(args.endpoints),
+            animals=tuple(args.animals),
             ensemble_size=args.ensemble_size,
             max_iter=args.max_iter,
             bootstrap_resamples=args.bootstrap_resamples,

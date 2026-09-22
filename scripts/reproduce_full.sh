@@ -75,13 +75,17 @@ echo "[2/8] Auditing pinned Fit4Function release"
 aav9-sma audit-fit4function "$FIT4FUNCTION_DIR" \
   --output "$OUTPUT_DIR/fit4function_release_audit.json"
 
-echo "[3/8] Running frozen animal-4 development benchmarks"
+echo "[3/8] Running animal-4 benchmarks and retrospective cross-animal audit"
 aav9-sma benchmark-multiorgan "$RECONSTRUCTED" \
   --models ridge random_forest \
   --output "$OUTPUT_DIR/multiorgan_baseline_metrics.csv"
 aav9-sma benchmark-multitask-ensemble "$RECONSTRUCTED" \
   --ensemble-size "$ENSEMBLE_SIZE" --max-iter "$MAX_ITER" \
   --output "$OUTPUT_DIR/multitask_ensemble_metrics.csv"
+aav9-sma benchmark-cross-animal "$RECONSTRUCTED" \
+  --ensemble-size "$ENSEMBLE_SIZE" --max-iter "$MAX_ITER" \
+  --bootstrap-resamples 500 \
+  --output "$OUTPUT_DIR/cross_animal_ensemble_metrics.csv"
 
 echo "[4/8] Running virtual screen"
 aav9-sma screen-virtual "$SCREEN_CSV" "$RECONSTRUCTED" \

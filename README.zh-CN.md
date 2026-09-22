@@ -56,7 +56,7 @@
 flowchart LR
     A["Fit4Function 数据"] --> B["数据审计\n标签映射"]
     B --> C["7-mer 编码"]
-    C --> D["四个预测头"]
+    C --> D["包装模型＋五个器官输出"]
     D --> E{"包装\n硬门槛"}
     E -->|不通过| X["淘汰"]
     E -->|通过| F["中枢 ↑ · 肝脏 ↓\n其他脱靶 ↓"]
@@ -254,6 +254,8 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 审计见 [三路线共识与差异](docs/THREE_ROUTE_CONSENSUS.md)。
 本轮最终升级、问题处置与通俗故事线见
 [最终升级报告](docs/FINAL_UPGRADE_REPORT.zh-CN.md)。
+没有湿实验时的完成度、已自动修复项和待决策项见
+[计算阶段最终审计](docs/COMPUTATIONAL_READINESS_REVIEW.zh-CN.md)。
 
 ### 实验验证交接包
 
@@ -269,14 +271,16 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 [阶段决策日志](docs/audit_data/wet_lab_decision_log.csv)、
 [中英文预注册模板](docs/WET_LAB_PREREGISTRATION_TEMPLATE.md)，以及
 [排版后的 Excel 工作簿](docs/audit_data/experimental_validation_handoff.xlsx)。
-候选表和空白模板可用下列命令重新生成：
+机器可读候选表、校验清单和空白模板可用下列命令重新生成：
 
 ```bash
-PYTHONPATH=src python scripts/build_experimental_handoff.py \
+PYTHONPATH=src python3 scripts/build_experimental_handoff.py \
   --shortlist docs/audit_data/virtual_screen_shortlist.csv \
   --controls docs/audit_data/funnel_control_audit.csv \
   --output-dir docs/audit_data
 ```
+
+排版后的 Excel 是上述机器可读文件的同步阅读版；实验样本的唯一权威清单仍是 CSV 面板。
 
 ## 科学边界
 

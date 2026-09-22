@@ -64,7 +64,7 @@ twice as another large objective.
 flowchart LR
     A["Fit4Function data"] --> B["Data audit\nand label mapping"]
     B --> C["7-mer encoding"]
-    C --> D["Four prediction heads"]
+    C --> D["Packaging model + five organ outputs"]
     D --> E{"Packaging\ngate"}
     E -->|fail| X["Reject"]
     E -->|pass| F["CNS ↑ · liver ↓\noff-target ↓"]
@@ -293,14 +293,17 @@ The handoff package includes the
 [decision log](docs/audit_data/wet_lab_decision_log.csv),
 [preregistration template](docs/WET_LAB_PREREGISTRATION_TEMPLATE.md), and a
 [formatted Excel workbook](docs/audit_data/experimental_validation_handoff.xlsx).
-The panel and empty templates can be regenerated with:
+The machine-readable panel, manifest, and empty templates can be regenerated with:
 
 ```bash
-PYTHONPATH=src python scripts/build_experimental_handoff.py \
+PYTHONPATH=src python3 scripts/build_experimental_handoff.py \
   --shortlist docs/audit_data/virtual_screen_shortlist.csv \
   --controls docs/audit_data/funnel_control_audit.csv \
   --output-dir docs/audit_data
 ```
+
+The formatted Excel workbook is a synchronized human-readable snapshot of those
+machine-readable files; the CSV panel remains the authoritative sample manifest.
 
 ## Scientific boundary
 

@@ -40,8 +40,8 @@
 
 - **第一阶段：** 30 条计算候选全部进入生产和质量检查。
 - **Tier 1：** `GKEKGGE`、`KKDGQEG`、`QGSGKEG`、`VNKGKDE`、`KGDKNEG`、`SKDNKEG`、`GAKGGEG`。这 7 条通过了严格保守定义，应优先排期。
-- **Tier 2：** 不属于 Tier 1、但处于严格帕累托前沿的候选。
-- **Tier 3：** 高分、多样化的近前沿候选。
+- **Tier 2：** 不属于 Tier 1，但位于严格帕累托前沿、脑和脊髓预测分别达到训练中位数、且预测 CNS:肝优势为正的候选。当前为 `QQKDKQA`。
+- **Tier 3：** 高分、多样化的探索候选，也包括只因某个次要目标极端而进入帕累托前沿、但绝对 CNS 表现不足的边界案例。`RAKREEE` 属于这一类，不应仅凭帕累托标签优先推进。
 - 预算允许时，每个 7-mer 可设计两种同义 DNA 编码，用于识别核苷酸或条形码效应。它们属于构建重复，不能替代独立生产批次和生物学重复。
 
 ### 3.2 必须设置的对照
@@ -111,7 +111,7 @@
 
 ### 阶段 1 输出
 
-按可重复性和产品质量排序。先推进 Tier 1，再根据实测生产证据补足合理规模的阶段 2 面板。每个阶段 2 实验都必须保留亲本和 mock。
+按可重复性和产品质量排序。先推进 Tier 1，再考虑 Tier 2；Tier 3 只在预注册的多样性挑战或实测产品质量提供额外理由时补入。每个阶段 2 实验都必须保留亲本和 mock。
 
 ## 7. 阶段 2：细胞层面的目标与肝脏脱靶验证
 
@@ -270,4 +270,3 @@ log2 特异性 = mean(log2 脊髓信号) - mean(log2 肝脏信号)
 - Percie du Sert 等：[ARRIVE Guidelines 2.0](https://arriveguidelines.org/arrive-guidelines)。
 - NIH：[重组或合成核酸研究指南](https://osp.od.nih.gov/wp-content/uploads/NIH_Guidelines.pdf)，或所在地适用的同等规定。
 - FDA：[Zolgensma 处方资料](https://www.fda.gov/media/126109/download)。
-

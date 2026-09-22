@@ -53,6 +53,7 @@ def build_validation_panel(shortlist: pd.DataFrame, control_audit: pd.DataFrame)
         "selection_rank",
         "strict_conservative",
         "is_pareto",
+        "passes_cns_median",
         "pred_pack_lcb",
         "pred_brain_mouse",
         "pred_spinal_cord_mouse",
@@ -70,6 +71,7 @@ def build_validation_panel(shortlist: pd.DataFrame, control_audit: pd.DataFrame)
     candidates = shortlist.copy()
     candidates["strict_conservative"] = _as_bool(candidates["strict_conservative"])
     candidates["is_pareto"] = _as_bool(candidates["is_pareto"])
+    candidates["passes_cns_median"] = _as_bool(candidates["passes_cns_median"])
     candidates["human_liver_warning"] = _as_bool(candidates["human_liver_warning"])
     candidates = candidates.sort_values(
         ["strict_conservative", "is_pareto", "selection_group", "selection_rank"],
@@ -78,16 +80,28 @@ def build_validation_panel(shortlist: pd.DataFrame, control_audit: pd.DataFrame)
     candidates["sample_id"] = [f"CAND-{index:03d}" for index in range(1, len(candidates) + 1)]
     candidates["panel_role"] = "computational_candidate"
     candidates["priority_tier"] = "Tier 3"
-    candidates.loc[candidates["is_pareto"], "priority_tier"] = "Tier 2"
+    tier_2 = (
+        candidates["is_pareto"]
+        & candidates["passes_cns_median"]
+        & candidates["log2_specificity"].gt(0)
+    )
+    candidates.loc[tier_2, "priority_tier"] = "Tier 2"
     candidates.loc[candidates["strict_conservative"], "priority_tier"] = "Tier 1"
     candidates["stage_1_plan"] = "package_and_qc"
-    candidates["stage_2_plan"] = "advance_if_stage_1_passes"
+    candidates["stage_2_plan"] = (
+        "hold_after_stage_1; advance only by preregistered diversity challenge or measured QC"
+    )
+    candidates.loc[
+        candidates["priority_tier"].isin(["Tier 1", "Tier 2"]), "stage_2_plan"
+    ] = "advance_if_stage_1_passes; prioritize by measured QC"
     candidates["stage_3_plan"] = "rank_after_stage_2; test top 4-6"
     candidates["selection_basis"] = candidates.apply(
         lambda row: (
             "strict_conservative_shortlist"
             if row["strict_conservative"]
-            else "strict_pareto_shortlist"
+            else "target_plausible_pareto_shortlist"
+            if row["priority_tier"] == "Tier 2"
+            else "exploratory_pareto_boundary_case"
             if row["is_pareto"]
             else "diverse_high_scoring_near_front"
         ),
@@ -183,6 +197,7 @@ def build_validation_panel(shortlist: pd.DataFrame, control_audit: pd.DataFrame)
         "selection_basis",
         "strict_conservative",
         "is_pareto",
+        "passes_cns_median",
         "pred_pack_lcb",
         "pred_brain_mouse",
         "pred_spinal_cord_mouse",

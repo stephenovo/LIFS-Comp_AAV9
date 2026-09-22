@@ -5,11 +5,11 @@
   "controls": 7,
   "panel_rows": 37,
   "schema_version": "1.0",
-  "shortlist_sha256": "e135b8e3774d1aad0577cfc5b1abf3ded9c53870bd138c673a6a0b3495aef762",
+  "shortlist_sha256": "3b499327a2a2ebb08f3a987fbd030c9e8d030cb8025bdbce03034c3606136210",
   "shortlist_source": "docs/audit_data/virtual_screen_shortlist.csv",
   "tier_counts": {
     "Tier 1": 7,
-    "Tier 2": 2,
-    "Tier 3": 21
+    "Tier 2": 1,
+    "Tier 3": 22
   }
 }

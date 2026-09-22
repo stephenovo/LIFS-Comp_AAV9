@@ -40,8 +40,8 @@ Use [`experimental_validation_panel.csv`](audit_data/experimental_validation_pan
 
 - **Stage 1:** test all 30 computational candidates for production and product quality.
 - **Tier 1:** `GKEKGGE`, `KKDGQEG`, `QGSGKEG`, `VNKGKDE`, `KGDKNEG`, `SKDNKEG`, and `GAKGGEG`. These seven passed the strict conservative definition and enter the front of the queue.
-- **Tier 2:** non-Tier-1 members of the strict Pareto front.
-- **Tier 3:** diverse, high-scoring near-front candidates.
+- **Tier 2:** non-Tier-1 strict-Pareto candidates that also clear both the brain and spinal-cord training medians and have positive predicted CNS:liver specificity. The current member is `QQKDKQA`.
+- **Tier 3:** diverse exploratory candidates, including Pareto boundary cases whose non-dominance is driven by a secondary objective despite weak absolute CNS predictions. `RAKREEE` is such a boundary case and should not be prioritized from Pareto membership alone.
 - If resources allow, represent each peptide with two synonymous DNA encodings. Treat these as construct replicates, not biological replicates. This helps detect nucleotide-level or barcode-related effects.
 
 ### 3.2 Required controls
@@ -113,7 +113,7 @@ Report exact values and confidence intervals. Do not convert a continuous yield 
 
 ### Stage 1 output
 
-Rank survivors by reproducibility and product quality. Advance Tier 1 first, then use measured production evidence to fill a practical Stage 2 panel. Keep the parental and mock controls in every Stage 2 experiment.
+Rank survivors by reproducibility and product quality. Advance Tier 1 first, then Tier 2. Add Tier 3 only through a preregistered diversity challenge or when measured product quality provides an additional reason. Keep the parental and mock controls in every Stage 2 experiment.
 
 ## 7. Stage 2 — cell-based target and liver off-target study
 
@@ -276,4 +276,3 @@ The handoff is complete only when the project receives:
 - Percie du Sert et al. [ARRIVE Guidelines 2.0](https://arriveguidelines.org/arrive-guidelines).
 - NIH. [Guidelines for Research Involving Recombinant or Synthetic Nucleic Acid Molecules](https://osp.od.nih.gov/wp-content/uploads/NIH_Guidelines.pdf), or the applicable local equivalent.
 - FDA. [Zolgensma prescribing information](https://www.fda.gov/media/126109/download).
-

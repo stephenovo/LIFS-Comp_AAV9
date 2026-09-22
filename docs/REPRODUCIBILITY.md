@@ -51,7 +51,8 @@ aav9-sma verify-manifest docs/data_manifest.json --root .
 
 The non-destructive full-data wrapper checks the pinned Fit4Function commit,
 verifies the manifest, runs the release audit and both Animal 4 development
-benchmarks, then runs the virtual screen:
+benchmarks, runs the virtual screen and funnel audits, and regenerates the
+machine-readable experimental handoff:
 
 ```bash
 bash scripts/reproduce_full.sh \
@@ -63,5 +64,6 @@ bash scripts/reproduce_full.sh \
 ```
 
 This wrapper never downloads raw data and never calls a result from Animal 4 a
-final blind validation. The Animal 4 role policy is documented in
+final blind validation. It regenerates the CSV/JSON handoff artifacts, not the
+formatted Excel snapshot. The Animal 4 role policy is documented in
 [`ANIMAL4_POLICY.md`](ANIMAL4_POLICY.md).

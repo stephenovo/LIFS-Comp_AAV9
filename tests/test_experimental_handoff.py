@@ -35,6 +35,7 @@ def _shortlist() -> pd.DataFrame:
             "selection_rank": [1, 1, 1],
             "strict_conservative": [True, False, False],
             "is_pareto": [True, True, False],
+            "passes_cns_median": [True, True, False],
             "pred_pack_lcb": [1.0, 1.0, 1.0],
             "pred_brain_mouse": [1.0, 1.0, 1.0],
             "pred_spinal_cord_mouse": [1.0, 1.0, 1.0],
@@ -68,3 +69,16 @@ def test_panel_contains_candidates_and_required_controls() -> None:
     assert {"PARENT_AAV9_K449R", "WILD_TYPE_AAV9", "NO_VECTOR_MOCK"} <= set(
         panel["variant_id"]
     )
+
+
+def test_pareto_boundary_case_without_target_floor_is_not_tier_2() -> None:
+    shortlist = _shortlist()
+    shortlist.loc[1, "passes_cns_median"] = False
+    shortlist.loc[1, "log2_specificity"] = -0.5
+
+    panel = build_validation_panel(shortlist, _controls())
+    candidate = panel.loc[panel["variant_id"] == "V2"].iloc[0]
+
+    assert candidate["priority_tier"] == "Tier 3"
+    assert candidate["selection_basis"] == "exploratory_pareto_boundary_case"
+    assert candidate["stage_2_plan"].startswith("hold_after_stage_1")

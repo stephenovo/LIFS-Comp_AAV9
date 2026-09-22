@@ -7,8 +7,9 @@ Usage: bash scripts/reproduce_full.sh \
   --fit4function-dir PATH --manifest PATH --data-root PATH \
   --reconstructed PATH --screen-csv PATH [options]
 
-Runs the data-dependent audit, benchmarks, and virtual screen without
-downloading or modifying external research data.
+Runs the data-dependent audit, benchmarks, virtual screen, control audit, and
+machine-readable experimental handoff without downloading or modifying external
+research data.
 
 Options:
   --output-dir PATH       Artifact directory (default: artifacts/full-data)
@@ -67,14 +68,14 @@ if [[ "$actual_commit" != "$expected_commit" ]]; then
 fi
 
 mkdir -p "$OUTPUT_DIR"
-echo "[1/5] Verifying external-data checksums"
+echo "[1/7] Verifying external-data checksums"
 aav9-sma verify-manifest "$MANIFEST" --root "$DATA_ROOT" > "$OUTPUT_DIR/manifest_verification.json"
 
-echo "[2/5] Auditing pinned Fit4Function release"
+echo "[2/7] Auditing pinned Fit4Function release"
 aav9-sma audit-fit4function "$FIT4FUNCTION_DIR" \
   --output "$OUTPUT_DIR/fit4function_release_audit.json"
 
-echo "[3/5] Running frozen animal-4 development benchmarks"
+echo "[3/7] Running frozen animal-4 development benchmarks"
 aav9-sma benchmark-multiorgan "$RECONSTRUCTED" \
   --models ridge random_forest \
   --output "$OUTPUT_DIR/multiorgan_baseline_metrics.csv"
@@ -82,7 +83,7 @@ aav9-sma benchmark-multitask-ensemble "$RECONSTRUCTED" \
   --ensemble-size "$ENSEMBLE_SIZE" --max-iter "$MAX_ITER" \
   --output "$OUTPUT_DIR/multitask_ensemble_metrics.csv"
 
-echo "[4/5] Running virtual screen"
+echo "[4/7] Running virtual screen"
 aav9-sma screen-virtual "$SCREEN_CSV" "$RECONSTRUCTED" \
   --pool-size "$POOL_SIZE" --ensemble-size "$ENSEMBLE_SIZE" --max-iter "$MAX_ITER" \
   --output-ranked "$OUTPUT_DIR/virtual_screen_ranked.csv.gz" \
@@ -90,7 +91,7 @@ aav9-sma screen-virtual "$SCREEN_CSV" "$RECONSTRUCTED" \
   --output-shortlist "$OUTPUT_DIR/virtual_screen_shortlist.csv" \
   --output-summary "$OUTPUT_DIR/virtual_screen_summary.json"
 
-echo "[5/5] Auditing gate sensitivity and residue composition"
+echo "[5/7] Auditing gate sensitivity and residue composition"
 aav9-sma audit-screen-funnel \
   "$OUTPUT_DIR/virtual_screen_ranked.csv.gz" \
   "$OUTPUT_DIR/virtual_screen_shortlist.csv" \
@@ -98,5 +99,17 @@ aav9-sma audit-screen-funnel \
   --output-gates "$OUTPUT_DIR/packaging_gate_sensitivity.csv" \
   --output-composition "$OUTPUT_DIR/funnel_composition_audit.csv" \
   --output-summary "$OUTPUT_DIR/funnel_sensitivity_summary.json"
+
+echo "[6/7] Running in-sample directionality controls"
+aav9-sma audit-controls "$SCREEN_CSV" "$RECONSTRUCTED" \
+  --ensemble-size "$ENSEMBLE_SIZE" --max-iter "$MAX_ITER" \
+  --output-controls "$OUTPUT_DIR/funnel_control_audit.csv" \
+  --output-summary "$OUTPUT_DIR/funnel_control_summary.json"
+
+echo "[7/7] Building machine-readable experimental handoff"
+PYTHONPATH=src python3 scripts/build_experimental_handoff.py \
+  --shortlist "$OUTPUT_DIR/virtual_screen_shortlist.csv" \
+  --controls "$OUTPUT_DIR/funnel_control_audit.csv" \
+  --output-dir "$OUTPUT_DIR"
 
 echo "Full-data run completed in $OUTPUT_DIR"

@@ -117,6 +117,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install ".[dev]"
+```
 
 ## 先运行自包含 smoke test
 
@@ -130,6 +131,7 @@ aav9-sma demo --output-dir artifacts/demo
 这些输出只用于检查安装和接口，不能用于生物学结论。详见
 [可复现性说明](docs/REPRODUCIBILITY.md)。
 
+```bash
 ruff check .
 pytest
 ```
@@ -240,8 +242,8 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 偏中枢、偏低肝和折中型各 10 条；全部与训练序列至少相差 2 位、候选之间至少相差
 3 位，并处于过包装线序列综合分前 5%。其中 6 条属于严格帕累托前沿，其余 24 条
 明确标记为兼顾得分与多样性的近前沿计算假设。新增的严格保守定义要求同时通过
-包装下界、脊髓训练中位数、低肝训练中位数和低模型分歧；全池有 8 条，最终清单
-包含其中 7 条。
+包装下界、脑与脊髓各自的训练中位数、低肝训练中位数和低模型分歧；全池有 8 条，
+最终清单包含其中 7 条。
 
 ![虚拟筛选总结图](docs/assets/virtual_screen_summary.png)
 
@@ -250,6 +252,8 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 [30 条候选清单](docs/audit_data/virtual_screen_shortlist.csv) 和
 [筛选摘要](docs/audit_data/virtual_screen_summary.json)。模型挑战者、晋级结论和对照漏斗
 审计见 [三路线共识与差异](docs/THREE_ROUTE_CONSENSUS.md)。
+本轮最终升级、问题处置与通俗故事线见
+[最终升级报告](docs/FINAL_UPGRADE_REPORT.zh-CN.md)。
 
 ### 实验验证交接包
 

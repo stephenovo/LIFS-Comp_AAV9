@@ -1,0 +1,5 @@
+evaluation,model,train_rows,test_rows,pearson_r,r2,mae,offset_90,offset_95,promoted,reason
+independent_assessment_library,ridge,24000,57724,0.7668236711160065,0.5877551433381005,2.2006498959194047,,,False,RF was slightly better on assessment but did not pass the in-pipeline distance-2 calibration guardrail
+independent_assessment_library,random_forest,24000,57724,0.779518591712434,0.6072331964566282,2.059015205150346,,,False,Assessment improvement was not reproduced on the distance-2 calibration protocol
+distance_2_sequence_calibration,ridge,78219,19883,0.65442989355086,0.4281143011994486,1.0470980905244789,1.7240332239944456,2.5503787498840333,True,Reference packaging head retained
+distance_2_sequence_calibration,random_forest,78219,19883,0.6426973323904336,0.41289048844887866,1.050811072880614,1.8094464090628306,2.6467137275513766,False,Lower correlation higher MAE and wider lower-bound offset than Ridge

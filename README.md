@@ -129,6 +129,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install ".[dev]"
+```
 
 ## Run the self-contained smoke test first
 
@@ -143,6 +144,7 @@ aav9-sma demo --output-dir artifacts/demo
 The outputs are installation checks only and must not be used for biological
 claims. See [the reproducibility guide](docs/REPRODUCIBILITY.md).
 
+```bash
 ruff check .
 pytest
 ```
@@ -309,6 +311,9 @@ inspected during model comparison. It is not a final blind test; see
 [`docs/ANIMAL4_POLICY.md`](docs/ANIMAL4_POLICY.md). Full-data inputs can be
 checked with `aav9-sma verify-manifest` and the non-destructive
 [`scripts/reproduce_full.sh`](scripts/reproduce_full.sh).
+The final model decision, funnel sensitivity audit, and plain-language project
+story are documented in the
+[`final upgrade report`](docs/FINAL_UPGRADE_REPORT.zh-CN.md).
 
 - Mouse brain/spinal-cord enrichment is a CNS proxy, not demonstrated human
   motor-neuron specificity.

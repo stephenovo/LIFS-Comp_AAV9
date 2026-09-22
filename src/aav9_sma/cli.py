@@ -21,7 +21,6 @@ from aav9_sma.data.reconstruct import (
 )
 from aav9_sma.data.sra import fetch_sra_manifest, summarize_sra_manifest
 from aav9_sma.demo import run_demo
-from aav9_sma.repro import verify_manifest
 from aav9_sma.models.evaluate import (
     MULTIORGAN_ENDPOINTS,
     SCREEN_TASKS,
@@ -32,8 +31,18 @@ from aav9_sma.models.evaluate import (
     benchmark_production_generalization,
     benchmark_screen_models,
 )
+from aav9_sma.repro import verify_manifest
+from aav9_sma.screening.audit import (
+    build_composition_audit,
+    build_gate_sensitivity_audit,
+    summarize_funnel_audit,
+)
 from aav9_sma.screening.score import rank_candidates
-from aav9_sma.screening.virtual import run_control_audit, run_virtual_screen
+from aav9_sma.screening.virtual import (
+    fit_calibrated_packaging_model,
+    run_control_audit,
+    run_virtual_screen,
+)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -277,6 +286,18 @@ def _build_parser() -> argparse.ArgumentParser:
     control_parser.add_argument("--max-iter", type=int, default=80)
     control_parser.add_argument("--output-controls", type=Path, required=True)
     control_parser.add_argument("--output-summary", type=Path, required=True)
+
+    funnel_audit_parser = subparsers.add_parser(
+        "audit-screen-funnel",
+        help="Audit packaging-gate sensitivity and residue composition without reranking",
+    )
+    funnel_audit_parser.add_argument("ranked_csv", type=Path)
+    funnel_audit_parser.add_argument("shortlist_csv", type=Path)
+    funnel_audit_parser.add_argument("screen_csv", type=Path)
+    funnel_audit_parser.add_argument("--random-state", type=int, default=42)
+    funnel_audit_parser.add_argument("--output-gates", type=Path, required=True)
+    funnel_audit_parser.add_argument("--output-composition", type=Path, required=True)
+    funnel_audit_parser.add_argument("--output-summary", type=Path, required=True)
     return parser
 
 
@@ -611,6 +632,35 @@ def main() -> None:
             path.parent.mkdir(parents=True, exist_ok=True)
         controls.to_csv(args.output_controls, index=False)
         _write_json(summary, args.output_summary)
+        return
+    if args.command == "audit-screen-funnel":
+        ranked = pd.read_csv(args.ranked_csv)
+        shortlist = pd.read_csv(args.shortlist_csv)
+        screen = pd.read_csv(args.screen_csv)
+        offsets: dict[str, float] = {}
+        packaging_threshold = None
+        for gate, coverage in (("sensitivity_90_lcb", 0.90), ("strict_95_lcb", 0.95)):
+            _, threshold, offset, _ = fit_calibrated_packaging_model(
+                screen,
+                random_state=args.random_state,
+                coverage=coverage,
+            )
+            if packaging_threshold is not None and threshold != packaging_threshold:
+                raise RuntimeError("Packaging threshold changed between calibration runs")
+            packaging_threshold = threshold
+            offsets[gate] = offset
+        offsets["sensitivity_point_prediction"] = 0.0
+        gate_audit = build_gate_sensitivity_audit(
+            ranked,
+            packaging_threshold=float(packaging_threshold),
+            lower_bound_offsets=offsets,
+        )
+        composition_audit = build_composition_audit(ranked, shortlist, screen)
+        for path in (args.output_gates, args.output_composition, args.output_summary):
+            path.parent.mkdir(parents=True, exist_ok=True)
+        gate_audit.to_csv(args.output_gates, index=False)
+        composition_audit.to_csv(args.output_composition, index=False)
+        _write_json(summarize_funnel_audit(gate_audit, composition_audit), args.output_summary)
         return
     raise RuntimeError(f"Unhandled command: {args.command}")
 

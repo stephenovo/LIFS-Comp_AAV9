@@ -44,6 +44,7 @@
   "shortlist_pareto_rows": 6,
   "shortlist_human_liver_warnings": 1,
   "strict_conservative_thresholds": {
+    "brain_training_median": -0.0935122576974689,
     "spinal_cord_training_median": -0.0066681232936948,
     "liver_training_median": -0.8925827981789674,
     "eligible_uncertainty_median": 0.8376862406730652

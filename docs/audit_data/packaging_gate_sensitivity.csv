@@ -1,0 +1,4 @@
+gate,lower_bound_offset,packaging_threshold,passed,pass_rate,fold_count_vs_strict,strict_candidates_retained,jaccard_vs_strict,js_divergence_bits_vs_virtual_pool,missing_residues,role
+sensitivity_90_lcb,1.7240332239944456,-0.769888015,29123,0.029123,4.84092420212766,1.0,0.20657212512447207,0.12462270953367563,,sensitivity_only
+strict_95_lcb,2.5503787498840333,-0.769888015,6016,0.006016,1.0,1.0,1.0,0.18219335973593498,,primary_pre_registered
+sensitivity_point_prediction,0.0,-0.769888015,238933,0.238933,39.716256648936174,1.0,0.025178606554975662,0.04586911229685288,,sensitivity_only

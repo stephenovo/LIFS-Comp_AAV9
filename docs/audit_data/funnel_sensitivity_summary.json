@@ -1,0 +1,74 @@
+{
+  "packaging_gates": {
+    "sensitivity_90_lcb": {
+      "passed": 29123,
+      "pass_rate": 0.029123,
+      "fold_count_vs_strict": 4.84092420212766,
+      "role": "sensitivity_only"
+    },
+    "strict_95_lcb": {
+      "passed": 6016,
+      "pass_rate": 0.006016,
+      "fold_count_vs_strict": 1.0,
+      "role": "primary_pre_registered"
+    },
+    "sensitivity_point_prediction": {
+      "passed": 238933,
+      "pass_rate": 0.238933,
+      "fold_count_vs_strict": 39.716256648936174,
+      "role": "sensitivity_only"
+    }
+  },
+  "composition_stages": {
+    "observed_100k_library": {
+      "sequence_count": 100000,
+      "js_divergence_bits_vs_virtual_pool": 0.027577522998917595,
+      "missing_residues": []
+    },
+    "virtual_pool": {
+      "sequence_count": 1000000,
+      "js_divergence_bits_vs_virtual_pool": 0.0,
+      "missing_residues": []
+    },
+    "packaging_95_lcb": {
+      "sequence_count": 6016,
+      "js_divergence_bits_vs_virtual_pool": 0.18219335973593498,
+      "missing_residues": []
+    },
+    "pareto_after_95_lcb": {
+      "sequence_count": 169,
+      "js_divergence_bits_vs_virtual_pool": 0.27137493442040894,
+      "missing_residues": [
+        "Y"
+      ]
+    },
+    "quality_top5_after_95_lcb": {
+      "sequence_count": 296,
+      "js_divergence_bits_vs_virtual_pool": 0.22742768407399933,
+      "missing_residues": [
+        "C",
+        "F",
+        "W"
+      ]
+    },
+    "final_shortlist": {
+      "sequence_count": 30,
+      "js_divergence_bits_vs_virtual_pool": 0.2688791036177766,
+      "missing_residues": [
+        "C",
+        "F",
+        "I",
+        "M",
+        "W",
+        "Y"
+      ]
+    }
+  },
+  "interpretation": {
+    "strict_gate_is_high_false_negative_risk": true,
+    "composition_bias_first_visible_at": "packaging_95_lcb",
+    "primary_shortlist_changed": false,
+    "reason": "Sensitivity gates diagnose robustness; they do not replace the pre-registered 95% lower-bound shortlist without new experimental evidence."
+  },
+  "claim_boundary": "This audit measures computational funnel behavior, not packaging, motor-neuron transduction, biodistribution, safety, or efficacy in wet-lab experiments."
+}

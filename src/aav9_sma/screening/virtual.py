@@ -245,17 +245,27 @@ def add_conservative_annotations(
     Thresholds come from animals 1-3 training labels; uncertainty is compared
     only within candidates that passed the packaging gate.
     """
+    brain_column = "log2enr_whitelist__brain_animals_1_3__over__virus_prod2"
     spinal_column = "log2enr_whitelist__spinal_cord_animals_1_3__over__virus_prod2"
     liver_column = "log2enr_whitelist__liver_animals_1_3__over__virus_prod2"
-    missing = [column for column in (spinal_column, liver_column) if column not in reconstructed]
+    missing = [
+        column
+        for column in (brain_column, spinal_column, liver_column)
+        if column not in reconstructed
+    ]
     if missing:
         raise ValueError(f"Missing conservative-subgroup columns: {missing}")
+    brain_threshold = float(pd.to_numeric(reconstructed[brain_column], errors="coerce").median())
     spinal_threshold = float(pd.to_numeric(reconstructed[spinal_column], errors="coerce").median())
     liver_threshold = float(pd.to_numeric(reconstructed[liver_column], errors="coerce").median())
     eligible_uncertainty = ranked.loc[ranked["passes_packaging_gate"], "organ_uncertainty_mean"]
     uncertainty_threshold = float(eligible_uncertainty.median())
     output = ranked.copy()
-    output["passes_cns_median"] = output["pred_spinal_cord_mouse"] >= spinal_threshold
+    output["passes_brain_median"] = output["pred_brain_mouse"] >= brain_threshold
+    output["passes_spinal_median"] = output["pred_spinal_cord_mouse"] >= spinal_threshold
+    output["passes_cns_median"] = output["passes_brain_median"] & output[
+        "passes_spinal_median"
+    ]
     output["passes_low_liver_median"] = output["pred_liver_mouse"] <= liver_threshold
     output["passes_low_uncertainty"] = output["organ_uncertainty_mean"] <= uncertainty_threshold
     output["strict_conservative"] = (
@@ -265,6 +275,7 @@ def add_conservative_annotations(
         & output["passes_low_uncertainty"]
     )
     return output, {
+        "brain_training_median": brain_threshold,
         "spinal_cord_training_median": spinal_threshold,
         "liver_training_median": liver_threshold,
         "eligible_uncertainty_median": uncertainty_threshold,

@@ -1,0 +1,38 @@
+{
+  "study_id": "REPLACE_WITH_STUDY_ID",
+  "final_blind_dataset_id": "REPLACE_WITH_NEW_INDEPENDENT_BATCH_ID",
+  "outcome_data_accessed": false,
+  "roles": {
+    "model_team": "REPLACE_WITH_MODEL_TEAM",
+    "custodian": "REPLACE_WITH_BLIND_KEY_CUSTODIAN",
+    "wet_lab": "REPLACE_WITH_WET_LAB_TEAM",
+    "analysis": "REPLACE_WITH_INDEPENDENT_ANALYSIS_TEAM"
+  },
+  "locked_decisions": {
+    "model_and_encoder": "Frozen shared multi-task MLP ensemble and one-hot encoder at the recorded Git commit",
+    "training_data_version": "Frozen source manifest and reconstructed training table",
+    "primary_endpoint": "Spinal-cord Spearman correlation on the preregistered model-validation set",
+    "analysis_method": "One-shot locked script; sequence bootstrap confidence interval; no interim outcome review",
+    "success_rule": "Spearman rho >= 0.45 and bootstrap 95% lower confidence limit > 0.30",
+    "exclusion_rule": "REPLACE_WITH_PRE_OUTCOME_SAMPLE_AND_BATCH_QC_RULES",
+    "unblinding_condition": "QC and exclusions locked; blinded report generated and hashed"
+  },
+  "files": [
+    {
+      "role": "analysis_plan",
+      "path": "docs/FINAL_BLIND_TEST_PROTOCOL.zh-CN.md"
+    },
+    {
+      "role": "candidate_panel",
+      "path": "REPLACE_WITH_FROZEN_BLINDED_PANEL.csv"
+    },
+    {
+      "role": "prediction_table",
+      "path": "REPLACE_WITH_FROZEN_PREDICTIONS.csv"
+    },
+    {
+      "role": "evaluation_code",
+      "path": "src/aav9_sma/models/evaluate.py"
+    }
+  ]
+}

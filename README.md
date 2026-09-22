@@ -274,6 +274,12 @@ Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan
 [30-candidate shortlist](docs/audit_data/virtual_screen_shortlist.csv). The
 [three-route comparison](docs/THREE_ROUTE_CONSENSUS.md) records challenger
 results, control behavior, adopted consensus, and route-specific differences.
+The separate [12-sequence composition challenge](docs/audit_data/composition_challenge_panel.csv)
+covers `C/F/I/M/W/Y` with one strict-95 packaging survivor and one 90%-only
+near miss per residue. It is a packaging/QC stress test, not an extension of
+the therapeutic shortlist. The [final blind-test protocol](docs/FINAL_BLIND_TEST_PROTOCOL.zh-CN.md)
+defines the new-data design, role separation, immutable freeze, one-time
+unblinding, and automatic downgrade if the blind is broken.
 
 ### Experimental-validation handoff
 

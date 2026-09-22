@@ -43,3 +43,7 @@ Use:
 Do not use “Animal 4 blind test”, “unseen final test”, or “validated in animals”
 without an independent experimental dataset and the corresponding wet-lab
 evidence.
+
+The operational preregistration, role separation, freeze command, integrity
+checks, and automatic failure consequence for the next study are defined in the
+[final blind-test protocol](FINAL_BLIND_TEST_PROTOCOL.zh-CN.md).

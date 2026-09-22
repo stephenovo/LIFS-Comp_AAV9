@@ -137,6 +137,12 @@ G/K/E、低疏水的窄序列区域。它可能是真实设计信号，也可能
 综合分前 5% 与最终短名单继续放大。见
 [`funnel_composition_audit.csv`](audit_data/funnel_composition_audit.csv)。
 
+为直接检验这一失败模式，另行选择了
+[`composition_challenge_panel.csv`](audit_data/composition_challenge_panel.csv) 中的 12 条：
+对 `C/F/I/M/W/Y` 每种残基各保留 1 条严格 95% 包装下界通过者和 1 条只通过 90%
+下界的边界候选。它们彼此的最小 Hamming 距离为 3，且均与训练序列至少相差 2 位。
+该面板只用于阶段 1 包装/QC，不替换主 30 条，也不得并入主候选命中率。
+
 ## 9. 必须保留的限制
 
 - 这些标签是两小时小鼠器官载体基因组 DNA 分布，不是细胞类型分辨的功能转导；
@@ -146,6 +152,9 @@ G/K/E、低疏水的窄序列区域。它可能是真实设计信号，也可能
 - Fit4Function 数据来自 AAV9 `(K449R)`、VP1 588/589 之间插入 7-mer 的背景；
 - Animal 4 已用于本轮模型比较，后续不能再把它称为从未查看的最终盲测；
 - 若有合适的猕猴数据，应保持为下一层真正的盲测，不参与调权或挑候选。
+
+新数据的冻结、角色分离、一次解盲和违规降级规则见
+[最终盲测方案](FINAL_BLIND_TEST_PROTOCOL.zh-CN.md)。
 
 ## 10. 下一步实验交接建议
 

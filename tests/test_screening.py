@@ -4,6 +4,7 @@ import pandas as pd
 from aav9_sma.screening.audit import (
     build_composition_audit,
     build_gate_sensitivity_audit,
+    select_composition_challenge_panel,
     summarize_funnel_audit,
 )
 from aav9_sma.screening.pareto import pareto_mask
@@ -166,3 +167,37 @@ def test_funnel_audits_trace_gate_and_composition_changes() -> None:
         "final_shortlist",
     }
     assert summary["interpretation"]["primary_shortlist_changed"] is False
+
+
+def test_composition_challenge_keeps_primary_shortlist_separate() -> None:
+    ranked = pd.DataFrame(
+        {
+            "variant_id": ["c95", "c90", "f95", "f90", "main"],
+            "AA": ["CAAAAAD", "ACDDDDD", "FAAAAAG", "AFEEEEE", "AAAAAAA"],
+            "pred_pack": [3.0, 2.4, 3.1, 2.3, 4.0],
+            "pred_pack_lcb": [1.0, 0.4, 1.1, 0.3, 2.0],
+            "display_score": [1.0, 0.0, 0.8, -0.1, 2.0],
+            "f_cns": [0.0] * 5,
+            "f_liv": [0.0] * 5,
+            "f_off": [0.0] * 5,
+            "organ_uncertainty_mean": [0.1] * 5,
+            "training_distance_lower_bound": [2] * 5,
+            "human_liver_warning": [False] * 5,
+        }
+    )
+    shortlist = pd.DataFrame({"AA": ["AAAAAAA"]})
+
+    panel, summary = select_composition_challenge_panel(
+        ranked,
+        shortlist,
+        packaging_threshold=0.5,
+        strict_95_offset=2.0,
+        sensitivity_90_offset=1.0,
+        target_residues=("C", "F"),
+        minimum_pairwise_distance=1,
+    )
+
+    assert len(panel) == 4
+    assert set(panel["gate_stratum"]) == {"strict_95_survivor", "sensitivity_90_only"}
+    assert not panel["replaces_primary_shortlist"].any()
+    assert summary["primary_shortlist_changed"] is False

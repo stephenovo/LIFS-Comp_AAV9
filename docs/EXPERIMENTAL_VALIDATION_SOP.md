@@ -34,7 +34,11 @@ The project team supplies the candidate rationale and analysis plan. The qualifi
 
 ## 3. Test article and control panel
 
-Use [`experimental_validation_panel.csv`](audit_data/experimental_validation_panel.csv) as the authoritative manifest.
+Use [`experimental_validation_panel.csv`](audit_data/experimental_validation_panel.csv) as the
+authoritative manifest for the primary candidates and existing controls. Use
+[`composition_challenge_panel.csv`](audit_data/composition_challenge_panel.csv) as the authoritative
+manifest for the separate composition-stress arm. A custodian may assign both tables into one blind-ID
+space, but their analyses remain separate.
 
 ### 3.1 Candidates
 
@@ -44,7 +48,13 @@ Use [`experimental_validation_panel.csv`](audit_data/experimental_validation_pan
 - **Tier 3:** diverse exploratory candidates, including Pareto boundary cases whose non-dominance is driven by a secondary objective despite weak absolute CNS predictions. `RAKREEE` is such a boundary case and should not be prioritized from Pareto membership alone.
 - If resources allow, represent each peptide with two synonymous DNA encodings. Treat these as construct replicates, not biological replicates. This helps detect nucleotide-level or barcode-related effects.
 
-### 3.2 Required controls
+### 3.2 Composition-challenge arm
+
+- The 12 rows cover `C/F/I/M/W/Y`, with one strict-95 packaging survivor and one 90%-only near miss per residue.
+- They test whether the packaging gate creates composition-dependent false negatives and default to Stage 1 packaging/QC only.
+- They are not additional SMA therapeutic candidates and must not be pooled into the primary 30-candidate hit rate. Advancement beyond Stage 1 requires a separately preregistered rationale.
+
+### 3.3 Required controls
 
 1. **Matched parental control:** AAV9 `(K449R)` with no 7-mer insertion. This is the primary comparator because the Fit4Function library used that background.
 2. **No-vector/mock control:** carries the assay background through every applicable stage.
@@ -113,7 +123,7 @@ Report exact values and confidence intervals. Do not convert a continuous yield 
 
 ### Stage 1 output
 
-Rank survivors by reproducibility and product quality. Advance Tier 1 first, then Tier 2. Add Tier 3 only through a preregistered diversity challenge or when measured product quality provides an additional reason. Keep the parental and mock controls in every Stage 2 experiment.
+Rank survivors by reproducibility and product quality. Advance Tier 1 first, then Tier 2. Add Tier 3 only through a preregistered diversity challenge or when measured product quality provides an additional reason. Analyze strict-95 versus 90%-only packaging success separately within the composition arm; do not pool it with tier hit rates. Keep the parental and mock controls in every Stage 2 experiment.
 
 ## 7. Stage 2 — cell-based target and liver off-target study
 

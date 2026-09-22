@@ -1,0 +1,32 @@
+{
+  "panel_role": "separate_packaging_composition_challenge",
+  "rows": 12,
+  "target_residues": [
+    "C",
+    "F",
+    "I",
+    "M",
+    "W",
+    "Y"
+  ],
+  "rows_per_residue": {
+    "C": 2,
+    "F": 2,
+    "I": 2,
+    "M": 2,
+    "W": 2,
+    "Y": 2
+  },
+  "rows_per_gate_stratum": {
+    "strict_95_survivor": 6,
+    "sensitivity_90_only": 6
+  },
+  "minimum_pairwise_hamming_required": 3,
+  "minimum_pairwise_hamming_observed": 3,
+  "packaging_threshold": -0.769888015,
+  "strict_95_lower_bound_offset": 2.5503787498840333,
+  "sensitivity_90_lower_bound_offset": 1.7240332239944456,
+  "primary_shortlist_changed": false,
+  "selection_rule": "One strict-95 survivor and one 90-only near miss per residue; exactly one target residue per sequence; distance >=2 from training and pairwise challenge distance >=3.",
+  "claim_boundary": "Packaging/QC challenge only. These rows are not therapeutic candidates and must not be pooled with the primary 30-candidate hit-rate analysis."
+}

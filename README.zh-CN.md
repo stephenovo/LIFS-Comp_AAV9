@@ -256,6 +256,9 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 [最终升级报告](docs/FINAL_UPGRADE_REPORT.zh-CN.md)。
 没有湿实验时的完成度、已自动修复项和待决策项见
 [计算阶段最终审计](docs/COMPUTATIONAL_READINESS_REVIEW.zh-CN.md)。
+下一批新数据的模型级与候选级盲测、四方分权、冻结命令和一次解盲规则见
+[最终盲测方案](docs/FINAL_BLIND_TEST_PROTOCOL.zh-CN.md)。组成偏倚另用
+[12 条包装/QC 挑战组](docs/audit_data/composition_challenge_panel.csv)检查，不改变原 30 条主名单。
 
 ### 实验验证交接包
 

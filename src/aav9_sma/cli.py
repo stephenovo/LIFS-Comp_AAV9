@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from aav9_sma.blind import freeze_blind_study, verify_blind_freeze
 from aav9_sma.data.alignment import count_bowtie2_fastq, write_bowtie2_reference
 from aav9_sma.data.audit import audit_csv
 from aav9_sma.data.ena import download_fastq_manifest, resolve_ena_fastqs
@@ -35,6 +36,7 @@ from aav9_sma.repro import verify_manifest
 from aav9_sma.screening.audit import (
     build_composition_audit,
     build_gate_sensitivity_audit,
+    select_composition_challenge_panel,
     summarize_funnel_audit,
 )
 from aav9_sma.screening.score import rank_candidates
@@ -61,6 +63,22 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     manifest_parser.add_argument("manifest", type=Path)
     manifest_parser.add_argument("--root", type=Path, default=Path("."))
+
+    blind_freeze_parser = subparsers.add_parser(
+        "freeze-blind-study",
+        help="Freeze a one-shot external blind-study plan before outcome access",
+    )
+    blind_freeze_parser.add_argument("config", type=Path)
+    blind_freeze_parser.add_argument("--root", type=Path, default=Path("."))
+    blind_freeze_parser.add_argument("--output", type=Path, required=True)
+
+    blind_verify_parser = subparsers.add_parser(
+        "verify-blind-freeze",
+        help="Verify the frozen files and Git state before locked blind analysis",
+    )
+    blind_verify_parser.add_argument("manifest", type=Path)
+    blind_verify_parser.add_argument("--root", type=Path, default=Path("."))
+    blind_verify_parser.add_argument("--output", type=Path)
 
     audit_parser = subparsers.add_parser("audit-data", help="Audit a canonical CSV file")
     audit_parser.add_argument("input", type=Path)
@@ -298,6 +316,21 @@ def _build_parser() -> argparse.ArgumentParser:
     funnel_audit_parser.add_argument("--output-gates", type=Path, required=True)
     funnel_audit_parser.add_argument("--output-composition", type=Path, required=True)
     funnel_audit_parser.add_argument("--output-summary", type=Path, required=True)
+
+    composition_challenge_parser = subparsers.add_parser(
+        "select-composition-challenge",
+        help="Select a separate packaging-only panel for residues missing from the shortlist",
+    )
+    composition_challenge_parser.add_argument("ranked_csv", type=Path)
+    composition_challenge_parser.add_argument("shortlist_csv", type=Path)
+    composition_challenge_parser.add_argument("screen_csv", type=Path)
+    composition_challenge_parser.add_argument(
+        "--target-residues", nargs="+", default=list("CFIMWY")
+    )
+    composition_challenge_parser.add_argument("--minimum-pairwise-distance", type=int, default=3)
+    composition_challenge_parser.add_argument("--random-state", type=int, default=42)
+    composition_challenge_parser.add_argument("--output-panel", type=Path, required=True)
+    composition_challenge_parser.add_argument("--output-summary", type=Path, required=True)
     return parser
 
 
@@ -370,6 +403,16 @@ def main() -> None:
     if args.command == "verify-manifest":
         result = verify_manifest(args.manifest, args.root)
         print(json.dumps(result, indent=2, ensure_ascii=False))
+        if not result["ok"]:
+            raise SystemExit(1)
+        return
+    if args.command == "freeze-blind-study":
+        payload = freeze_blind_study(args.config, args.root, args.output)
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+        return
+    if args.command == "verify-blind-freeze":
+        result = verify_blind_freeze(args.manifest, args.root)
+        _write_json(result, args.output)
         if not result["ok"]:
             raise SystemExit(1)
         return
@@ -661,6 +704,36 @@ def main() -> None:
         gate_audit.to_csv(args.output_gates, index=False)
         composition_audit.to_csv(args.output_composition, index=False)
         _write_json(summarize_funnel_audit(gate_audit, composition_audit), args.output_summary)
+        return
+    if args.command == "select-composition-challenge":
+        ranked = pd.read_csv(args.ranked_csv)
+        shortlist = pd.read_csv(args.shortlist_csv)
+        screen = pd.read_csv(args.screen_csv)
+        _, packaging_threshold, strict_95_offset, _ = fit_calibrated_packaging_model(
+            screen,
+            random_state=args.random_state,
+            coverage=0.95,
+        )
+        _, threshold_90, sensitivity_90_offset, _ = fit_calibrated_packaging_model(
+            screen,
+            random_state=args.random_state,
+            coverage=0.90,
+        )
+        if threshold_90 != packaging_threshold:
+            raise RuntimeError("Packaging threshold changed between calibration runs")
+        panel, summary = select_composition_challenge_panel(
+            ranked,
+            shortlist,
+            packaging_threshold=packaging_threshold,
+            strict_95_offset=strict_95_offset,
+            sensitivity_90_offset=sensitivity_90_offset,
+            target_residues=args.target_residues,
+            minimum_pairwise_distance=args.minimum_pairwise_distance,
+        )
+        for path in (args.output_panel, args.output_summary):
+            path.parent.mkdir(parents=True, exist_ok=True)
+        panel.to_csv(args.output_panel, index=False)
+        _write_json(summary, args.output_summary)
         return
     raise RuntimeError(f"Unhandled command: {args.command}")
 

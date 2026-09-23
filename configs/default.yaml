@@ -6,8 +6,9 @@ project:
 targets:
   packaging: f_pack
   cns:
-    brain_mouse: 0.5
-    spinal_cord_mouse: 0.5
+    # SMA priority: spinal cord is the primary available disease proxy.
+    brain_mouse: 0.3
+    spinal_cord_mouse: 0.7
   liver: liver_mouse
   off_target:
     heart_mouse: 0.5
@@ -33,6 +34,22 @@ screening:
   final_candidate_count:
     minimum: 24
     maximum: 30
+  sequential_strategy:
+    # Applied after packaging and training-distance gates. Each fraction is
+    # evaluated among survivors from the preceding stage and can be tuned
+    # without retraining the organ-prediction model.
+    organ_order:
+      - spinal_cord_mouse
+      - brain_mouse
+      - liver_mouse
+      - heart_mouse
+      - kidney_mouse
+    retain_fraction:
+      spinal_cord_mouse: 0.25
+      brain_mouse: 0.50
+      liver_mouse: 0.50
+      heart_mouse: 0.75
+      kidney_mouse: 0.75
 
 validation:
   split_strategy: sequence_cluster

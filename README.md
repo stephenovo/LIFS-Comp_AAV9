@@ -50,7 +50,7 @@ search for capsids with a more favorable predicted distribution profile.
 | Objective | Role in screening | Current proxy |
 | --- | --- | --- |
 | `F_pack` | **Hard gate** | Packaging/production label |
-| `F_CNS` | Reward | Mean of mouse brain and spinal-cord predictions |
+| `F_SMA` | Reward | `0.30 × mouse brain + 0.70 × mouse spinal cord` |
 | `F_liv` | Primary penalty | Mouse liver prediction |
 | `F_off` | Secondary penalty | Mean of mouse heart and kidney predictions |
 | `R_imm` | Annotation only | Antibody-footprint or immune-risk proximity |
@@ -76,15 +76,19 @@ Models predict individual endpoints. The presentation score is calculated
 after training and is not inserted into the training loss:
 
 ```text
-S  = 0.45 × F_CNS − 0.35 × F_liv − 0.20 × F_off
-log2(SI) = F_CNS − F_liv
-SI       = 2^(F_CNS − F_liv)
+F_SMA = 0.30 × F_brain + 0.70 × F_spinal
+S     = 0.45 × F_SMA − 0.35 × F_liv − 0.20 × F_off
+log2(SI) = F_SMA − F_liv
+SI       = 2^(F_SMA − F_liv)
 ```
 
 The weights are working assumptions. Candidate stability is tested across 27
-weight combinations. The shortlist contains **CNS-favoring**,
+weight combinations. The joint shortlist contains **spinal-favoring**,
 **liver-minimizing**, and **balanced** groups, while strict Pareto membership is
-reported separately rather than forced for every row.
+reported separately rather than forced for every row. A configurable sequential
+route filters spinal cord, brain, liver, heart, and kidney in that order on the
+same predictions. See
+[SMA parallel screening strategies](docs/SMA_PARALLEL_SCREENING.md).
 
 ## Technical approach
 

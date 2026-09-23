@@ -41,6 +41,11 @@ from aav9_sma.screening.audit import (
     summarize_funnel_audit,
 )
 from aav9_sma.screening.score import rank_candidates
+from aav9_sma.screening.strategies import (
+    compare_strategy_shortlists,
+    default_sma_sequential_stages,
+    run_sequential_strategy,
+)
 from aav9_sma.screening.virtual import (
     fit_calibrated_packaging_model,
     run_control_audit,
@@ -292,6 +297,8 @@ def _build_parser() -> argparse.ArgumentParser:
     rank_parser = subparsers.add_parser("rank-candidates", help="Rank model predictions")
     rank_parser.add_argument("input", type=Path)
     rank_parser.add_argument("--packaging-threshold", type=float, required=True)
+    rank_parser.add_argument("--brain-target-weight", type=float, default=0.30)
+    rank_parser.add_argument("--spinal-target-weight", type=float, default=0.70)
     rank_parser.add_argument("--output", type=Path, required=True)
 
     virtual_parser = subparsers.add_parser(
@@ -307,6 +314,28 @@ def _build_parser() -> argparse.ArgumentParser:
     virtual_parser.add_argument("--output-pareto", type=Path)
     virtual_parser.add_argument("--output-shortlist", type=Path, required=True)
     virtual_parser.add_argument("--output-summary", type=Path, required=True)
+
+    strategy_parser = subparsers.add_parser(
+        "compare-screening-strategies",
+        help=(
+            "Run a spinal-first sequential funnel on existing predictions and compare it "
+            "with the joint multi-organ shortlist"
+        ),
+    )
+    strategy_parser.add_argument("ranked_csv", type=Path)
+    strategy_parser.add_argument("joint_shortlist_csv", type=Path)
+    strategy_parser.add_argument("--candidate-count", type=int, default=30)
+    strategy_parser.add_argument("--spinal-retain-fraction", type=float, default=0.25)
+    strategy_parser.add_argument("--brain-retain-fraction", type=float, default=0.50)
+    strategy_parser.add_argument("--liver-retain-fraction", type=float, default=0.50)
+    strategy_parser.add_argument("--heart-retain-fraction", type=float, default=0.75)
+    strategy_parser.add_argument("--kidney-retain-fraction", type=float, default=0.75)
+    strategy_parser.add_argument("--minimum-training-distance", type=int, default=2)
+    strategy_parser.add_argument("--minimum-pairwise-distance", type=int, default=3)
+    strategy_parser.add_argument("--output-annotated", type=Path)
+    strategy_parser.add_argument("--output-sequential-shortlist", type=Path, required=True)
+    strategy_parser.add_argument("--output-comparison", type=Path, required=True)
+    strategy_parser.add_argument("--output-summary", type=Path, required=True)
 
     control_parser = subparsers.add_parser(
         "audit-controls",
@@ -663,7 +692,12 @@ def main() -> None:
         return
     if args.command == "rank-candidates":
         predictions = pd.read_csv(args.input)
-        ranked = rank_candidates(predictions, packaging_threshold=args.packaging_threshold)
+        ranked = rank_candidates(
+            predictions,
+            packaging_threshold=args.packaging_threshold,
+            brain_target_weight=args.brain_target_weight,
+            spinal_target_weight=args.spinal_target_weight,
+        )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         ranked.to_csv(args.output, index=False)
         return
@@ -687,6 +721,49 @@ def main() -> None:
             ranked.loc[ranked["is_pareto"]].to_csv(args.output_pareto, index=False)
         shortlist.to_csv(args.output_shortlist, index=False)
         _write_json(summary, args.output_summary)
+        return
+    if args.command == "compare-screening-strategies":
+        ranked = pd.read_csv(args.ranked_csv)
+        joint_shortlist = pd.read_csv(args.joint_shortlist_csv)
+        stages = default_sma_sequential_stages(
+            spinal_retain_fraction=args.spinal_retain_fraction,
+            brain_retain_fraction=args.brain_retain_fraction,
+            liver_retain_fraction=args.liver_retain_fraction,
+            heart_retain_fraction=args.heart_retain_fraction,
+            kidney_retain_fraction=args.kidney_retain_fraction,
+        )
+        annotated, sequential_shortlist, stage_audit = run_sequential_strategy(
+            ranked,
+            stages,
+            candidate_count=args.candidate_count,
+            minimum_training_distance=args.minimum_training_distance,
+            minimum_pairwise_distance=args.minimum_pairwise_distance,
+        )
+        comparison, comparison_summary = compare_strategy_shortlists(
+            joint_shortlist,
+            sequential_shortlist,
+        )
+        output_paths = [
+            args.output_sequential_shortlist,
+            args.output_comparison,
+            args.output_summary,
+        ]
+        if args.output_annotated is not None:
+            output_paths.append(args.output_annotated)
+        for path in output_paths:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        if args.output_annotated is not None:
+            annotated.to_csv(args.output_annotated, index=False)
+        sequential_shortlist.to_csv(args.output_sequential_shortlist, index=False)
+        comparison.to_csv(args.output_comparison, index=False)
+        _write_json(
+            {
+                "strategy": "sequential_spinal_first",
+                "stage_audit": stage_audit,
+                "comparison": comparison_summary,
+            },
+            args.output_summary,
+        )
         return
     if args.command == "audit-controls":
         screen = pd.read_csv(args.screen_csv)

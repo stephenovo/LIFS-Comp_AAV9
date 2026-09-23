@@ -25,7 +25,7 @@ def main() -> None:
 
     ranked = pd.read_csv(
         args.ranked,
-        usecols=["AA", "passes_packaging_gate", "is_pareto", "f_cns", "f_liv"],
+        usecols=["AA", "passes_packaging_gate", "is_pareto", "f_sma_target", "f_liv"],
     )
     eligible = ranked.loc[ranked["passes_packaging_gate"]]
     pareto = eligible.loc[eligible["is_pareto"]]
@@ -93,7 +93,7 @@ def main() -> None:
 
     axes[2].scatter(
         eligible["f_liv"],
-        eligible["f_cns"],
+        eligible["f_sma_target"],
         s=8,
         alpha=0.16,
         color="#64748B",
@@ -102,7 +102,7 @@ def main() -> None:
     )
     axes[2].scatter(
         pareto["f_liv"],
-        pareto["f_cns"],
+        pareto["f_sma_target"],
         s=14,
         alpha=0.75,
         color="#D78B22",
@@ -111,14 +111,14 @@ def main() -> None:
     )
     group_styles = {
         "balanced": ("#2E7D5B", "o", "Balanced"),
-        "cns_favoring": ("#7048A8", "^", "CNS-favoring"),
+        "spinal_favoring": ("#7048A8", "^", "Spinal-favoring"),
         "low_liver": ("#C43D4D", "s", "Low-liver"),
     }
     for group, (color, marker, label) in group_styles.items():
         selected = shortlist.loc[shortlist["selection_group"].eq(group)]
         axes[2].scatter(
             selected["f_liv"],
-            selected["f_cns"],
+            selected["f_sma_target"],
             s=58,
             color=color,
             marker=marker,
@@ -130,7 +130,7 @@ def main() -> None:
     axes[2].axhline(0, color="#94A3B8", linewidth=0.8, linestyle="--")
     axes[2].axvline(0, color="#94A3B8", linewidth=0.8, linestyle="--")
     axes[2].set_xlabel("Predicted mouse liver enrichment (lower is preferred)")
-    axes[2].set_ylabel("Predicted CNS enrichment (higher is preferred)")
+    axes[2].set_ylabel("Predicted SMA target score (70% spinal; higher is preferred)")
     axes[2].set_title("C. Eligible prediction landscape")
     axes[2].grid(alpha=0.15)
     axes[2].legend(frameon=False, fontsize=7, loc="lower left")

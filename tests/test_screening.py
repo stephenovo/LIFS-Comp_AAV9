@@ -9,6 +9,11 @@ from aav9_sma.screening.audit import (
 )
 from aav9_sma.screening.pareto import pareto_mask
 from aav9_sma.screening.score import rank_candidates
+from aav9_sma.screening.strategies import (
+    SequentialStage,
+    compare_strategy_shortlists,
+    run_sequential_strategy,
+)
 from aav9_sma.screening.virtual import (
     add_conservative_annotations,
     add_weight_sensitivity,
@@ -35,12 +40,39 @@ def test_packaging_gate_and_ranking_fields() -> None:
 
     assert ranked.iloc[-1]["variant_id"] == "low_pack"
     assert not bool(ranked.iloc[-1]["passes_packaging_gate"])
-    assert {"f_cns", "f_liv", "f_off", "display_score", "specificity_index"} <= set(ranked.columns)
+    assert {
+        "f_cns",
+        "f_sma_target",
+        "f_liv",
+        "f_off",
+        "display_score",
+        "specificity_index",
+    } <= set(ranked.columns)
     assert ranked.loc[ranked["variant_id"] == "good", "is_pareto"].item()
     assert ranked.loc[ranked["variant_id"] == "low_liver", "is_pareto"].item()
     good = ranked.loc[ranked["variant_id"] == "good"].iloc[0]
     assert np.isclose(good["log2_specificity"], 0.6)
     assert np.isclose(good["specificity_index"], 2**0.6)
+
+
+def test_sma_target_prioritizes_spinal_cord_over_brain() -> None:
+    frame = pd.DataFrame(
+        {
+            "variant_id": ["brain_high", "spinal_high"],
+            "pred_pack": [1.0, 1.0],
+            "pred_brain_mouse": [1.0, 0.0],
+            "pred_spinal_cord_mouse": [0.0, 1.0],
+            "pred_liver_mouse": [0.0, 0.0],
+            "pred_heart_mouse": [0.0, 0.0],
+            "pred_kidney_mouse": [0.0, 0.0],
+        }
+    )
+
+    ranked = rank_candidates(frame, packaging_threshold=0.5)
+
+    assert ranked.iloc[0]["variant_id"] == "spinal_high"
+    assert np.isclose(ranked.iloc[0]["f_sma_target"], 0.7)
+    assert np.isclose(ranked.iloc[1]["f_sma_target"], 0.3)
 
 
 def test_fast_three_dimensional_pareto_matches_brute_force() -> None:
@@ -72,7 +104,10 @@ def test_generation_distance_and_diverse_shortlist() -> None:
             "passes_packaging_gate": True,
             "is_pareto": [True, True, True, False, False, False],
             "training_distance_lower_bound": 2,
+            "pred_spinal_cord_mouse": [6, 5, 4, 3, 2, 1],
+            "pred_brain_mouse": [1, 2, 3, 4, 5, 6],
             "f_cns": [6, 5, 4, 3, 2, 1],
+            "f_sma_target": [6, 5, 4, 3, 2, 1],
             "f_liv": [6, 5, 4, 3, 2, 1],
             "display_score": [6, 6, 6, 6, 6, 6],
             "weight_stability_top_fraction": [1, 0.8, 0.6, 0.4, 0.2, 0],
@@ -82,7 +117,7 @@ def test_generation_distance_and_diverse_shortlist() -> None:
     shortlist = select_diverse_shortlist(frame, per_group=1)
     assert len(shortlist) == 3
     assert set(shortlist["selection_group"]) == {
-        "cns_favoring",
+        "spinal_favoring",
         "low_liver",
         "balanced",
     }
@@ -93,6 +128,7 @@ def test_weight_sensitivity_is_bounded() -> None:
         {
             "passes_packaging_gate": [True, True, False],
             "f_cns": [2.0, 1.0, 5.0],
+            "f_sma_target": [2.0, 1.0, 5.0],
             "f_liv": [0.0, 0.5, 0.0],
             "f_off": [0.0, 0.5, 0.0],
         }
@@ -101,6 +137,74 @@ def test_weight_sensitivity_is_bounded() -> None:
     assert output["weight_stability_top_fraction"].between(0, 1).all()
     assert output["weight_mean_percentile"].between(0, 1).all()
     assert output.loc[2, "weight_stability_top_fraction"] == 0
+
+
+def test_sequential_funnel_applies_spinal_then_brain_then_liver() -> None:
+    ranked = pd.DataFrame(
+        {
+            "AA": ["AAAAAAA", "CCCCCCC", "DDDDDDD", "EEEEEEE"],
+            "passes_packaging_gate": [True] * 4,
+            "training_distance_lower_bound": [2] * 4,
+            "pred_spinal_cord_mouse": [4.0, 3.0, 2.0, 1.0],
+            "pred_brain_mouse": [1.0, 4.0, 3.0, 2.0],
+            "pred_liver_mouse": [4.0, 1.0, 2.0, 3.0],
+            "pred_heart_mouse": [0.0] * 4,
+            "pred_kidney_mouse": [0.0] * 4,
+            "display_score": [1.0] * 4,
+        }
+    )
+    stages = (
+        SequentialStage("spinal", "pred_spinal_cord_mouse", "maximize", 0.50),
+        SequentialStage("brain", "pred_brain_mouse", "maximize", 0.50),
+        SequentialStage("liver", "pred_liver_mouse", "minimize", 1.00),
+    )
+
+    annotated, shortlist, audit = run_sequential_strategy(
+        ranked,
+        stages,
+        candidate_count=2,
+        minimum_pairwise_distance=1,
+    )
+
+    assert audit[1]["stage"] == "spinal"
+    assert audit[2]["stage"] == "brain"
+    assert audit[1]["survivor_rows"] == 2
+    assert audit[2]["survivor_rows"] == 1
+    assert annotated.loc[annotated["passes_sequential_funnel"], "AA"].tolist() == ["CCCCCCC"]
+    assert shortlist["AA"].tolist() == ["CCCCCCC"]
+
+
+def test_strategy_comparison_quantifies_overlap_and_composition() -> None:
+    joint = pd.DataFrame(
+        {
+            "AA": ["AAAAAAA", "CCCCCCC"],
+            "display_score": [2.0, 1.0],
+            "pred_spinal_cord_mouse": [1.0, 2.0],
+            "pred_brain_mouse": [2.0, 1.0],
+        }
+    )
+    sequential = pd.DataFrame(
+        {
+            "AA": ["CCCCCCC", "DDDDDDD"],
+            "display_score": [1.0, 0.5],
+            "pred_spinal_cord_mouse": [2.0, 3.0],
+            "pred_brain_mouse": [1.0, 0.0],
+            "strategy_selection_rank": [1, 2],
+        }
+    )
+
+    comparison, summary = compare_strategy_shortlists(joint, sequential)
+
+    assert set(comparison["selection_relationship"]) == {
+        "shared",
+        "joint_only",
+        "sequential_only",
+    }
+    assert summary["shared_rows"] == 1
+    assert np.isclose(summary["jaccard_similarity"], 1 / 3)
+    assert summary["predicted_phenotype_medians"]["pred_spinal_cord_mouse"][
+        "sequential_minus_joint"
+    ] == 1.0
 
 
 def test_strict_conservative_annotation_uses_training_medians() -> None:

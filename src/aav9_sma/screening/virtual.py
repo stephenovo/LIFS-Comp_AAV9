@@ -218,7 +218,9 @@ def add_weight_sensitivity(
             for off_weight in (0.10, 0.20, 0.30):
                 total = cns_weight + liver_weight + off_weight
                 scores = (
-                    cns_weight / total * output.loc[eligible_indices, "f_cns"].to_numpy()
+                    cns_weight
+                    / total
+                    * output.loc[eligible_indices, "f_sma_target"].to_numpy()
                     - liver_weight / total * output.loc[eligible_indices, "f_liv"].to_numpy()
                     - off_weight / total * output.loc[eligible_indices, "f_off"].to_numpy()
                 )
@@ -291,7 +293,7 @@ def select_diverse_shortlist(
     per_group: int = 10,
     minimum_pairwise_distance: int = 3,
 ) -> pd.DataFrame:
-    """Select CNS, low-liver, and balanced groups with greedy diversity."""
+    """Select spinal-priority, low-liver, and balanced groups with diversity."""
     required = {"AA", "passes_packaging_gate", "is_pareto", "training_distance_lower_bound"}
     missing = required - set(ranked.columns)
     if missing:
@@ -311,8 +313,13 @@ def select_diverse_shortlist(
     selected_peptides: list[str] = []
     assignments: list[tuple[int, str, int, bool, float]] = []
     group_orders = {
-        "cns_favoring": ["f_cns", "f_liv", "organ_uncertainty_mean"],
-        "low_liver": ["f_liv", "f_cns", "organ_uncertainty_mean"],
+        "spinal_favoring": [
+            "pred_spinal_cord_mouse",
+            "pred_brain_mouse",
+            "f_liv",
+            "organ_uncertainty_mean",
+        ],
+        "low_liver": ["f_liv", "f_sma_target", "organ_uncertainty_mean"],
         "balanced": [
             "display_score",
             "weight_stability_top_fraction",
@@ -320,7 +327,7 @@ def select_diverse_shortlist(
         ],
     }
     group_ascending = {
-        "cns_favoring": [False, True, True],
+        "spinal_favoring": [False, False, True, True],
         "low_liver": [True, False, True],
         "balanced": [False, False, True],
     }
@@ -451,6 +458,12 @@ def run_virtual_screen(
             "architecture": "shared_mlp_64_32",
             "members": ensemble_size,
             **organ_metadata,
+        },
+        "sma_target_priority": {
+            "brain_weight": float(ranked["brain_target_weight"].iloc[0]),
+            "spinal_cord_weight": float(ranked["spinal_target_weight"].iloc[0]),
+            "selection_field": "f_sma_target",
+            "note": "Whole-brain remains a proxy; spinal cord is prioritized for SMA.",
         },
         "human_liver_warning_threshold": human_liver_threshold,
         "weight_scenarios": 27,

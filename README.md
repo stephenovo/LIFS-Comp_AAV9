@@ -41,6 +41,20 @@ question:
 The motivating application is future **SMN1 delivery for spinal muscular
 atrophy (SMA)**. The project engineers the delivery vehicle, not the SMN1 cargo.
 
+## Updated 5.0
+
+`updated-5.0` is now the main development line. It combines the original
+multi-organ ensemble with configurable brain/spinal target weighting, a
+comparison-only sequential screening route, and a guarded motor-neuron evidence
+extension that requires sequence-linked L3/L4 cell-level data. The evaluated
+50/50 brain/spinal score remains the default; 30/70 is an explicit sensitivity
+analysis rather than an unvalidated silent replacement.
+
+The pre-upgrade main line is preserved unchanged on the
+[`original`](https://github.com/stephenovo/LIFS-Comp_AAV9/tree/original) branch.
+The integration evidence and promotion decisions are documented in the
+[Updated 5.0 report](docs/UPDATED_5_0_INTEGRATION.zh-CN.md).
+
 ## Why this direction?
 
 Existing systemic AAV9 therapy establishes a real SMA application context, but
@@ -103,6 +117,7 @@ replacement for the joint shortlist. See
 | Models | Ridge and Random Forest per endpoint | Shared `64→32` MLP ensemble |
 | Validation | Distance-2 sequence split and Animal 4 holdout | Primate blind test if available |
 | Screening | Calibrated packaging lower bound and Pareto | Weight stability, distance and diversity |
+| Cell-type extension | Bulk spinal-cord proxy kept separate | L3/L4 sequence-linked motor-neuron head |
 
 Simple baselines come first. A neural model is justified only if it improves
 held-out performance without sequence leakage.
@@ -277,6 +292,32 @@ definition (packaging, spinal-cord median, low-liver median, and low model
 disagreement), and seven of those are present in the final 30.
 
 ![Virtual-screen summary](docs/assets/virtual_screen_summary.png)
+
+### Robustness diagnostics
+
+The leave-one-animal-out audit shows that liver and kidney predictions are the
+most stable across animals, while brain, spinal-cord, and heart predictions have
+more limited and animal-dependent transportability. The right panel compares
+model performance with the empirical animal-pair agreement ceiling rather than
+treating every endpoint as equally predictable.
+
+![Cross-animal robustness](docs/assets/cross_animal_robustness.png)
+
+The funnel audit makes two risks visible: the number of packaging-eligible
+candidates changes sharply with uncertainty treatment, and amino-acid
+composition drifts progressively away from the uniform virtual pool. The frozen
+95% lower-bound gate remains primary; the alternative gates and the separate
+composition-challenge panel are diagnostics rather than post-hoc replacements.
+
+![Funnel robustness and composition pressure](docs/assets/funnel_robustness.png)
+
+Both figures are reproducible from the tracked
+[cross-animal metrics](docs/audit_data/fit4function_cross_animal_ensemble_metrics.csv),
+[replicate metrics](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv),
+[gate audit](docs/audit_data/packaging_gate_sensitivity.csv), and
+[composition audit](docs/audit_data/funnel_composition_audit.csv), using the
+[cross-animal plot script](scripts/plot_cross_animal_robustness.py) and
+[funnel plot script](scripts/plot_funnel_robustness.py).
 
 Machine-readable results: [replicate QC](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv),
 [run QC](docs/audit_data/fit4function_multiorgan_run_qc.csv), and

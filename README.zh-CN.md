@@ -36,6 +36,18 @@
 
 应用场景是未来的 **SMA（脊髓性肌萎缩症）SMN1 递送**。我们改造的是递送载体衣壳，不是 SMN1 治疗基因。
 
+## Updated 5.0
+
+`updated-5.0` 已成为当前主开发版本。它在原有多器官集成模型上增加了可配置的脑/脊髓
+目标权重、只用于比较的顺序筛选路线，以及必须使用 sequence-linked L3/L4 细胞级数据的
+运动神经元证据扩展。已评估的脑/脊髓 50/50 评分继续作为默认值；30/70 是显式敏感性
+分析，不会在缺少验证的情况下静默替换主模型。
+
+升级前的主线完整保存在
+[`original`](https://github.com/stephenovo/LIFS-Comp_AAV9/tree/original) 分支。
+整合证据、保留项和未晋升项见
+[Updated 5.0 整合报告](docs/UPDATED_5_0_INTEGRATION.zh-CN.md)。
+
 ## 为什么选择这个方向？
 
 现有全身 AAV9 治疗为 SMA 提供了真实应用背景。本项目进一步把问题缩小为：能否利用多器官数据，找到预测分布更加偏向中枢、同时减少肝脏负担代理的衣壳候选。
@@ -92,6 +104,7 @@ SI       = 2^(F_target − F_liv)
 | 模型 | 各终点 Ridge、Random Forest | 共享 `64→32` MLP 集成 |
 | 验证 | 距离-2 序列切分、Animal 4 留出 | 有数据时做猕猴盲测 |
 | 筛选 | 校准包装下界、S、SI、帕累托 | 权重稳定性、训练距离和多样性 |
+| 细胞类型扩展 | 脊髓 bulk 代理保持独立 | L3/L4 sequence-linked 运动神经元 head |
 
 项目先建立简单、可解释的基线。只有在无数据泄漏的留出测试中确实改善，才引入神经网络。
 
@@ -258,6 +271,28 @@ masked 模型利用了更多不完整标签行，但没有改善任何 Animal 4 
 最终清单包含其中 7 条。
 
 ![虚拟筛选总结图](docs/assets/virtual_screen_summary.png)
+
+### 稳健性诊断图
+
+逐动物留出结果显示，肝和肾预测的跨动物稳定性最好；脑、脊髓和心脏的可迁移性更有限，
+并且更依赖具体动物。右图把模型表现与动物重复间的一致性参照放在一起，避免把所有终点
+都当作同样容易预测。
+
+![跨动物稳健性](docs/assets/cross_animal_robustness.png)
+
+筛选漏斗图揭示了两个重要风险：包装合格候选数量对不确定性处理非常敏感，而且氨基酸
+组成会随漏斗推进逐渐偏离均匀虚拟池。冻结的 95% 下置信界仍是主门槛；其他门槛和独立
+组成挑战组只用于诊断，不做事后替换。
+
+![筛选漏斗稳健性与组成压力](docs/assets/funnel_robustness.png)
+
+两张图都可由仓库内的
+[跨动物指标](docs/audit_data/fit4function_cross_animal_ensemble_metrics.csv)、
+[动物重复指标](docs/audit_data/fit4function_multiorgan_replicate_metrics.csv)、
+[包装门槛审计](docs/audit_data/packaging_gate_sensitivity.csv)和
+[组成审计](docs/audit_data/funnel_composition_audit.csv)，通过
+[跨动物绘图脚本](scripts/plot_cross_animal_robustness.py)和
+[漏斗绘图脚本](scripts/plot_funnel_robustness.py)复现。
 
 机器可读结果见：[集成留出测试](docs/audit_data/fit4function_multitask_ensemble_metrics.csv)、
 [169 条帕累托表](docs/audit_data/virtual_screen_pareto.csv)、

@@ -23,16 +23,17 @@ def rank_candidates(
     cns_weight: float = 0.45,
     liver_weight: float = 0.35,
     off_target_weight: float = 0.20,
-    brain_target_weight: float = 0.30,
-    spinal_target_weight: float = 0.70,
+    brain_target_weight: float = 0.50,
+    spinal_target_weight: float = 0.50,
     epsilon: float = 1.0e-6,
 ) -> pd.DataFrame:
     """Apply the packaging gate and compute SMA-prioritized ranking fields.
 
     ``f_cns`` is retained as the unweighted brain/spinal mean for backwards-
-    compatible reporting. Selection uses ``f_sma_target`` instead, with spinal
-    cord prioritized by default. The two target weights are normalized so
-    callers can supply any non-negative ratio.
+    compatible reporting. Selection uses the configurable ``f_sma_target``.
+    The default preserves the previously evaluated 50/50 baseline; a
+    spinal-prioritized ratio must be selected explicitly. The two target
+    weights are normalized so callers can supply any non-negative ratio.
     """
     missing = [column for column in PREDICTION_COLUMNS if column not in frame]
     if missing:

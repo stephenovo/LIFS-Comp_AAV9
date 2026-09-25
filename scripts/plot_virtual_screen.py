@@ -25,7 +25,15 @@ def main() -> None:
 
     ranked = pd.read_csv(
         args.ranked,
-        usecols=["AA", "passes_packaging_gate", "is_pareto", "f_sma_target", "f_liv"],
+        usecols=[
+            "AA",
+            "passes_packaging_gate",
+            "is_pareto",
+            "f_sma_target",
+            "f_liv",
+            "brain_target_weight",
+            "spinal_target_weight",
+        ],
     )
     eligible = ranked.loc[ranked["passes_packaging_gate"]]
     pareto = eligible.loc[eligible["is_pareto"]]
@@ -130,7 +138,12 @@ def main() -> None:
     axes[2].axhline(0, color="#94A3B8", linewidth=0.8, linestyle="--")
     axes[2].axvline(0, color="#94A3B8", linewidth=0.8, linestyle="--")
     axes[2].set_xlabel("Predicted mouse liver enrichment (lower is preferred)")
-    axes[2].set_ylabel("Predicted SMA target score (70% spinal; higher is preferred)")
+    brain_weight = float(ranked["brain_target_weight"].iloc[0])
+    spinal_weight = float(ranked["spinal_target_weight"].iloc[0])
+    axes[2].set_ylabel(
+        "Predicted target score "
+        f"({brain_weight:.0%} brain / {spinal_weight:.0%} spinal; higher is preferred)"
+    )
     axes[2].set_title("C. Eligible prediction landscape")
     axes[2].grid(alpha=0.15)
     axes[2].legend(frameon=False, fontsize=7, loc="lower left")

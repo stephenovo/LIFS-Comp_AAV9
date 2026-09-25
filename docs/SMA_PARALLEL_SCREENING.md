@@ -6,7 +6,7 @@ The organ-prediction model continues to predict brain, spinal cord, liver,
 heart, and kidney together. Two independent decision strategies are then run
 on the same predictions:
 
-1. **Joint multi-organ strategy** - spinal-prioritized SMA target score,
+1. **Joint multi-organ strategy** - configurable brain/spinal target score,
    liver/off-target penalties, Pareto status, weight stability, and diversity.
 2. **Sequential strategy** - packaging/distance eligibility followed by spinal
    cord, brain, liver, heart, and kidney filters in that exact order.
@@ -23,7 +23,14 @@ The historical unweighted field is retained for reporting:
 f_cns = 0.5 * brain + 0.5 * spinal_cord
 ```
 
-Selection now uses an explicit SMA target score:
+Selection now uses an explicit target score. The default preserves the
+previously evaluated 50/50 baseline:
+
+```text
+f_sma_target = 0.50 * brain + 0.50 * spinal_cord
+```
+
+An explicit SMA sensitivity run can use:
 
 ```text
 f_sma_target = 0.30 * brain + 0.70 * spinal_cord
@@ -31,7 +38,8 @@ f_sma_target = 0.30 * brain + 0.70 * spinal_cord
 
 `display_score`, specificity, Pareto analysis, weight sensitivity, and the
 balanced shortlist use `f_sma_target`. The target-oriented shortlist group is
-now `spinal_favoring`, ordered first by spinal prediction and then by brain.
+`spinal_favoring`, ordered first by spinal prediction and then by brain.
+Non-equal weights are a screening hypothesis and are never enabled silently.
 
 Whole-brain and whole-spinal-cord DNA enrichment remain organ-level mouse
 proxies. They are not evidence of motor-neuron-specific functional
@@ -39,7 +47,7 @@ transduction.
 
 ## Sequential strategy
 
-Default stages are:
+The currently configured comparison stages are:
 
 | Order | Organ | Direction | Retain among current survivors |
 |---:|---|---|---:|
@@ -49,7 +57,8 @@ Default stages are:
 | 4 | heart | minimize | 75% |
 | 5 | kidney | minimize | 75% |
 
-The fractions are deliberately CLI-configurable. Each cutoff is recomputed
+These fractions have not been promoted as a superior selector. They are
+deliberately CLI-configurable. Each cutoff is recomputed
 among candidates that survived the preceding stage. Ties at a cutoff are kept,
 so the realized fraction can differ slightly from the requested fraction.
 
@@ -59,8 +68,10 @@ Hamming-distance step then produces a diverse final panel.
 
 ## Run both strategies on the same predictions
 
-First create the spinal-prioritized joint results with `screen-virtual` as
-usual. Then run the sequential route and comparison without retraining:
+First create the joint results with `screen-virtual`. To run the optional
+30/70 sensitivity, pass `--brain-target-weight 0.30` and
+`--spinal-target-weight 0.70`. Then run the sequential route and comparison
+without retraining:
 
 ```bash
 aav9-sma compare-screening-strategies \
@@ -107,3 +118,14 @@ Future experimental results should add the decisive comparison: packaging,
 motor-neuron functional transduction, liver-cell transduction, and in-vivo
 spinal/liver outcomes by strategy. Until then, the comparison describes model
 behavior rather than biological superiority.
+
+## Promotion status
+
+The sequential route is **comparison only**. On the tracked one-million-candidate
+screen, its default funnel shared 8 of 30 sequences with the 30/70 joint list,
+while its median predicted spinal-cord score was 0.36 lower and its median
+predicted liver score was 0.86 higher. Those results do not support replacing
+the joint shortlist. Likewise, changing the joint score from 50/50 to 30/70
+produced a rank Spearman correlation of 0.99985 among packaging-eligible
+candidates and changed only one of 30 shortlisted sequences; this is useful as
+a sensitivity check, not evidence of a biological model improvement.

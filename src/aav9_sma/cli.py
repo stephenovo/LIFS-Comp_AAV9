@@ -297,8 +297,8 @@ def _build_parser() -> argparse.ArgumentParser:
     rank_parser = subparsers.add_parser("rank-candidates", help="Rank model predictions")
     rank_parser.add_argument("input", type=Path)
     rank_parser.add_argument("--packaging-threshold", type=float, required=True)
-    rank_parser.add_argument("--brain-target-weight", type=float, default=0.30)
-    rank_parser.add_argument("--spinal-target-weight", type=float, default=0.70)
+    rank_parser.add_argument("--brain-target-weight", type=float, default=0.50)
+    rank_parser.add_argument("--spinal-target-weight", type=float, default=0.50)
     rank_parser.add_argument("--output", type=Path, required=True)
 
     virtual_parser = subparsers.add_parser(
@@ -310,6 +310,8 @@ def _build_parser() -> argparse.ArgumentParser:
     virtual_parser.add_argument("--pool-size", type=int, default=200_000)
     virtual_parser.add_argument("--ensemble-size", type=int, default=5)
     virtual_parser.add_argument("--max-iter", type=int, default=80)
+    virtual_parser.add_argument("--brain-target-weight", type=float, default=0.50)
+    virtual_parser.add_argument("--spinal-target-weight", type=float, default=0.50)
     virtual_parser.add_argument("--output-ranked", type=Path, required=True)
     virtual_parser.add_argument("--output-pareto", type=Path)
     virtual_parser.add_argument("--output-shortlist", type=Path, required=True)
@@ -346,6 +348,8 @@ def _build_parser() -> argparse.ArgumentParser:
     control_parser.add_argument("--per-group", type=int, default=25)
     control_parser.add_argument("--ensemble-size", type=int, default=5)
     control_parser.add_argument("--max-iter", type=int, default=80)
+    control_parser.add_argument("--brain-target-weight", type=float, default=0.50)
+    control_parser.add_argument("--spinal-target-weight", type=float, default=0.50)
     control_parser.add_argument("--output-controls", type=Path, required=True)
     control_parser.add_argument("--output-summary", type=Path, required=True)
 
@@ -710,6 +714,8 @@ def main() -> None:
             pool_size=args.pool_size,
             ensemble_size=args.ensemble_size,
             max_iter=args.max_iter,
+            brain_target_weight=args.brain_target_weight,
+            spinal_target_weight=args.spinal_target_weight,
         )
         output_paths = [args.output_ranked, args.output_shortlist, args.output_summary]
         if args.output_pareto is not None:
@@ -759,6 +765,7 @@ def main() -> None:
         _write_json(
             {
                 "strategy": "sequential_spinal_first",
+                "status": "comparison_only_not_promoted",
                 "stage_audit": stage_audit,
                 "comparison": comparison_summary,
             },
@@ -774,6 +781,8 @@ def main() -> None:
             per_group=args.per_group,
             ensemble_size=args.ensemble_size,
             max_iter=args.max_iter,
+            brain_target_weight=args.brain_target_weight,
+            spinal_target_weight=args.spinal_target_weight,
         )
         for path in (args.output_controls, args.output_summary):
             path.parent.mkdir(parents=True, exist_ok=True)

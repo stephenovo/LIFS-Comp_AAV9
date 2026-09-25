@@ -72,6 +72,22 @@ def test_rejects_bulk_spinal_cord_as_motor_neuron_training_data() -> None:
         )
 
 
+def test_rejects_conflicting_sequences_for_one_variant() -> None:
+    frame = _evidence_frame().iloc[:2].copy()
+    frame.loc[frame.index[1], "peptide_7mer"] = "CCCCCCC"
+
+    with pytest.raises(ValueError, match="exactly one peptide_7mer"):
+        normalize_motor_neuron_evidence(frame, require_sequence=True)
+
+
+def test_rejects_mixed_raw_readout_scales() -> None:
+    frame = _evidence_frame()
+    frame.loc[frame["study_id"].eq("study_3"), "readout_type"] = "function"
+
+    with pytest.raises(ValueError, match="one comparable readout_type"):
+        fit_motor_neuron_head(frame, validation_fraction=0.34, random_state=3)
+
+
 def test_aggregates_traceable_evidence_without_fabricating_labels() -> None:
     frame = _evidence_frame()
     frame.loc[0, "evidence_level"] = "L4"

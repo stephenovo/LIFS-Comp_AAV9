@@ -66,7 +66,8 @@
 
 ### 3.1 最直接的参考：Kussick et al., 2025
 
-**Enhancer AAVs for targeting spinal motor neurons and descending motor pathways in rodents and macaque**  
+**Enhancer AAVs for targeting spinal motor neurons and descending motor pathways in rodents and macaque**
+
 [PubMed](https://pubmed.ncbi.nlm.nih.gov/40403722/) · DOI: 10.1016/j.celrep.2025.115730
 
 该工作：
@@ -88,14 +89,18 @@
 
 ### 3.2 AAV9 与脊髓运动系统
 
-**Bravo-Hernandez et al., 2020, Nature Medicine**  
-[Spinal subpial delivery of AAV9 enables widespread gene silencing and blocks motoneuron degeneration in ALS](https://pubmed.ncbi.nlm.nih.gov/31873312/)  
+**Bravo-Hernandez et al., 2020, Nature Medicine**
+
+[Spinal subpial delivery of AAV9 enables widespread gene silencing and blocks motoneuron degeneration in ALS](https://pubmed.ncbi.nlm.nih.gov/31873312/)
+
 DOI: 10.1038/s41591-019-0674-1
 
 可用于参考 AAV9 在猪和非人灵长类脊髓运动系统中的表达、组织分布和 ALS 功能终点。限制是给药方式为 subpial delivery，不能直接与项目的系统给药/器官富集模型合并训练。
 
-**Rashnonejad et al., 2019, Molecular Therapy**  
-[Fetal Gene Therapy Using a Single Injection of Recombinant AAV9 Rescued SMA Phenotype in Mice](https://pubmed.ncbi.nlm.nih.gov/31543414/)  
+**Rashnonejad et al., 2019, Molecular Therapy**
+
+[Fetal Gene Therapy Using a Single Injection of Recombinant AAV9 Rescued SMA Phenotype in Mice](https://pubmed.ncbi.nlm.nih.gov/31543414/)
+
 DOI: 10.1016/j.ymthe.2019.08.017
 
 可用于定义 SMA 中的 SMN 表达、运动功能和疾病表型终点，但不是 sequence-linked 的 capsid library 数据。
@@ -218,8 +223,10 @@ motor-neuron cell label
 该细胞中的 vector barcode、RNA、蛋白或 reporter readout
 ~~~
 
-如果缺少 capsid 序列但有细胞类型数据，只能训练 motor-neuron classifier。  
-如果有 capsid 序列但只有整块脊髓数据，只能训练 spinal-cord proxy。  
+如果缺少 capsid 序列但有细胞类型数据，只能训练 motor-neuron classifier。
+
+如果有 capsid 序列但只有整块脊髓数据，只能训练 spinal-cord proxy。
+
 如果两者来自不同实验且没有统一 route、dose、payload 和时间点，不应直接连接成监督标签。
 
 ## 6. 没有直接数据时能做什么

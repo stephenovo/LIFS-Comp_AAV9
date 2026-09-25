@@ -68,7 +68,17 @@ def test_sma_target_prioritizes_spinal_cord_over_brain() -> None:
         }
     )
 
-    ranked = rank_candidates(frame, packaging_threshold=0.5)
+    baseline = rank_candidates(frame, packaging_threshold=0.5)
+    assert baseline["f_sma_target"].eq(0.5).all()
+    assert baseline["brain_target_weight"].eq(0.5).all()
+    assert baseline["spinal_target_weight"].eq(0.5).all()
+
+    ranked = rank_candidates(
+        frame,
+        packaging_threshold=0.5,
+        brain_target_weight=0.30,
+        spinal_target_weight=0.70,
+    )
 
     assert ranked.iloc[0]["variant_id"] == "spinal_high"
     assert np.isclose(ranked.iloc[0]["f_sma_target"], 0.7)

@@ -147,6 +147,13 @@ def normalize_motor_neuron_evidence(
             raise ValueError(
                 f"Invalid peptide_7mer values at rows {output.index[invalid_peptides].tolist()}"
             )
+        sequence_counts = output.groupby("variant_id")["peptide_7mer"].nunique()
+        conflicting_variants = sequence_counts[sequence_counts > 1].index.tolist()
+        if conflicting_variants:
+            raise ValueError(
+                "Each variant_id must map to exactly one peptide_7mer; conflicts: "
+                f"{conflicting_variants}"
+            )
         output["sequence_linked"] = True
     else:
         output["sequence_linked"] = (

@@ -29,6 +29,23 @@ _CATEGORICAL_CONTEXT = ("species", "strain", "route", "payload", "promoter_or_en
 _NUMERIC_CONTEXT = ("dose", "timepoint")
 
 
+def _validate_comparable_readouts(frame: pd.DataFrame) -> None:
+    """Reject raw assay scales that the current head cannot compare safely."""
+    readout_types = sorted(frame["readout_type"].str.lower().dropna().unique().tolist())
+    if len(readout_types) != 1:
+        raise ValueError(
+            "Motor-neuron regression requires one comparable readout_type per fit; "
+            f"found {readout_types}. Normalize to a common target or fit separate heads."
+        )
+    if "readout_unit" in frame:
+        units = sorted(frame["readout_unit"].astype("string").dropna().unique().tolist())
+        if len(units) > 1:
+            raise ValueError(
+                "Motor-neuron regression requires one readout_unit per fit; "
+                f"found {units}"
+            )
+
+
 def _model_for_name(name: str, random_state: int):
     if name == "ridge":
         return Ridge(alpha=1.0)
@@ -140,6 +157,7 @@ class MotorNeuronHead:
             require_motor_labels=True,
         )
         normalized = normalized[normalized["is_motor_neuron"]].copy()
+        _validate_comparable_readouts(normalized)
         if target_column not in normalized:
             raise ValueError(f"Missing target column: {target_column}")
         if len(normalized) < 2 or normalized["variant_id"].nunique() < 2:
@@ -218,6 +236,7 @@ def fit_motor_neuron_head(
     ].copy()
     if len(eligible) < 4 or eligible["variant_id"].nunique() < 2:
         raise ValueError("Too few direct motor-neuron rows for a sequence-linked head")
+    _validate_comparable_readouts(eligible)
     train_rows, validation_rows = study_level_split(
         eligible,
         validation_fraction=validation_fraction,

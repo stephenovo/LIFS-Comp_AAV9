@@ -6,9 +6,9 @@ project:
 targets:
   packaging: f_pack
   cns:
-    # SMA priority: spinal cord is the primary available disease proxy.
-    brain_mouse: 0.3
-    spinal_cord_mouse: 0.7
+    # Previously evaluated baseline. Alternative weights are a screening hypothesis.
+    brain_mouse: 0.5
+    spinal_cord_mouse: 0.5
   liver: liver_mouse
   off_target:
     heart_mouse: 0.5
@@ -34,7 +34,11 @@ screening:
   final_candidate_count:
     minimum: 24
     maximum: 30
+  alternative_sma_target_weights:
+    brain_mouse: 0.30
+    spinal_cord_mouse: 0.70
   sequential_strategy:
+    status: comparison_only_not_promoted
     # Applied after packaging and training-distance gates. Each fraction is
     # evaluated among survivors from the preceding stage and can be tuned
     # without retraining the organ-prediction model.

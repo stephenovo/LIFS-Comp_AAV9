@@ -392,6 +392,8 @@ def run_virtual_screen(
     ensemble_size: int = 5,
     random_state: int = 42,
     max_iter: int = 80,
+    brain_target_weight: float = 0.50,
+    spinal_target_weight: float = 0.50,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
     """Run the complete in-silico candidate funnel."""
     observed_sequences = set(screen["AA"]) | set(reconstructed["AA"])
@@ -434,7 +436,12 @@ def run_virtual_screen(
         ],
         axis=1,
     )
-    ranked = rank_candidates(candidates, packaging_threshold=packaging_threshold)
+    ranked = rank_candidates(
+        candidates,
+        packaging_threshold=packaging_threshold,
+        brain_target_weight=brain_target_weight,
+        spinal_target_weight=spinal_target_weight,
+    )
     ranked = add_weight_sensitivity(ranked)
     ranked, conservative_thresholds = add_conservative_annotations(ranked, reconstructed)
     shortlist = select_diverse_shortlist(ranked)
@@ -463,7 +470,10 @@ def run_virtual_screen(
             "brain_weight": float(ranked["brain_target_weight"].iloc[0]),
             "spinal_cord_weight": float(ranked["spinal_target_weight"].iloc[0]),
             "selection_field": "f_sma_target",
-            "note": "Whole-brain remains a proxy; spinal cord is prioritized for SMA.",
+            "note": (
+                "Whole-brain and whole-spinal-cord are organ-level proxies; "
+                "non-equal weights are an explicit screening hypothesis."
+            ),
         },
         "human_liver_warning_threshold": human_liver_threshold,
         "weight_scenarios": 27,
@@ -511,6 +521,8 @@ def run_control_audit(
     ensemble_size: int = 5,
     random_state: int = 42,
     max_iter: int = 80,
+    brain_target_weight: float = 0.50,
+    spinal_target_weight: float = 0.50,
 ) -> tuple[pd.DataFrame, dict[str, object]]:
     """Send empirical positive/negative controls through the fitted funnel.
 
@@ -576,7 +588,12 @@ def run_control_audit(
         predictions[f"pred_{endpoint}_mouse"] = organ_mean[:, endpoint_index]
         predictions[f"uncertainty_{endpoint}_mouse"] = organ_std[:, endpoint_index]
     predictions["organ_uncertainty_mean"] = organ_std.mean(axis=1)
-    ranked = rank_candidates(predictions, packaging_threshold=packaging_threshold)
+    ranked = rank_candidates(
+        predictions,
+        packaging_threshold=packaging_threshold,
+        brain_target_weight=brain_target_weight,
+        spinal_target_weight=spinal_target_weight,
+    )
     audit = selected.merge(
         ranked.drop(columns="AA"), on="variant_id", how="left", validate="one_to_one"
     )
@@ -605,6 +622,10 @@ def run_control_audit(
         ),
         "per_group": per_group,
         "packaging_threshold": packaging_threshold,
+        "target_weights": {
+            "brain": brain_target_weight,
+            "spinal_cord": spinal_target_weight,
+        },
         "groups": group_summary,
     }
     return audit.sort_values(["control_group", "AA"]), summary
